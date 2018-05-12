@@ -1,9 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
+import {environment} from "../environments/environment";
 import DrawingControlOptions = google.maps.drawing.DrawingControlOptions;
 import OverlayType = google.maps.drawing.OverlayType;
 import MarkerOptions = google.maps.MarkerOptions;
-import LatLng = google.maps.LatLng;
-import {environment} from "../environments/environment";
+import PolygonOptions = google.maps.PolygonOptions;
 
 @Component({
   selector: 'app-root',
@@ -18,7 +18,9 @@ export class AppComponent {
 
 
   ngOnInit() {
-
+    var selectedShape;
+    var selectedColor;
+    var colors = ['#1E90FF', '#FF1493', '#32CD32', '#FF8C00', '#4B0082'];
 
     var mapProp = {
       center: new google.maps.LatLng(environment.initLat, environment.initLng),
@@ -42,7 +44,7 @@ export class AppComponent {
     };
     const markerOptions: MarkerOptions = {
       icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-      position: LatLng
+      position: new google.maps.LatLng(environment.initLat, environment.initLng)
     };
     const drawingManager = new google.maps.drawing.DrawingManager({
       drawingMode: google.maps.drawing.OverlayType.MARKER,
@@ -59,10 +61,54 @@ export class AppComponent {
         zIndex: 1
       }
     });
-    // this.map.addListener("polygoncomplete", new OnPolygonClickListener())
+
+    function clearSelection() {
+      if (selectedShape) {
+        selectedShape.setEditable(false);
+        selectedShape = null;
+      }
+    }
+
+
+    function setSelection(shape) {
+      clearSelection();
+      selectedShape = shape;
+      shape.setEditable(true);
+      var options: PolygonOptions = {
+        fillColor: "#fffff0"
+      };
+      shape.setOptions(options)
+    }
+
+    google.maps.event.addListener(drawingManager, 'overlaycomplete', function (e) {
+      if (e.type != google.maps.drawing.OverlayType.MARKER) {
+        // Switch back to non-drawing mode after drawing a shape.
+        drawingManager.setDrawingMode(null);
+
+        // Add an event listener that selects the newly-drawn shape when the user
+        // mouses down on it.
+        var newShape = e.overlay;
+        newShape.type = e.type;
+
+        google.maps.event.addListener(newShape, 'click', function () {
+          console.log("newShape:" + newShape)
+          setSelection(newShape);
+        });
+
+        google.maps.event.addListener(newShape, 'rightclick', function () {
+          console.log("newShape:" + newShape)
+          newShape.setEditable(true);
+          var options: PolygonOptions = {
+            fillColor: "#ff0000"
+          };
+          newShape.setOptions(options)
+        });
+      }
+    });
     drawingManager.setMap(this.map);
 
   }
+
 
   public loadScript() {
     var isFound = false;
@@ -76,7 +122,7 @@ export class AppComponent {
     if (!isFound) {
       var dynamicScripts = ["https://widgets.skyscanner.net/widget-server/js/loader.js"];
 
-      for (var i = 0; i < dynamicScripts .length; i++) {
+      for (var i = 0; i < dynamicScripts.length; i++) {
         let node = document.createElement('script');
         node.src = dynamicScripts [i];
         node.type = 'text/javascript';
@@ -87,6 +133,7 @@ export class AppComponent {
 
     }
   }
+
   /*
   function remove_circle(circle) {
     // remove event listers
