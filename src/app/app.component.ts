@@ -4,6 +4,8 @@ import DrawingControlOptions = google.maps.drawing.DrawingControlOptions;
 import OverlayType = google.maps.drawing.OverlayType;
 import MarkerOptions = google.maps.MarkerOptions;
 import PolygonOptions = google.maps.PolygonOptions;
+import {} from '@types/googlemaps';
+import {MarkersSet, ShadowShape} from "./MarkersSet";
 
 @Component({
   selector: 'app-root',
@@ -15,6 +17,8 @@ export class AppComponent {
   @ViewChild('gmap') gmapElement: any;
   map: google.maps.Map;
   title = 'shadowow';
+  markersSet: MarkersSet;
+  shadowShapes: ShadowShape[] = [];
 
 
   ngOnInit() {
@@ -30,6 +34,7 @@ export class AppComponent {
 
 
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
+    this.markersSet = new MarkersSet(this.map)
     const fmap = this.map;
     this.map.addListener('center_changed', function () {
       // 3 seconds after the center of the map has changed, pan back to the
@@ -79,6 +84,7 @@ export class AppComponent {
       };
       shape.setOptions(options)
     }
+    const markersSet = this.markersSet;
 
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function (e) {
       if (e.type != google.maps.drawing.OverlayType.MARKER) {
@@ -90,13 +96,44 @@ export class AppComponent {
         var newShape = e.overlay;
         newShape.type = e.type;
 
+        const newShadowShape: ShadowShape = {
+            shape: e.overlay,
+            heights: []
+        };
+
+
+        google.maps.event.addListener(newShape.getPath(), 'remove_at', function() {
+          console.log("removed");
+          markersSet.createMarkers(newShape);
+        });
+
+        google.maps.event.addListener(newShape.getPath(), 'set_at', function() {
+          console.log('Vertex moved on outer path.');
+          markersSet.createMarkers(newShape);
+        });
+
+        google.maps.event.addListener(newShape.getPath(), 'insert_at', function() {
+          console.log('Vertex removed from inner path.');
+          markersSet.createMarkers(newShape);
+        });
+
         google.maps.event.addListener(newShape, 'click', function () {
-          console.log("newShape:" + newShape)
+          markersSet.createMarkers(newShape);
           setSelection(newShape);
+
+        });
+
+        google.maps.event.addListener(newShape, 'dragstart', function () {
+          markersSet.createMarkers(newShape);
+
+        });
+        google.maps.event.addListener(newShape, 'dragend', function () {
+          markersSet.createMarkers(newShape);
+
         });
 
         google.maps.event.addListener(newShape, 'rightclick', function () {
-          console.log("newShape:" + newShape)
+          console.log("newShape:", newShape)
           newShape.setEditable(true);
           var options: PolygonOptions = {
             fillColor: "#ff0000"
