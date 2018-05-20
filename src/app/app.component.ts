@@ -3,9 +3,8 @@ import {environment} from "../environments/environment";
 import DrawingControlOptions = google.maps.drawing.DrawingControlOptions;
 import OverlayType = google.maps.drawing.OverlayType;
 import MarkerOptions = google.maps.MarkerOptions;
-import PolygonOptions = google.maps.PolygonOptions;
 import {} from '@types/googlemaps';
-import {MarkersSet, ShadowShape} from "./MarkersSet";
+import {MarkersSet, ShadowShape, ShadowShapeSet} from "./MarkersSet";
 
 @Component({
   selector: 'app-root',
@@ -17,8 +16,7 @@ export class AppComponent {
   @ViewChild('gmap') gmapElement: any;
   map: google.maps.Map;
   title = 'shadowow';
-  markersSet: MarkersSet;
-  shadowShapes: ShadowShape[] = [];
+  shadowShapesSet: ShadowShapeSet;
 
 
   ngOnInit() {
@@ -34,7 +32,7 @@ export class AppComponent {
 
 
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
-    this.markersSet = new MarkersSet(this.map)
+    this.shadowShapesSet = new ShadowShapeSet(this.map);
     const fmap = this.map;
     this.map.addListener('center_changed', function () {
       // 3 seconds after the center of the map has changed, pan back to the
@@ -67,79 +65,15 @@ export class AppComponent {
       }
     });
 
-    function clearSelection() {
-      if (selectedShape) {
-        selectedShape.setEditable(false);
-        selectedShape = null;
-      }
-    }
 
-
-    function setSelection(shape) {
-      clearSelection();
-      selectedShape = shape;
-      shape.setEditable(true);
-      var options: PolygonOptions = {
-        fillColor: "#fffff0"
-      };
-      shape.setOptions(options)
-    }
-    const markersSet = this.markersSet;
+    const shadowShapesSet = this.shadowShapesSet;
 
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function (e) {
       if (e.type != google.maps.drawing.OverlayType.MARKER) {
         // Switch back to non-drawing mode after drawing a shape.
         drawingManager.setDrawingMode(null);
 
-        // Add an event listener that selects the newly-drawn shape when the user
-        // mouses down on it.
-        var newShape = e.overlay;
-        newShape.type = e.type;
-
-        const newShadowShape: ShadowShape = {
-            shape: e.overlay,
-            heights: []
-        };
-
-
-        google.maps.event.addListener(newShape.getPath(), 'remove_at', function() {
-          console.log("removed");
-          markersSet.createMarkers(newShape);
-        });
-
-        google.maps.event.addListener(newShape.getPath(), 'set_at', function() {
-          console.log('Vertex moved on outer path.');
-          markersSet.createMarkers(newShape);
-        });
-
-        google.maps.event.addListener(newShape.getPath(), 'insert_at', function() {
-          console.log('Vertex removed from inner path.');
-          markersSet.createMarkers(newShape);
-        });
-
-        google.maps.event.addListener(newShape, 'click', function () {
-          markersSet.createMarkers(newShape);
-          setSelection(newShape);
-
-        });
-
-        google.maps.event.addListener(newShape, 'dragstart', function () {
-          markersSet.createMarkers(newShape);
-
-        });
-        google.maps.event.addListener(newShape, 'dragend', function () {
-          markersSet.createMarkers(newShape);
-
-        });
-
-        google.maps.event.addListener(newShape, 'rightclick', function () {
-          console.log("newShape:", newShape)
-          newShape.setEditable(true);
-          var options: PolygonOptions = {
-            fillColor: "#ff0000"
-          };
-          newShape.setOptions(options)
-        });
+        shadowShapesSet.onShapeAdded(e.overlay);
       }
     });
     drawingManager.setMap(this.map);
@@ -147,38 +81,4 @@ export class AppComponent {
   }
 
 
-  public loadScript() {
-    var isFound = false;
-    var scripts = document.getElementsByTagName("script") as any
-    for (var i = 0; i < scripts.length; ++i) {
-      if (scripts[i].getAttribute('src') != null && scripts[i].getAttribute('src').includes("loader")) {
-        isFound = true;
-      }
-    }
-
-    if (!isFound) {
-      var dynamicScripts = ["https://widgets.skyscanner.net/widget-server/js/loader.js"];
-
-      for (var i = 0; i < dynamicScripts.length; i++) {
-        let node = document.createElement('script');
-        node.src = dynamicScripts [i];
-        node.type = 'text/javascript';
-        node.async = false;
-        node.charset = 'utf-8';
-        document.getElementsByTagName('head')[0].appendChild(node);
-      }
-
-    }
-  }
-
-  /*
-  function remove_circle(circle) {
-    // remove event listers
-    google.maps.event.clearListeners(circle, 'click_handler_name');
-    google.maps.event.clearListeners(circle, 'drag_handler_name');
-    circle.setRadius(0);
-    // if polygon:
-    // polygon_shape.setPath([]);
-    circle.setMap(null);
-  }*/
 }
