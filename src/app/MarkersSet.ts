@@ -46,10 +46,10 @@ export class ShadowShapeSet {
   public onShapeAdded(shape: google.maps.Polygon | google.maps.Polyline) {
     const newShadowShape: ShadowShape = {
       shape: shape,
-      heights: []
+      heights: [],
     };
     for (let i = 0; i < shape.getPath().getLength(); i++) {
-      newShadowShape.heights.push(10)
+      newShadowShape.heights.push(10);
     }
     this.shadowShapes.push(newShadowShape);
     this.currentShape = newShadowShape;
@@ -65,10 +65,9 @@ export class ShadowShapeSet {
 
   private setSelection(shape) {
     this.clearSelection();
-    const shadowShape = this.shadowShapes.find((s) => s.shape === shape);
-    this.currentShape = shadowShape
+    this.currentShape =  this.shadowShapes.find((s) => s.shape === shape);
     shape.setEditable(true);
-    var options: PolygonOptions = {
+    const options: PolygonOptions = {
       fillColor: "#fffff0"
     };
     shape.setOptions(options)
@@ -76,7 +75,8 @@ export class ShadowShapeSet {
 
   private initListeners(shape: google.maps.Polygon | google.maps.Polyline) {
     const markersSet = this.markersSet;
-    google.maps.event.addListener(shape.getPath(), 'remove_at', function () {
+
+    google.maps.event.addListener(shape.getPath(), 'remove_at', () => {
       markersSet.createMarkers(shape);
     });
 
@@ -84,8 +84,24 @@ export class ShadowShapeSet {
       markersSet.createMarkers(shape);
     });
 
-    google.maps.event.addListener(shape.getPath(), 'insert_at', function () {
+    google.maps.event.addListener(shape.getPath(), 'insert_at', (vertex: number) => {
       markersSet.createMarkers(shape);
+      console.log("insert ", vertex);
+      const shadowShape = this.shadowShapes.find((s) => s.shape === shape);
+      console.log("heights", shadowShape.heights);
+      shadowShape.heights.splice(vertex, 0, 10);
+      console.log("heightsB", shadowShape.heights)
+    });
+
+    google.maps.event.addListener(shape, 'rightclick', (e) => {
+      // Check if click was on a vertex control point
+      console.log("remove", e.vertex);
+      if (e.vertex == undefined) {
+        return;
+      }
+      shape.getPath().removeAt(e.vertex);
+      const shadowShape = this.shadowShapes.find((s) => s.shape === shape);
+      shadowShape.heights.splice(e.vertex, 1);
     });
 
     google.maps.event.addListener(shape, 'click', function () {
@@ -105,7 +121,7 @@ export class ShadowShapeSet {
 
     google.maps.event.addListener(shape, 'rightclick', function () {
       shape.setEditable(true);
-      var options: PolygonOptions = {
+      const options: PolygonOptions = {
         fillColor: "#ff0000"
       };
       //shape.setOptions(options)
