@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 
 import {AppComponent} from './app.component';
 import { ShapeDetailsComponent } from './shape/shape-details/shape-details.component';
+import {FormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -12,7 +13,8 @@ import { ShapeDetailsComponent } from './shape/shape-details/shape-details.compo
     ShapeDetailsComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,4 +1,5 @@
 import PolygonOptions = google.maps.PolygonOptions;
+import {NgZone} from "@angular/core";
 
 export class MarkersSet {
   private map: google.maps.Map;
@@ -36,14 +37,14 @@ export class ShadowShapeSet {
   private shadowShapes: ShadowShape[] = [];
   private markersSet: MarkersSet;
   private map: google.maps.Map;
-  private currentShape: ShadowShape;
+  public currentShape: ShadowShape;
 
   constructor(map: google.maps.Map) {
     this.map = map;
     this.markersSet = new MarkersSet(this.map);
   }
 
-  public onShapeAdded(shape: google.maps.Polygon | google.maps.Polyline) {
+  public onShapeAdded(shape: google.maps.Polygon | google.maps.Polyline, _ngZone: NgZone) {
     const newShadowShape: ShadowShape = {
       shape: shape,
       heights: [],
@@ -53,7 +54,7 @@ export class ShadowShapeSet {
     }
     this.shadowShapes.push(newShadowShape);
     this.currentShape = newShadowShape;
-    this.initListeners(shape);
+    this.initListeners(shape, _ngZone);
   }
 
   private clearSelection() {
@@ -73,7 +74,7 @@ export class ShadowShapeSet {
     shape.setOptions(options)
   }
 
-  private initListeners(shape: google.maps.Polygon | google.maps.Polyline) {
+  private initListeners(shape: google.maps.Polygon | google.maps.Polyline, _ngZone: NgZone) {
     const markersSet = this.markersSet;
 
     google.maps.event.addListener(shape.getPath(), 'remove_at', () => {
@@ -102,24 +103,28 @@ export class ShadowShapeSet {
       shape.getPath().removeAt(e.vertex);
       const shadowShape = this.shadowShapes.find((s) => s.shape === shape);
       shadowShape.heights.splice(e.vertex, 1);
+      // TODO if last vertex, remove whole shadowShape
     });
 
-    google.maps.event.addListener(shape, 'click', function () {
-      markersSet.createMarkers(shape);
-      this.setSelection(shape);
-
-    });
-
-    google.maps.event.addListener(shape, 'dragstart', function () {
+    google.maps.event.addListener(shape, 'click', () =>  {
       markersSet.createMarkers(shape);
 
+      _ngZone.run(() => {
+        this.setSelection(shape);
+      })
+
     });
-    google.maps.event.addListener(shape, 'dragend', function () {
+
+    google.maps.event.addListener(shape, 'dragstart', () =>  {
+      markersSet.createMarkers(shape);
+
+    });
+    google.maps.event.addListener(shape, 'dragend', () =>  {
       markersSet.createMarkers(shape);
 
     });
 
-    google.maps.event.addListener(shape, 'rightclick', function () {
+    google.maps.event.addListener(shape, 'rightclick', () =>  {
       shape.setEditable(true);
       const options: PolygonOptions = {
         fillColor: "#ff0000"

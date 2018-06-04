@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, NgZone, ViewChild} from '@angular/core';
 import {environment} from "../environments/environment";
 import DrawingControlOptions = google.maps.drawing.DrawingControlOptions;
 import OverlayType = google.maps.drawing.OverlayType;
@@ -19,6 +19,10 @@ export class AppComponent {
   shadowShapesSet: ShadowShapeSet;
 
 
+  constructor(private _ngZone: NgZone) {
+
+  }
+
   ngOnInit() {
     var selectedShape;
     var selectedColor;
@@ -26,18 +30,19 @@ export class AppComponent {
 
     var mapProp = {
       center: new google.maps.LatLng(environment.initLat, environment.initLng),
-      zoom: 100,
+      zoom: 20,
       mapTypeId: google.maps.MapTypeId.SATELLITE
     };
 
 
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
+    this.map.setTilt(0);
     this.shadowShapesSet = new ShadowShapeSet(this.map);
-    const fmap = this.map;
-    this.map.addListener('center_changed', function () {
+
+    this.map.addListener('center_changed', () => {
       // 3 seconds after the center of the map has changed, pan back to the
       // marker.
-      console.log(fmap.getCenter().lat() + " " + fmap.getCenter().lng())
+      console.log(this.map.getCenter().lat() + " " + this.map.getCenter().lng())
 
 
     });
@@ -50,7 +55,7 @@ export class AppComponent {
       position: new google.maps.LatLng(environment.initLat, environment.initLng)
     };
     const drawingManager = new google.maps.drawing.DrawingManager({
-      drawingMode: google.maps.drawing.OverlayType.MARKER,
+      drawingMode: OverlayType.POLYGON,
       drawingControl: true,
       drawingControlOptions,
       markerOptions,
@@ -68,12 +73,12 @@ export class AppComponent {
 
     const shadowShapesSet = this.shadowShapesSet;
 
-    google.maps.event.addListener(drawingManager, 'overlaycomplete', function (e) {
+    google.maps.event.addListener(drawingManager, 'overlaycomplete', (e) => {
       if (e.type != google.maps.drawing.OverlayType.MARKER) {
         // Switch back to non-drawing mode after drawing a shape.
         drawingManager.setDrawingMode(null);
 
-        shadowShapesSet.onShapeAdded(e.overlay);
+        shadowShapesSet.onShapeAdded(e.overlay, this._ngZone);
       }
     });
     drawingManager.setMap(this.map);

@@ -1,3 +1,5 @@
-<p>
-  shape-details works!
-</p>
+<div *ngIf="shadowShape != null">
+  <div *ngFor="let h of shadowShape.heights; trackBy:trackByIdx; let i = index">
+    {{ i }} <input [(ngModel)]="shadowShape.heights[i]" type=number min=0 max=50>
+  </div>
+</div>
