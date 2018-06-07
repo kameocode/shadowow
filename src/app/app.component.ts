@@ -1,3 +1,4 @@
+import 'hammerjs';
 import {Component, NgZone, ViewChild} from '@angular/core';
 import {environment} from "../environments/environment";
 import DrawingControlOptions = google.maps.drawing.DrawingControlOptions;

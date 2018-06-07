@@ -29,9 +29,12 @@ export class MarkersSet {
 }
 
 export interface ShadowShape {
-  shape: google.maps.Polygon | google.maps.Polyline | google.maps.Rectangle | google.maps.Circle
+  shape: google.maps.Polygon | google.maps.Polyline | google.maps.Rectangle
   heights: number[]
 }
+
+
+
 
 export class ShadowShapeSet {
   private shadowShapes: ShadowShape[] = [];
@@ -49,12 +52,18 @@ export class ShadowShapeSet {
       shape: shape,
       heights: [],
     };
+
+
     for (let i = 0; i < shape.getPath().getLength(); i++) {
       newShadowShape.heights.push(10);
     }
+
+
     this.shadowShapes.push(newShadowShape);
     this.currentShape = newShadowShape;
     this.initListeners(shape, _ngZone);
+
+
   }
 
   private clearSelection() {

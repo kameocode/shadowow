@@ -5,16 +5,23 @@ import { NgModule } from '@angular/core';
 import {AppComponent} from './app.component';
 import { ShapeDetailsComponent } from './shape/shape-details/shape-details.component';
 import {FormsModule} from "@angular/forms";
+import { HoursSliderComponent } from './hours-slider/hours-slider.component';
+import {MatSliderModule} from "@angular/material";
+import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    ShapeDetailsComponent
+    ShapeDetailsComponent,
+    HoursSliderComponent,
+
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    MatSliderModule,
+    NoopAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
