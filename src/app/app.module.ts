@@ -8,6 +8,7 @@ import {FormsModule} from "@angular/forms";
 import { HoursSliderComponent } from './hours-slider/hours-slider.component';
 import {MatSliderModule} from "@angular/material";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
+import {ShadowCalculatorService} from "./shadow-calculator.service";
 
 
 @NgModule({
@@ -23,7 +24,7 @@ import {NoopAnimationsModule} from "@angular/platform-browser/animations";
     MatSliderModule,
     NoopAnimationsModule
   ],
-  providers: [],
+  providers: [ShadowCalculatorService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

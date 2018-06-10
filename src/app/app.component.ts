@@ -6,6 +6,7 @@ import OverlayType = google.maps.drawing.OverlayType;
 import MarkerOptions = google.maps.MarkerOptions;
 import {} from '@types/googlemaps';
 import {MarkersSet, ShadowShape, ShadowShapeSet} from "./MarkersSet";
+import {ShadowCalculatorService} from "./shadow-calculator.service";
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,7 @@ export class AppComponent {
   shadowShapesSet: ShadowShapeSet;
 
 
-  constructor(private _ngZone: NgZone) {
+  constructor(private _ngZone: NgZone, private shadowService: ShadowCalculatorService) {
 
   }
 
@@ -39,6 +40,7 @@ export class AppComponent {
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
     this.map.setTilt(0);
     this.shadowShapesSet = new ShadowShapeSet(this.map);
+    this.shadowService.setShadowShapeSet(this.shadowShapesSet);
 
     this.map.addListener('center_changed', () => {
       // 3 seconds after the center of the map has changed, pan back to the
