@@ -1,5 +1,5 @@
 <p>
-  <mat-slider thumbLabel  (change)="onChanged($event)" [(ngModel)]="value" min="1" [max]="maxValue"  step="1" tickInterval="4" ></mat-slider> {{ hour }}h {{minutes }}min
+  <mat-slider thumbLabel (change)="onChanged($event)" [(ngModel)]="value" min="1" [max]="maxValue"  step="1" tickInterval="4" ></mat-slider> {{ hour }}h {{minutes }}min
 
   <button md-button (click)="decrement()">-</button>
   <button md-button (click)="increment()">+</button>

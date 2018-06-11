@@ -1,4 +1,4 @@
-import {colors, MarkersSet} from "../MarkersSet";
+import {colors, MarkersSet} from "./marker-set.model";
 import {NgZone} from "@angular/core";
 import {findMinMax, TransformablePoint} from "./tranformable-point.model";
 import {ShadowCalculatorService} from "../shadow-calculator.service";
@@ -50,6 +50,8 @@ export class ShadowShapeSet {
             const point: LatLng = polygon.getPath().getAt(i);
             const shadowPoint = google.maps.geometry.spherical.computeOffset(point, shadowLength, sunAzimuthRad * 180 / Math.PI);
             pathShadowTop.push(shadowPoint);
+
+
             const rotatedPo = this.rotateTowardsSun(point, normalizedFirstPoint, sunAzimuthRad);
             pointsRotatedTowardsSun.push(rotatedPo);
             const normalizedLatLng = this.map.getProjection().fromPointToLatLng(new Point(rotatedPo.x, rotatedPo.y));

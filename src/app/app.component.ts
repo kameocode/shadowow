@@ -5,7 +5,7 @@ import DrawingControlOptions = google.maps.drawing.DrawingControlOptions;
 import OverlayType = google.maps.drawing.OverlayType;
 import MarkerOptions = google.maps.MarkerOptions;
 import {} from '@types/googlemaps';
-import {colors} from "./MarkersSet";
+import {colors} from "./shape/marker-set.model";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
 import {ShadowShapeSet} from "./shape/shadow-shape.model";
 
@@ -26,12 +26,13 @@ export class AppComponent {
   }
 
   ngOnInit() {
-
-
     let mapProp = {
       center: new google.maps.LatLng(environment.initLat, environment.initLng),
       zoom: 20,
-      mapTypeId: google.maps.MapTypeId.SATELLITE
+      mapTypeId: google.maps.MapTypeId.SATELLITE,
+      rotateControl: false,
+      overviewMapControl: false,
+      streetViewControl: false
     };
 
 
@@ -40,13 +41,7 @@ export class AppComponent {
     this.shadowShapesSet = new ShadowShapeSet(this.map);
     this.shadowService.setShadowShapeSet(this.shadowShapesSet);
 
-    this.map.addListener('center_changed', () => {
-      // 3 seconds after the center of the map has changed, pan back to the
-      // marker.
-      console.log("Center changed "+this.map.getCenter().lat() + " " + this.map.getCenter().lng())
 
-
-    });
     const drawingControlOptions: DrawingControlOptions = {
       position: google.maps.ControlPosition.TOP_CENTER,
       drawingModes: [OverlayType.POLYGON]

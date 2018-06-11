@@ -1,5 +1,5 @@
 export const colors = {
-  colorArea: "#fffff0" //"#fffff0" //"#a7ffeb"
+  colorArea: "#a7ffeb" //"#fffff0" //"#a7ffeb"
 };
 
 export class MarkersSet {

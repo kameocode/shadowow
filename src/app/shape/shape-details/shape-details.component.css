@@ -1,0 +1,20 @@
+
+.pinBackground {
+  display: inline-block;
+  width: 30px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-image: url('../../../assets/pin.svg');
+  background-size: 25px auto;
+  height: 38px;
+  line-height: 38px;
+
+}
+.pinLabel {
+  height: 12px;
+  font-size: 12px;
+  vertical-align: top;
+  line-height: 12px;
+  display: inline-block;
+  margin-top: 7px;
+}
