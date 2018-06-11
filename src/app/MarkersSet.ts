@@ -4,6 +4,11 @@ import LatLng = google.maps.LatLng;
 import {NgZone} from "@angular/core";
 import Point = google.maps.Point;
 
+
+export const colors = {
+  colorArea: "#fffff0" //"#a7ffeb"
+};
+
 export class MarkersSet {
   private map: google.maps.Map;
   private currentMarkers: google.maps.Marker[] = [];
@@ -25,7 +30,7 @@ export class MarkersSet {
       const marker = new google.maps.Marker({
         position: new google.maps.LatLng(point.lat(), point.lng()),
         map: this.map,
-        label: (i%2==0)?  ''+(i*10) :'' + (i + 1),
+        label: ''+(i + 1),
         icon: {
           labelOrigin: new google.maps.Point(15,13),
           url: 'assets/pin.svg',
@@ -68,16 +73,7 @@ export class ShadowShapeSet {
   }
 
 
-  private move(point: LatLng, dlat: number, dlng: number): LatLng {
-    return new LatLng(point.lat() + dlat, point.lng() + dlng);
-  }
 
-  private rotate(point: LatLng, angleRad: number): LatLng {
-
-    const transformedLng = point.lat() * Math.sin(angleRad) + point.lng() * Math.cos(angleRad);
-    const transformedLat = point.lat() * Math.cos(angleRad) - point.lng() * Math.sin(angleRad);
-    return new LatLng(transformedLat, transformedLng);
-  }
   private movePo(point: Po, x: number, y: number): Po {
     return {x: point.x + x, y: point.y + y};
   }
@@ -133,13 +129,6 @@ export class ShadowShapeSet {
   }
 
   public createShadows(sunAltitudeRad: number, sunAzimuthRad: number) {
-   /* let sunAzimuthRadOriginal = sunAzimuthRad;
-
-    if(sunAzimuthRad < 0)
-      sunAzimuthRad = Math.abs(sunAzimuthRad + Math.PI);
-    else
-      sunAzimuthRad = sunAzimuthRad + Math.PI;*/
-
     for (let sh of this.shadowShapes) {
       sh.shadows = [];
       for (let h of sh.heights) {
@@ -147,95 +136,56 @@ export class ShadowShapeSet {
         sh.shadows.push(shadowLength);
         const polygon = sh.shape as Polygon;
 
-
         if (sh.shadowShapes != null) {
           sh.shadowShapes.forEach(shape => {
             shape.setMap(null);
           })
         }
         sh.shadowShapes = [];
-
-
         if (sunAltitudeRad > 0) {
 
-          const shadowPath: LatLng[] = [];
-          const shadowPath2: Po[] = [];
-          const shadowPath3: Po[] = [];
-          const shadowPath4: LatLng[] = [];
-          let transformedLatLng = [];
+          const pathShadowTop: LatLng[] = [];
+          const pointsRotatedTowardsSun: Po[] = [];
+          const pathRotatedTowardsSun: LatLng[] = [];
+
 
           let firstPoint: LatLng = polygon.getPath().getAt(0);
-          var normalizedFirstPoint = this.map.getProjection().fromLatLngToPoint(firstPoint);
+          const normalizedFirstPoint = this.map.getProjection().fromLatLngToPoint(firstPoint);
 
           for (let i = 0; i < polygon.getPath().getLength(); i++) {
             let point: LatLng = polygon.getPath().getAt(i);
             let shadowPoint = google.maps.geometry.spherical.computeOffset(point, shadowLength, sunAzimuthRad * 180 / Math.PI);
+            pathShadowTop.push(shadowPoint);
 
 
 
-
-            const transformedPoint = this.rotate(shadowPoint, sunAzimuthRad);
-
-
-
-            //const y = 100 * Math.sin(point.lat()*Math.PI/180) * Math.cos(point.lng()*Math.PI/180);
-            //const x = 100 * Math.sin(point.lat()*Math.PI/180) * Math.sin(point.lng()*Math.PI/180);
-            //console.log("i "+(i+1)+ " (x, y)="+x+","+y);
-
-            var normalizedPoint = this.map.getProjection().fromLatLngToPoint(point);
-            var Po= this.movePo({x: normalizedPoint.x, y: normalizedPoint.y}, -normalizedFirstPoint.x, -normalizedFirstPoint.y);
-            //console.log("norm ", normalizedPoint);
-            // shadowPath3.push({x: normalizedPoint.x, y: normalizedPoint.y});
-
-            var rotatedPo = this.rotatePo(Po, - sunAzimuthRad);
+            const normalizedPoint = this.map.getProjection().fromLatLngToPoint(point);
+            const Po= this.movePo({x: normalizedPoint.x, y: normalizedPoint.y}, -normalizedFirstPoint.x, -normalizedFirstPoint.y);
+            let rotatedPo = this.rotatePo(Po, - sunAzimuthRad);
             rotatedPo = this.movePo( rotatedPo, normalizedFirstPoint.x, +normalizedFirstPoint.y);
+            pointsRotatedTowardsSun.push(rotatedPo);
+            const normalizedLatLng = this.map.getProjection().fromPointToLatLng(new Point(rotatedPo.x, rotatedPo.y));
+            pathRotatedTowardsSun.push(normalizedLatLng);
 
-            shadowPath2.push(Po);
-            shadowPath3.push(rotatedPo);
-
-            var normalizedLatLng = this.map.getProjection().fromPointToLatLng(new Point(rotatedPo.x, rotatedPo.y));
-            shadowPath4.push(normalizedLatLng);
-
-            // shadowPath3.push({x: transformedPoint.lat(), y: transformedPoint.lng()});
-            //shadowPath2.push({x, y});
-            //shadowPath3.push(this.rotatePo({x, y},  sunAzimuthRad));
-
-
-            //  const transformedPoint2 = this.rotate(new LatLng(x, y), sunAzimuthRad);
-
-
-            // let distance = google.maps.geometry.spherical.computeDistanceBetween(point, firstPoint);
-
-
-            transformedLatLng[i] = transformedPoint;
-            //console.log("Transformed lattitude" + transformedPoint.lat());
-            //console.log("Transformed longtitude" + transformedPoint.lng());
-
-
-            shadowPath.push(shadowPoint);
           }
 
           console.log("azimuth degrees: "+(sunAzimuthRad * 180 / Math.PI));
-          console.log("sh ",shadowPath2);
-          console.log("sh ",shadowPath3);
-          const minMaxIndices0 = this.findMinMax(shadowPath2, "shadowPath2");
-          const minMaxIndices = this.findMinMax(shadowPath3, "shadowPath3");
+          const minMaxIndices = this.findMinMax(pointsRotatedTowardsSun, "pointsRotatedTowardsSun");
 
           let maxLatIndex = 0;
           let minLatIndex = 0;
-
-          let totalLatLng = [];
+          let pathShadowTotal = [];
 
           minLatIndex = minMaxIndices.minLatIndex;
           maxLatIndex = minMaxIndices.maxLatIndex;
           // dawn
           if (minLatIndex < maxLatIndex) {
             for (let i = minLatIndex; i <= maxLatIndex; i++) {
-              totalLatLng.push(shadowPath[i]);
+              pathShadowTotal.push(pathShadowTop[i]);
               //console.log("iiA " + i + "minLatIndex " + minLatIndex + ", maxLatIndex " + maxLatIndex);
             }
             for (let i = maxLatIndex; i >= minLatIndex; i--) {
-              totalLatLng.push(polygon.getPath().getAt(i));
+              pathShadowTotal.push(polygon.getPath().getAt(i));
               //console.log("jjA " + i);
             }
 
@@ -243,28 +193,29 @@ export class ShadowShapeSet {
           } else {
             // dusk
             for (let i = maxLatIndex; i <= minLatIndex; i++) {
-              totalLatLng.push(shadowPath[i]);
+              pathShadowTotal.push(pathShadowTop[i]);
               //console.log("iiB " + i + "minLatIndex " + minLatIndex + ", maxLatIndex " + maxLatIndex);
             }
             for (let i = minLatIndex; i >= maxLatIndex; i--) {
-              totalLatLng.push(polygon.getPath().getAt(i));
+              pathShadowTotal.push(polygon.getPath().getAt(i));
               //console.log("jjB " + i);
             }
           }
 
 
           const shapePolygonTotal = new Polygon();
-          shapePolygonTotal.setPath(totalLatLng);
+          shapePolygonTotal.setPath(pathShadowTotal);
           shapePolygonTotal.setMap(this.map);
           shapePolygonTotal.setOptions({
-            fillColor: "#ffff00",
+            fillColor: "#000000",
             zIndex: this.SELECTED_SHAPE_ZINDEX - 2
           });
           sh.shadowShapes.push(shapePolygonTotal);
 
+          polygon.setMap(this.map);
 
           const shapePolygon = new Polygon();
-          shapePolygon.setPath(shadowPath);
+          shapePolygon.setPath(pathShadowTop);
           shapePolygon.setMap(this.map);
           const options: PolygonOptions = {
             fillColor: "#efaff0",
@@ -274,7 +225,7 @@ export class ShadowShapeSet {
           sh.shadowShapes.push(shapePolygon);
 
           const shapePolygon2 = new Polygon();
-          shapePolygon2.setPath(shadowPath4);
+          shapePolygon2.setPath(pathRotatedTowardsSun);
           shapePolygon2.setMap(this.map);
           const options2: PolygonOptions = {
             fillColor: "#0faff0",
@@ -291,7 +242,7 @@ export class ShadowShapeSet {
     }
   }
 
-  public onShapeAdded(shape: google.maps.Polygon | google.maps.Polyline, _ngZone: NgZone) {
+  public onShapeAdded(shape: google.maps.Polygon, _ngZone: NgZone) {
     const newShadowShape: ShadowShape = {
       shape: shape,
       heights: [],
@@ -323,13 +274,13 @@ export class ShadowShapeSet {
     this.currentShape = this.shadowShapes.find((s) => s.shape === shape);
     shape.setEditable(true);
     const options: PolygonOptions = {
-      fillColor: "#fffff0",
+      fillColor: colors.colorArea,
       zIndex: this.SELECTED_SHAPE_ZINDEX
     };
     shape.setOptions(options)
   }
 
-  private initListeners(shape: google.maps.Polygon | google.maps.Polyline, _ngZone: NgZone) {
+  private initListeners(shape: google.maps.Polygon, _ngZone: NgZone) {
     const markersSet = this.markersSet;
 
     google.maps.event.addListener(shape.getPath(), 'remove_at', () => {
