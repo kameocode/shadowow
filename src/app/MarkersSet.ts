@@ -25,8 +25,14 @@ export class MarkersSet {
       const marker = new google.maps.Marker({
         position: new google.maps.LatLng(point.lat(), point.lng()),
         map: this.map,
-        label: '' + (i + 1)
+        label: (i%2==0)?  ''+(i*10) :'' + (i + 1),
+        icon: {
+          labelOrigin: new google.maps.Point(15,13),
+          url: 'assets/pin.svg',
+          anchor: new google.maps.Point(15, 43),
+        }
       });
+
       this.currentMarkers.push(marker)
     }
   }
