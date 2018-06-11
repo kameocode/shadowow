@@ -5,8 +5,9 @@ import DrawingControlOptions = google.maps.drawing.DrawingControlOptions;
 import OverlayType = google.maps.drawing.OverlayType;
 import MarkerOptions = google.maps.MarkerOptions;
 import {} from '@types/googlemaps';
-import {colors, MarkersSet, ShadowShape, ShadowShapeSet} from "./MarkersSet";
+import {colors} from "./MarkersSet";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
+import {ShadowShapeSet} from "./shape/shadow-shape.model";
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,6 @@ export class AppComponent {
 
   @ViewChild('gmap') gmapElement: any;
   map: google.maps.Map;
-  title = 'shadowow';
   shadowShapesSet: ShadowShapeSet;
 
 
@@ -28,7 +28,7 @@ export class AppComponent {
   ngOnInit() {
 
 
-    var mapProp = {
+    let mapProp = {
       center: new google.maps.LatLng(environment.initLat, environment.initLng),
       zoom: 20,
       mapTypeId: google.maps.MapTypeId.SATELLITE
@@ -79,7 +79,7 @@ export class AppComponent {
         // Switch back to non-drawing mode after drawing a shape.
         drawingManager.setDrawingMode(null);
 
-        shadowShapesSet.onShapeAdded(e.overlay, this._ngZone);
+        shadowShapesSet.onShapeAdded(e.overlay, this._ngZone, this.shadowService);
       }
     });
     drawingManager.setMap(this.map);

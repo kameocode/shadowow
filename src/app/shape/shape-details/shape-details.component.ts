@@ -1,5 +1,5 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {ShadowShape} from "../../MarkersSet";
+import {Component, Input, OnInit} from '@angular/core';
+import {ShadowShape} from "../shadow-shape.model";
 
 @Component({
   selector: 'app-shape-details',
@@ -8,11 +8,10 @@ import {ShadowShape} from "../../MarkersSet";
 })
 export class ShapeDetailsComponent implements OnInit {
   @Input()
-  shadowShape:ShadowShape;
-  foo = 2
+  shadowShape: ShadowShape;
 
-
-  constructor() { }
+  constructor() {
+  }
 
 
   ngOnInit() {

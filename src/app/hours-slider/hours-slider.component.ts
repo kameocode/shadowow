@@ -10,10 +10,14 @@ import {ShadowCalculatorService} from "../shadow-calculator.service";
 export class HoursSliderComponent implements OnInit {
   value: number = 17*60;
   maxValue = 24*60;
+  date = new Date();
+
 
   constructor(private shadowService: ShadowCalculatorService) { }
 
   ngOnInit() {
+    this.value = this.shadowService.getHour() * 60 + this.shadowService.getMinutes();
+
   }
 
   onChanged(event: MatSliderChange) {
@@ -21,6 +25,10 @@ export class HoursSliderComponent implements OnInit {
 
     this.updateHour();
 
+  }
+
+  onDateChange(event: any) {
+    console.log(this.date);
   }
 
   get hour() {

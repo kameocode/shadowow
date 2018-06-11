@@ -4,3 +4,9 @@
   <button md-button (click)="decrement()">-</button>
   <button md-button (click)="increment()">+</button>
 </p>
+
+
+  <input matInput [matDatepicker]="picker" (change)="onDateChange($event)" [(ngModel)]="date" placeholder="Choose a date">
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker></mat-datepicker>
+

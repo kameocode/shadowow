@@ -6,7 +6,7 @@ import {AppComponent} from './app.component';
 import { ShapeDetailsComponent } from './shape/shape-details/shape-details.component';
 import {FormsModule} from "@angular/forms";
 import { HoursSliderComponent } from './hours-slider/hours-slider.component';
-import {MatSliderModule} from "@angular/material";
+import {MatDatepickerModule, MatFormFieldModule, MatNativeDateModule, MatSliderModule} from "@angular/material";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
 
@@ -22,7 +22,10 @@ import {ShadowCalculatorService} from "./shadow-calculator.service";
     BrowserModule,
     FormsModule,
     MatSliderModule,
-    NoopAnimationsModule
+    NoopAnimationsModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatNativeDateModule
   ],
   providers: [ShadowCalculatorService],
   bootstrap: [AppComponent]

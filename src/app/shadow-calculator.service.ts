@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
-import {ShadowShapeSet} from "./MarkersSet";
+import {ShadowShapeSet} from "./shape/shadow-shape.model";
 
-var SunCalc = require('suncalc');
+let SunCalc = require('suncalc');
 
 // import SunCalc from 'suncalc';
 
 @Injectable()
 export class ShadowCalculatorService {
-  private hour: number;
-  private minutes: number;
+  private hour: number = 15;
+  private minutes: number = 0;
   private shadowShapeSet: ShadowShapeSet;
   private date = new Date();
 
@@ -25,7 +25,7 @@ export class ShadowCalculatorService {
     this.shadowShapeSet = shadowShapeSet;
   }
 
-  private recalculateShadows() {
+  public recalculateShadows() {
     console.log("recalculate", SunCalc);
     this.date.setHours(this.hour, this.minutes, 0, 0);
     const times = SunCalc.getTimes(/*Date*/ this.date, /*Number*/ this.shadowShapeSet.map.getCenter().lat(), /*Number*/ this.shadowShapeSet.map.getCenter().lng());
@@ -48,8 +48,14 @@ export class ShadowCalculatorService {
     this.shadowShapeSet.createShadows(position.altitude, position.azimuth);
 
 
-
   }
 
 
+  getMinutes() {
+    return this.minutes;
+  }
+
+  getHour() {
+    return this.hour;
+  }
 }
