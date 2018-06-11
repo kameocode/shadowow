@@ -3,11 +3,11 @@ import {MatSliderChange} from "@angular/material";
 import {ShadowCalculatorService} from "../shadow-calculator.service";
 
 @Component({
-  selector: 'app-hours-slider',
-  templateUrl: './hours-slider.component.html',
-  styleUrls: ['./hours-slider.component.css']
+  selector: 'app-time-details',
+  templateUrl: './time-details.component.html',
+  styleUrls: ['./time-details.component.css']
 })
-export class HoursSliderComponent implements OnInit {
+export class TimeDetailsComponent implements OnInit {
   value: number = 17*60;
   maxValue = 24*60;
   date = new Date();
@@ -21,14 +21,15 @@ export class HoursSliderComponent implements OnInit {
   }
 
   onChanged(event: MatSliderChange) {
-    //this.shadowService.setHour(event.value/10);
+    //this.shadowService.setTime(event.value/10);
 
     this.updateHour();
 
   }
 
-  onDateChange(event: any) {
-    console.log(this.date);
+  onDayChanged(day: Date) {
+    console.log(this.date, event);
+    this.shadowService.setDay(day);
   }
 
   get hour() {
@@ -53,6 +54,6 @@ export class HoursSliderComponent implements OnInit {
     const hour = this.hour;
     const minutes = this.minutes;
     // console.log("value "+this.value+" hour "+hour+" "+minutes+" "+(24*60));
-    this.shadowService.setHour(hour, minutes);
+    this.shadowService.setTime(hour, minutes);
   }
 }

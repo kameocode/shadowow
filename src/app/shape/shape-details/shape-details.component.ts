@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ShadowShape} from "../shadow-shape.model";
+import {ShadowCalculatorService} from "../../shadow-calculator.service";
 
 @Component({
   selector: 'app-shape-details',
@@ -10,7 +11,7 @@ export class ShapeDetailsComponent implements OnInit {
   @Input()
   shadowShape: ShadowShape;
 
-  constructor() {
+  constructor(private shadowService: ShadowCalculatorService) {
   }
 
 
@@ -19,6 +20,10 @@ export class ShapeDetailsComponent implements OnInit {
 
   trackByIdx(index: number, obj: any): any {
     return index;
+  }
+
+  onHeightChanged(height: number) {
+      this.shadowService.recalculateShadows();
   }
 
 }

@@ -1,5 +1,9 @@
 <div *ngIf="shadowShape != null">
   <div *ngFor="let h of shadowShape.heights; trackBy:trackByIdx; let i = index">
-    {{ i }} <input [(ngModel)]="shadowShape.heights[i]" type=number min=0 max=50>
+
+      <!--<img src='assets/pin.svg'>-->
+      {{ i }}
+
+    <input [(ngModel)]="shadowShape.heights[i]" (ngModelChange)="onHeightChanged($event)" type=number min=0 max=50>
   </div>
 </div>

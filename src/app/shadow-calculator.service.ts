@@ -15,9 +15,13 @@ export class ShadowCalculatorService {
   constructor() {
   }
 
-  public setHour(hour: number, minutes: number) {
+  public setTime(hour: number, minutes: number) {
     this.hour = hour;
     this.minutes = minutes;
+    this.recalculateShadows();
+  }
+  setDay(day: Date) {
+    this.date = day;
     this.recalculateShadows();
   }
 
@@ -58,4 +62,6 @@ export class ShadowCalculatorService {
   getHour() {
     return this.hour;
   }
+
+
 }

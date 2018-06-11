@@ -5,17 +5,17 @@ import { NgModule } from '@angular/core';
 import {AppComponent} from './app.component';
 import { ShapeDetailsComponent } from './shape/shape-details/shape-details.component';
 import {FormsModule} from "@angular/forms";
-import { HoursSliderComponent } from './hours-slider/hours-slider.component';
 import {MatDatepickerModule, MatFormFieldModule, MatNativeDateModule, MatSliderModule} from "@angular/material";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
+import {TimeDetailsComponent} from "./time-details/time-details.component";
 
 
 @NgModule({
   declarations: [
     AppComponent,
     ShapeDetailsComponent,
-    HoursSliderComponent,
+    TimeDetailsComponent,
 
   ],
   imports: [

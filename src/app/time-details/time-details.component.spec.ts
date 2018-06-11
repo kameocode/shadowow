@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HoursSliderComponent } from './hours-slider.component';
+import { HoursSliderComponent } from './time-details.component';
 
 describe('HoursSliderComponent', () => {
   let component: HoursSliderComponent;

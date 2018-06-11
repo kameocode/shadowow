@@ -11,8 +11,7 @@ import PolygonOptions = google.maps.PolygonOptions;
 export interface ShadowShape {
   shape: google.maps.Polygon
   shadowShapes?: google.maps.Polygon[]
-  heights: number[],
-  shadows: number[]
+  heights: number[]
 }
 
 export class ShadowShapeSet {
@@ -30,16 +29,9 @@ export class ShadowShapeSet {
 
   public createShadows(sunAltitudeRad: number, sunAzimuthRad: number) {
     for (let sh of this.shadowShapes) {
-      sh.shadows = [];
-      for (let h of sh.heights) {
-        const shadowLength = h / Math.tan(sunAltitudeRad);
-        sh.shadows.push(shadowLength);
         const polygon = sh.shape;
-
         if (sh.shadowShapes != null) {
-          sh.shadowShapes.forEach(shape => {
-            shape.setMap(null);
-          })
+          sh.shadowShapes.forEach(shape => shape.setMap(null))
         }
         sh.shadowShapes = [];
         if (sunAltitudeRad > 0) {
@@ -53,15 +45,12 @@ export class ShadowShapeSet {
           const normalizedFirstPoint = this.map.getProjection().fromLatLngToPoint(firstPoint);
 
           for (let i = 0; i < polygon.getPath().getLength(); i++) {
-            let point: LatLng = polygon.getPath().getAt(i);
-            let shadowPoint = google.maps.geometry.spherical.computeOffset(point, shadowLength, sunAzimuthRad * 180 / Math.PI);
+
+            const shadowLength = sh.heights[i] / Math.tan(sunAltitudeRad);
+            const point: LatLng = polygon.getPath().getAt(i);
+            const shadowPoint = google.maps.geometry.spherical.computeOffset(point, shadowLength, sunAzimuthRad * 180 / Math.PI);
             pathShadowTop.push(shadowPoint);
-
-
-            const normalizedPoint = this.map.getProjection().fromLatLngToPoint(point);
-            const transformablePoint = TransformablePoint.of(normalizedPoint).movePo(-normalizedFirstPoint.x, -normalizedFirstPoint.y);
-            let rotatedPo = transformablePoint.rotatePo(-sunAzimuthRad);
-            rotatedPo = rotatedPo.movePo(normalizedFirstPoint.x, +normalizedFirstPoint.y);
+            const rotatedPo = this.rotateTowardsSun(point, normalizedFirstPoint, sunAzimuthRad);
             pointsRotatedTowardsSun.push(rotatedPo);
             const normalizedLatLng = this.map.getProjection().fromPointToLatLng(new Point(rotatedPo.x, rotatedPo.y));
             pathRotatedTowardsSun.push(normalizedLatLng);
@@ -73,6 +62,8 @@ export class ShadowShapeSet {
           shapePolygonTotal.setMap(this.map);
           shapePolygonTotal.setOptions({
             fillColor: "#000000",
+            // fillOpacity: 0.5,
+            // strokeWeight: 0,
             zIndex: this.SELECTED_SHAPE_ZINDEX - 2
           });
           sh.shadowShapes.push(shapePolygonTotal);
@@ -83,7 +74,9 @@ export class ShadowShapeSet {
           shapePolygon.setPath(pathShadowTop);
           shapePolygon.setMap(this.map);
           const options: PolygonOptions = {
-            fillColor: "#efaff0",
+            fillColor: "#000000",
+            // fillOpacity: 0.5,
+            // strokeWeight: 0,
             zIndex: this.SELECTED_SHAPE_ZINDEX - 1
           };
           shapePolygon.setOptions(options);
@@ -101,10 +94,15 @@ export class ShadowShapeSet {
 
 
         }
-
-      }
-
     }
+  }
+
+  private rotateTowardsSun(point: google.maps.LatLng, normalizedFirstPoint: google.maps.Point, sunAzimuthRad: number) {
+    const normalizedPoint = this.map.getProjection().fromLatLngToPoint(point);
+    const transformablePoint = TransformablePoint.of(normalizedPoint).movePo(-normalizedFirstPoint.x, -normalizedFirstPoint.y);
+    let rotatedPo = transformablePoint.rotatePo(-sunAzimuthRad);
+    rotatedPo = rotatedPo.movePo(normalizedFirstPoint.x, +normalizedFirstPoint.y);
+    return rotatedPo;
   }
 
   private createShadowPathTotal(sunAzimuthRad: number, pointsRotatedTowardsSun: TransformablePoint[], pathShadowTop: google.maps.LatLng[], polygon) {
@@ -146,8 +144,7 @@ export class ShadowShapeSet {
   public onShapeAdded(shape: google.maps.Polygon, _ngZone: NgZone, shadowService: ShadowCalculatorService) {
     const newShadowShape: ShadowShape = {
       shape: shape,
-      heights: [],
-      shadows: []
+      heights: []
     };
 
     for (let i = 0; i < shape.getPath().getLength(); i++) {
