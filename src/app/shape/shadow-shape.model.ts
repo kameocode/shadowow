@@ -20,86 +20,80 @@ export class ShadowShapeSet {
   public map: google.maps.Map;
   public currentShape: ShadowShape;
   private SELECTED_SHAPE_ZINDEX = 200;
+  private DEFAULT_HEIGHT = 10;
 
   constructor(map: google.maps.Map) {
     this.map = map;
     this.markersSet = new MarkersSet(this.map);
   }
 
-
   public createShadows(sunAltitudeRad: number, sunAzimuthRad: number) {
     for (let sh of this.shadowShapes) {
-        const polygon = sh.shape;
-        if (sh.shadowShapes != null) {
-          sh.shadowShapes.forEach(shape => shape.setMap(null))
+      const polygon = sh.shape;
+      if (sh.shadowShapes != null) {
+        sh.shadowShapes.forEach(shape => shape.setMap(null))
+      }
+      sh.shadowShapes = [];
+      if (sunAltitudeRad > 0) {
+        const pathShadowTop: LatLng[] = [];
+        const pointsRotatedTowardsSun: TransformablePoint[] = [];
+        const pathRotatedTowardsSun: LatLng[] = [];
+
+        for (let i = 0; i < polygon.getPath().getLength(); i++) {
+          const shadowLength = sh.heights[i] / Math.tan(sunAltitudeRad);
+          const point: LatLng = polygon.getPath().getAt(i);
+          const shadowPoint = google.maps.geometry.spherical.computeOffset(point, shadowLength, sunAzimuthRad * 180 / Math.PI);
+          pathShadowTop.push(shadowPoint);
+
+          const rotatedPo = this.rotateTowardsSun(point, polygon, sunAzimuthRad);
+          pointsRotatedTowardsSun.push(rotatedPo);
+          const normalizedLatLng = this.map.getProjection().fromPointToLatLng(new Point(rotatedPo.x, rotatedPo.y));
+          pathRotatedTowardsSun.push(normalizedLatLng);
         }
-        sh.shadowShapes = [];
-        if (sunAltitudeRad > 0) {
 
-          const pathShadowTop: LatLng[] = [];
-          const pointsRotatedTowardsSun: TransformablePoint[] = [];
-          const pathRotatedTowardsSun: LatLng[] = [];
+        const pathShadowTotal = ShadowShapeSet.createShadowPathTotal(sunAzimuthRad, pointsRotatedTowardsSun, pathShadowTop, polygon);
+        const shapePolygonTotal = new Polygon();
+        shapePolygonTotal.setPath(pathShadowTotal);
+        shapePolygonTotal.setMap(this.map);
+        shapePolygonTotal.setOptions({
+          fillColor: "#000000",
+          // fillOpacity: 0.5,
+          // strokeWeight: 0,
+          zIndex: this.SELECTED_SHAPE_ZINDEX - 2
+        });
+        sh.shadowShapes.push(shapePolygonTotal);
 
-
-          let firstPoint: LatLng = polygon.getPath().getAt(0);
-          const normalizedFirstPoint = this.map.getProjection().fromLatLngToPoint(firstPoint);
-
-          for (let i = 0; i < polygon.getPath().getLength(); i++) {
-
-            const shadowLength = sh.heights[i] / Math.tan(sunAltitudeRad);
-            const point: LatLng = polygon.getPath().getAt(i);
-            const shadowPoint = google.maps.geometry.spherical.computeOffset(point, shadowLength, sunAzimuthRad * 180 / Math.PI);
-            pathShadowTop.push(shadowPoint);
-
-
-            const rotatedPo = this.rotateTowardsSun(point, normalizedFirstPoint, sunAzimuthRad);
-            pointsRotatedTowardsSun.push(rotatedPo);
-            const normalizedLatLng = this.map.getProjection().fromPointToLatLng(new Point(rotatedPo.x, rotatedPo.y));
-            pathRotatedTowardsSun.push(normalizedLatLng);
-
-          }
-          let pathShadowTotal = this.createShadowPathTotal(sunAzimuthRad, pointsRotatedTowardsSun, pathShadowTop, polygon);
-          const shapePolygonTotal = new Polygon();
-          shapePolygonTotal.setPath(pathShadowTotal);
-          shapePolygonTotal.setMap(this.map);
-          shapePolygonTotal.setOptions({
-            fillColor: "#000000",
-            // fillOpacity: 0.5,
-            // strokeWeight: 0,
-            zIndex: this.SELECTED_SHAPE_ZINDEX - 2
-          });
-          sh.shadowShapes.push(shapePolygonTotal);
-
-          polygon.setMap(this.map);
-
-          const shapePolygon = new Polygon();
-          shapePolygon.setPath(pathShadowTop);
-          shapePolygon.setMap(this.map);
-          const options: PolygonOptions = {
-            fillColor: "#000000",
-            // fillOpacity: 0.5,
-            // strokeWeight: 0,
-            zIndex: this.SELECTED_SHAPE_ZINDEX - 1
-          };
-          shapePolygon.setOptions(options);
-          sh.shadowShapes.push(shapePolygon);
-
-          /*const shapePolygon2 = new Polygon();
-          shapePolygon2.setPath(pathRotatedTowardsSun);
-          shapePolygon2.setMap(this.map);
-          const options2: PolygonOptions = {
-            fillColor: "#0faff0",
-            zIndex: this.SELECTED_SHAPE_ZINDEX +1
-          };
-          shapePolygon2.setOptions(options2);
-          sh.shadowShapes.push(shapePolygon2);*/
-
-
-        }
+        /*
+                const shapePolygon = new Polygon();
+                shapePolygon.setPath(pathShadowTop);
+                shapePolygon.setMap(this.map);
+                const options: PolygonOptions = {
+                  fillColor: "#000000",
+                  // fillOpacity: 0.5,
+                  // strokeWeight: 0,
+                  zIndex: this.SELECTED_SHAPE_ZINDEX - 1
+                };
+                shapePolygon.setOptions(options);
+                sh.shadowShapes.push(shapePolygon);
+        */
+        /*
+                const shapePolygon2 = new Polygon();
+                shapePolygon2.setPath(pathRotatedTowardsSun);
+                shapePolygon2.setMap(this.map);
+                const options2: PolygonOptions = {
+                  fillColor: "#0faff0",
+                  zIndex: this.SELECTED_SHAPE_ZINDEX + 1
+                };
+                shapePolygon2.setOptions(options2);
+                sh.shadowShapes.push(shapePolygon2);
+        */
+      }
     }
   }
 
-  private rotateTowardsSun(point: google.maps.LatLng, normalizedFirstPoint: google.maps.Point, sunAzimuthRad: number) {
+  private rotateTowardsSun(point: google.maps.LatLng, polygon: Polygon, sunAzimuthRad: number) {
+    let firstPoint: LatLng = polygon.getPath().getAt(0);
+    const normalizedFirstPoint = this.map.getProjection().fromLatLngToPoint(firstPoint);
     const normalizedPoint = this.map.getProjection().fromLatLngToPoint(point);
     const transformablePoint = TransformablePoint.of(normalizedPoint).movePo(-normalizedFirstPoint.x, -normalizedFirstPoint.y);
     let rotatedPo = transformablePoint.rotatePo(-sunAzimuthRad);
@@ -107,39 +101,53 @@ export class ShadowShapeSet {
     return rotatedPo;
   }
 
-  private createShadowPathTotal(sunAzimuthRad: number, pointsRotatedTowardsSun: TransformablePoint[], pathShadowTop: google.maps.LatLng[], polygon) {
-    console.log("azimuth degrees: " + (sunAzimuthRad * 180 / Math.PI));
+  private static createShadowPathTotal(sunAzimuthRad: number, pointsRotatedTowardsSun: TransformablePoint[], pathShadowTop: google.maps.LatLng[], polygon) {
     const minMaxIndices = findMinMax(pointsRotatedTowardsSun, "pointsRotatedTowardsSun");
+    let pathShadowTotal: LatLng[] = [];
 
-    let maxLatIndex = 0;
-    let minLatIndex = 0;
-    let pathShadowTotal = [];
-
-    minLatIndex = minMaxIndices.minLatIndex;
-    maxLatIndex = minMaxIndices.maxLatIndex;
-    // dawn
-    if (minLatIndex < maxLatIndex) {
-      for (let i = minLatIndex; i <= maxLatIndex; i++) {
-        pathShadowTotal.push(pathShadowTop[i]);
-        //console.log("iiA " + i + "minLatIndex " + minLatIndex + ", maxLatIndex " + maxLatIndex);
-      }
-      for (let i = maxLatIndex; i >= minLatIndex; i--) {
+    let condition = minMaxIndices.minLngIndexSlope;
+    console.log("maxy " + "  [" + (minMaxIndices.minLatIndex + 1) + "," + (minMaxIndices.maxLatIndex + 1) + "] " + condition + " slope: " + minMaxIndices.minLngIndexSlope);
+    if (condition) {
+      for (let i = minMaxIndices.startLatIndex; i <= minMaxIndices.endLatIndex; i++) {
         pathShadowTotal.push(polygon.getPath().getAt(i));
-        //console.log("jjA " + i);
       }
-
-
+      for (let i = minMaxIndices.endLatIndex; i >= minMaxIndices.startLatIndex; i--) {
+        pathShadowTotal.push(pathShadowTop[i]);
+      }
     } else {
-      // dusk
-      for (let i = maxLatIndex; i <= minLatIndex; i++) {
+      for (let i = minMaxIndices.endLatIndex; i < pathShadowTop.length; i++) {
         pathShadowTotal.push(pathShadowTop[i]);
-        //console.log("iiB " + i + "minLatIndex " + minLatIndex + ", maxLatIndex " + maxLatIndex);
       }
-      for (let i = minLatIndex; i >= maxLatIndex; i--) {
+      for (let i = 0; i <= minMaxIndices.startLatIndex; i++) {
+        pathShadowTotal.push(pathShadowTop[i]);
+      }
+
+      for (let i = minMaxIndices.startLatIndex; i >= 0; i--) {
         pathShadowTotal.push(polygon.getPath().getAt(i));
-        //console.log("jjB " + i);
+      }
+      for (let i = pathShadowTop.length - 1; i >= minMaxIndices.endLatIndex; i--) {
+        pathShadowTotal.push(polygon.getPath().getAt(i));
       }
     }
+
+
+    /*
+         if (minMaxIndices.minLatIndex < minMaxIndices.maxLatIndex) {
+          for (let i = minMaxIndices.minLatIndex; i <= minMaxIndices.maxLatIndex; i++) {
+            pathShadowTotal.push(pathShadowTop[i]);
+          }
+          for (let i = minMaxIndices.maxLatIndex; i >= minMaxIndices.minLatIndex; i--) {
+            pathShadowTotal.push(polygon.getPath().getAt(i));
+          }
+        } else {
+          for (let i = minMaxIndices.maxLatIndex; i <= minMaxIndices.minLatIndex; i++) {
+            pathShadowTotal.push(pathShadowTop[i]);
+          }
+          for (let i = minMaxIndices.minLatIndex; i >= minMaxIndices.maxLatIndex; i--) {
+            pathShadowTotal.push(polygon.getPath().getAt(i));
+
+          }
+        }*/
     return pathShadowTotal;
   }
 
@@ -148,25 +156,32 @@ export class ShadowShapeSet {
       shape: shape,
       heights: []
     };
-
     for (let i = 0; i < shape.getPath().getLength(); i++) {
-      newShadowShape.heights.push(10);
+      newShadowShape.heights.push(this.DEFAULT_HEIGHT);
     }
-
     this.shadowShapes.push(newShadowShape);
-    this.currentShape = newShadowShape;
     this.initListeners(shape, _ngZone, shadowService);
   }
 
   private clearSelection() {
     if (this.currentShape) {
+      this.markersSet.clearMarkers();
       this.currentShape.shape.setEditable(false);
       this.currentShape = null;
     }
   }
 
-  private setSelection(shape) {
+  private setSelection(shape, toggle?: boolean) {
+    const previousShape = this.currentShape;
+    const foundShape = this.shadowShapes.find((s) => s.shape === shape);
+    if (previousShape === foundShape && !toggle) {
+      return;
+    }
     this.clearSelection();
+    if (previousShape === foundShape && toggle) {
+      return;
+    }
+    this.markersSet.createMarkers(shape);
     this.currentShape = this.shadowShapes.find((s) => s.shape === shape);
     shape.setEditable(true);
     const options: PolygonOptions = {
@@ -191,54 +206,40 @@ export class ShadowShapeSet {
 
     google.maps.event.addListener(shape.getPath(), 'insert_at', (vertex: number) => {
       this.markersSet.createMarkers(shape);
-      console.log("insert ", vertex);
       const shadowShape = this.shadowShapes.find((s) => s.shape === shape);
-      console.log("heights", shadowShape.heights);
-      shadowShape.heights.splice(vertex, 0, 10);
-      console.log("heightsB", shadowShape.heights)
+      shadowShape.heights.splice(vertex, 0, this.DEFAULT_HEIGHT);
       shadowService.recalculateShadows();
     });
 
     google.maps.event.addListener(shape, 'rightclick', (e) => {
-      // Check if click was on a vertex control point
-      console.log("remove", e.vertex);
+      // check if click was on a vertex control point
       if (e.vertex == undefined) {
         return;
       }
       shape.getPath().removeAt(e.vertex);
       const shadowShape = this.shadowShapes.find((s) => s.shape === shape);
       shadowShape.heights.splice(e.vertex, 1);
-      // TODO if last vertex, remove whole shadowShape
+      if (shadowShape.heights.length === 0) {
+        // if last vertex, remove whole shadowShape (TODO with listeners)
+        const indexToDelete = this.shadowShapes.indexOf(shadowShape);
+        shadowShape.shape.setMap(null);
+        this.shadowShapes.splice(indexToDelete, 1);
+      }
     });
 
     google.maps.event.addListener(shape, 'click', () => {
-      this.markersSet.createMarkers(shape);
-
-      _ngZone.run(() => {
-        this.setSelection(shape);
-      })
-
+      _ngZone.run(() => this.setSelection(shape, true))
     });
 
     google.maps.event.addListener(shape, 'dragstart', () => {
-      this.markersSet.createMarkers(shape);
-
+      this.setSelection(shape);
     });
     google.maps.event.addListener(shape, 'dragend', () => {
       this.markersSet.createMarkers(shape);
       shadowService.recalculateShadows();
-
     });
 
-    google.maps.event.addListener(shape, 'rightclick', () => {
-      shape.setEditable(true);
-
-    });
-
-    this.markersSet.createMarkers(shape);
-    _ngZone.run(() => {
-      this.setSelection(shape);
-    })
+    _ngZone.run(() => this.setSelection(shape, true));
     shadowService.recalculateShadows();
   }
 }

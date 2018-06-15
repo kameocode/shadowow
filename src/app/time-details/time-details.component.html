@@ -1,12 +1,14 @@
 <p>
-  <mat-slider thumbLabel (change)="onChanged($event)" [(ngModel)]="value" min="1" [max]="maxValue"  step="1" tickInterval="4" ></mat-slider> {{ hour }}h {{minutes }}min
-
+  <mat-slider thumbLabel (change)="onChanged($event)" [(ngModel)]="value" min="1" [max]="maxValue" step="1"
+              tickInterval="4"></mat-slider>
+  {{ hour }}h {{minutes }}min
   <button md-button (click)="decrement()">-</button>
   <button md-button (click)="increment()">+</button>
 </p>
 
 
-  <input matInput [matDatepicker]="picker" (ngModelChange)="onDayChanged($event)" [(ngModel)]="date" placeholder="Choose a date">
-  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-  <mat-datepicker #picker></mat-datepicker>
+<input matInput [matDatepicker]="picker" (ngModelChange)="onDayChanged($event)" [(ngModel)]="date"
+       placeholder="Choose a date">
+<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+<mat-datepicker #picker></mat-datepicker>
 

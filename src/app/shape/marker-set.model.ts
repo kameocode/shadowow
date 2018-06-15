@@ -12,10 +12,12 @@ export class MarkersSet {
   }
 
 
-  public createMarkers(newShape: google.maps.Polygon) {
-
+  public clearMarkers() {
     this.currentMarkers.forEach(marker => marker.setMap(null));
     this.currentMarkers = [];
+  }
+  public createMarkers(newShape: google.maps.Polygon) {
+    this.clearMarkers();
 
     const path: google.maps.MVCArray<google.maps.LatLng> = newShape.getPath();
     for (let i = 0; i < path.getLength(); i++) {
