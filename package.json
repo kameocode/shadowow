@@ -26,7 +26,9 @@
     "@types/node": "^10.3.2",
     "bootstrap": "^4.1.1",
     "core-js": "^2.4.1",
+    "greiner-hormann": "^1.3.4",
     "hammerjs": "^2.0.8",
+    "lodash": "^4.17.10",
     "rxjs": "^5.5.6",
     "suncalc": "^1.8.0",
     "zone.js": "^0.8.19"
@@ -38,6 +40,7 @@
     "@types/googlemaps": "^3.30.8",
     "@types/jasmine": "~2.8.3",
     "@types/jasminewd2": "~2.0.2",
+    "@types/lodash": "^4.14.109",
     "codelyzer": "^4.0.1",
     "jasmine-core": "~2.8.0",
     "jasmine-spec-reporter": "~4.2.1",
