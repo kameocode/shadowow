@@ -1,6 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ShadowShape} from "../shadow-shape.model";
 import {ShadowCalculatorService} from "../../shadow-calculator.service";
+import {MatDialog} from "@angular/material";
+import {ShapeBoundariesComponent} from "./shape-boundaries/shape-boundaries.component";
 
 @Component({
   selector: 'app-shape-details',
@@ -11,7 +13,7 @@ export class ShapeDetailsComponent implements OnInit {
   @Input()
   shadowShape: ShadowShape;
 
-  constructor(private shadowService: ShadowCalculatorService) {
+  constructor(private shadowService: ShadowCalculatorService, private dialog: MatDialog) {
   }
 
 
@@ -23,7 +25,12 @@ export class ShapeDetailsComponent implements OnInit {
   }
 
   onHeightChanged(height: number) {
-      this.shadowService.recalculateShadows();
+    this.shadowService.recalculateShadows();
   }
 
+  openSettingsDialog() {
+    this.dialog.open(ShapeBoundariesComponent, {
+      width: '550'
+    });
+  }
 }

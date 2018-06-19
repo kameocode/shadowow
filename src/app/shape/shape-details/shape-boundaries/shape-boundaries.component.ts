@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import {ShadowShape} from "../../shadow-shape.model";
 
 @Component({
   selector: 'app-shape-boundaries',
@@ -7,18 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ShapeBoundariesComponent implements OnInit {
 
-  pointSettings:PointSetting[] = [];
-  constructor() { }
+  constructor(public dialogRef: MatDialogRef<ShapeBoundariesComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
   }
 
-  openShapeBoundariesPopup() {
-
+  onNoClick(): void {
+    this.dialogRef.close();
   }
-}
-
-
-export interface PointSetting {
-  constructor(length:number, angle:number )
 }

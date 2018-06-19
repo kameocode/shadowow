@@ -2,12 +2,12 @@
   <div *ngFor="let h of shadowShape.heights; trackBy:trackByIdx; let i = index">
 
       <!--<img src='assets/pin.svg'>-->
-    <span class="pinBackground"><div class="pinLabel">{{ i+1 }}</div></span>
+    <span class="pinBackground" (click)="openSettingsDialog()"><div class="pinLabel">{{ i+1 }}</div></span>
 
     <input [(ngModel)]="shadowShape.heights[i]" (ngModelChange)="onHeightChanged($event)" type=number min=0 max=50>
   </div>
 </div>
 
-<div class="row">
-  <app-shape-boundaries></app-shape-boundaries>
+<div class="row" *ngIf="shadowShape != null">
+  <button mat-raised-button (click)="openSettingsDialog()">Settings</button>
 </div>
