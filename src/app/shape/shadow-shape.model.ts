@@ -8,7 +8,7 @@ import Point = google.maps.Point;
 import Polygon = google.maps.Polygon;
 import PolygonOptions = google.maps.PolygonOptions;
 
-var greinerHormann = require('greiner-hormann');
+const greinerHormann = require('greiner-hormann');
 
 export interface ShadowShape {
   shape: google.maps.Polygon
@@ -16,12 +16,108 @@ export interface ShadowShape {
   heights: number[]
 }
 
-class CalculatedPaths {
+class ShadowShapeCalculator {
+  r = 0.0000000001; //0.000000000001;
+  diff: number;
+  shadowBlockPointsArr: { x: number, y: number }[][] = [];
+  rawShadowBlockPathsArr: LatLng[][] = [];
+  rawShadowTopPath: LatLng[] = [];
+  rawBasePath: LatLng[] = [];
 
-
-  constructor(private sunAzimuthRad: number) {
-
+  constructor(private map: google.maps.Map, private sunAltitudeRad: number, private sunAzimuthRad: number) {
+    this.diff = this.r * 2;
   }
+
+  perturbate() {
+
+    const n = Math.random() * this.r;
+    if (n > this.r || n < -this.r) {
+      throw Error("Wrong n " + n);
+    }
+
+    return n;
+  }
+
+  public addShadowBlockPath(u: LatLng[],) {
+    this.rawShadowBlockPathsArr.push(u);
+    const points = this.toPerturbatedPoint(u);
+    this.shadowBlockPointsArr.push(points);
+  }
+  addBasePoint(point: google.maps.LatLng) {
+    this.rawBasePath.push(point);
+  }
+  addShadowTopPoint(point: google.maps.LatLng) {
+    this.rawShadowTopPath.push(point);
+  }
+
+
+  public toPerturbatedPoint(u: google.maps.LatLng[]) {
+    const points = u.map(latLng => {
+      const p = this.map.getProjection().fromLatLngToPoint(latLng);
+      return new TransformablePoint(p.x, p.y).rotatePo(-this.sunAzimuthRad).movePo(this.perturbate(), this.perturbate());
+    });
+    return points;
+  }
+
+  public removeTooClosedPoints(u: { x: number, y: number }[]) {
+    // remove points with too little distances
+    for (let i = u.length - 1; i >= 0; i--) {
+      const u1 = u[i];
+      for (let j = i - 1; j >= 0; j--) {
+        const u2 = u[j];
+        const tooClose = Math.abs(u1.x - u2.x) + Math.abs(u1.y - u2.y) < this.diff;
+        // console.log("DIFF "+i+" "+j+" "+ ((Math.abs(u1.x-u2.x)+Math.abs(u1.y-u2.y))));
+        if (tooClose) {
+          const p = new TransformablePoint(u1.x, u1.y).rotatePo(+this.sunAzimuthRad);
+          //if (j==i-1) {
+          //this.shadowMarkersSet.addMarker(this.map.getProjection().fromPointToLatLng(new Point(p.x + 0.0002, p.y)), "M" + i);
+          //}
+          u.splice(j, 1);
+          i--;
+        } else
+          break;
+      }
+    }
+    const tooClose = Math.abs(u[0].x - u[u.length - 1].x) + Math.abs(u[0].y - u[u.length - 1].y) < this.diff;
+    if (tooClose)
+      u.splice(u.length - 1, 1);
+  }
+
+  public removeTooSmallAngles(u: { x: number, y: number }[]) {
+    for (let i = 1; i <= u.length; i += 1) {
+      const a = u[i - 1];
+      const b = u[i % u.length];
+      const c = u[(i + 1) % u.length];
+
+      const vector1 = new Point(b.x - a.x, b.y - a.y);
+      const vector2 = new Point(b.x - c.x, b.y - c.y);
+
+      var angleDeg = (Math.atan2(vector2.y, vector2.x) - Math.atan2(vector1.y, vector1.x)) * 180 / Math.PI;//Math.atan2(vector2.y - vector1.y, vector2.x - vector1.x) * 180 / Math.PI;
+      if (Math.abs(angleDeg) < 0.01) {
+        // remove point b&c
+        // u.splice((i+1) % u.length, 1);
+        u.splice(i % u.length, 1);
+      }
+      const p = new TransformablePoint(b.x, b.y).rotatePo(this.sunAzimuthRad);
+      //this.shadowMarkersSet.addMarker(this.map.getProjection().fromPointToLatLng(new Point(p.x + 0.0002, p.y)),"M"+(i % u.length));
+    }
+  }
+
+
+  toLatLang(numbers: { x: number, y: number }[], xoffset = 0) {
+    return numbers.map(p => {
+      p = new TransformablePoint(p.x, p.y).rotatePo(+this.sunAzimuthRad);
+      return this.map.getProjection().fromPointToLatLng(new Point(p.x + xoffset, p.y));
+    });
+  }
+
+
+  calculateShadowPoint(sh: ShadowShape, i: number) {
+    const point: LatLng = sh.shape.getPath().getAt(i);
+    const shadowLength = sh.heights[i] / Math.tan(this.sunAltitudeRad);
+    return google.maps.geometry.spherical.computeOffset(point, shadowLength, this.sunAzimuthRad * 180 / Math.PI);
+  }
+
 
 }
 
@@ -44,27 +140,32 @@ export class ShadowShapeSet {
 
 
   public createShadows(sunAltitudeRad: number, sunAzimuthRad: number) {
+    this.shadowMarkersSet.clearMarkers();
     for (let sh of this.shadowShapes) {
       const polygon = sh.shape;
-      if (sh.shadowShapes != null) {
-        sh.shadowShapes.forEach(shape => shape.setMap(null))
-      }
-      sh.shadowShapes = [];
+      ShadowShapeSet.clearShadowShapes(sh);
+
+      const calculator = new ShadowShapeCalculator(this.map, sunAltitudeRad, sunAzimuthRad);
+
       if (sunAltitudeRad > 0) {
-        const pathShadowTop: LatLng[] = [];
         const pointsRotatedTowardsSun: TransformablePoint[] = [];
-        // const pathRotatedTowardsSun: LatLng[] = [];
-
-
-        const pointsSource: { x: number, y: number }[] = [];
-        const pointsShadowTop: { x: number, y: number }[] = [];
 
 
         for (let i = 0; i < polygon.getPath().getLength(); i++) {
-          const shadowLength = sh.heights[i] / Math.tan(sunAltitudeRad);
           const point: LatLng = polygon.getPath().getAt(i);
-          const shadowPoint = google.maps.geometry.spherical.computeOffset(point, shadowLength, sunAzimuthRad * 180 / Math.PI);
-          pathShadowTop.push(shadowPoint);
+          const shadowPoint = calculator.calculateShadowPoint(sh, i);
+          calculator.addBasePoint(point);
+          calculator.addShadowTopPoint(shadowPoint);
+
+          // we need to compute shadow blocks for each two consecutive points,
+          // in order to property render shadow for protruding parts (between min and max x)
+          let j = i + 1;
+          if (j >= polygon.getPath().getLength()) {
+            j = 0;
+          }
+          const point2: LatLng = polygon.getPath().getAt(j);
+          const shadowPoint2 = calculator.calculateShadowPoint(sh, j);
+          calculator.addShadowBlockPath([point, point2, shadowPoint2, shadowPoint]);
 
           {
             const rotatedPo = this.rotateTowardsSun(point, polygon, sunAzimuthRad);
@@ -73,138 +174,105 @@ export class ShadowShapeSet {
             // const rotatedPoShadow = this.rotateTowardsSun(shadowPoint, polygon, sunAzimuthRad);
             //pointsShadowRotatedTowardsSun.push(rotatedPoShadow)
           }
-
-
-
-          const p1 = this.map.getProjection().fromLatLngToPoint(point);
-          const p2 = this.map.getProjection().fromLatLngToPoint(shadowPoint);
-          pointsSource.push(new TransformablePoint(p1.x, p1.y).rotatePo(-sunAzimuthRad).movePo(0, 0.0000000001));
-          pointsShadowTop.push(new TransformablePoint(p2.x, p2.y).rotatePo(-sunAzimuthRad).movePo(0.000000001, 0.000000001));
         }
-        let pathShadowTotal: LatLng[] = ShadowShapeSet.createShadowPathTotal(sunAzimuthRad, pointsRotatedTowardsSun, pathShadowTop, polygon);
-        const pointsShadowTotal = pathShadowTotal.map(m => {
+
+        let pathShadowTotal: LatLng[] = ShadowShapeSet.createShadowPathTotal(sunAzimuthRad, pointsRotatedTowardsSun, calculator.rawShadowTopPath, polygon);
+        let pointsShadowTotal = pathShadowTotal.map(m => {
           const p = this.map.getProjection().fromLatLngToPoint(m);
           return new TransformablePoint(p.x, p.y).rotatePo(-sunAzimuthRad);//.movePo(0, 0.00000000009);
         });
 
 
-        var union = greinerHormann.union(pointsShadowTop, pointsShadowTotal);
-
-        this.shadowMarkersSet.clearMarkers();
-        union.map(u => {
-          u = greinerHormann.diff(u, pointsSource)[0];
-
-          const tempu = [];
-          for (let i = 0; i < u.length; i++) {
-            const u1 = u[i];
-
-            const tooClose = u.some(u2=>u1!==u2 &&  Math.abs(u1.x-u2.x)+Math.abs(u1.y-u2.y) <= 0.000000002);
-
-            if (!tooClose) {
-              console.log("add");
-              tempu.push(u1);
-
-
-
-            } else {
-              const p = new TransformablePoint(u1.x, u1.y).rotatePo(+sunAzimuthRad);
-              this.shadowMarkersSet.addMarker(this.map.getProjection().fromPointToLatLng(new Point(p.x + 0.0002, p.y)),"M");
-            }
-
+        let uu;
+        let u;
+        let counter=0;
+        let maxCounter = 100;
+        do {
+          uu = greinerHormann.union(calculator.toPerturbatedPoint(calculator.rawShadowTopPath), pointsShadowTotal);
+          if (uu.length == 1) {
+            u = uu[0];
+          } else if (uu.length > 1 && counter++<maxCounter) {
+            console.log("ERROR, union failed " + uu.length);
           }
-         // u = tempu;
+        } while (uu.length>1 );
 
-          const unionPath = u.map(p => {
-            p = new TransformablePoint(p.x, p.y).rotatePo(+sunAzimuthRad);
-            return this.map.getProjection().fromPointToLatLng(new Point(p.x + 0.0002, p.y));
-          });
+        calculator.removeTooClosedPoints(u);
+        calculator.removeTooSmallAngles(u);
+
+        let jj = 0;
+        // now add simple
+        for (let j = 0; j < calculator.rawShadowBlockPathsArr.length; j++) {
+          const points = calculator.toPerturbatedPoint(calculator.rawShadowBlockPathsArr[j]);
+          uu = greinerHormann.union(u, points);
+          if (uu.length > 1) {
+            jj++;
+            console.log("ERROR2, union failed " + uu.length + " for index " + j);
+            if (jj < maxCounter)
+              j--;
+            else
+              jj = 0;
+          } else {
+            u = uu[0];
+            calculator.removeTooClosedPoints(u);
+            calculator.removeTooSmallAngles(u);
+          }
+        }
+
+        uu = greinerHormann.diff(u, calculator.toPerturbatedPoint(calculator.rawBasePath));
+        console.log("Blocks after diff: " + uu.length);
+        uu.forEach(u => {
+          calculator.removeTooClosedPoints(u);
+          calculator.removeTooSmallAngles(u);
+          const unionPath = calculator.toLatLang(u, 0);
+          const p0 = this.printPolygon(unionPath, "#000000");
+          sh.shadowShapes.push(p0);
+        });
 
 
-          //TODO remove all points that lay too close to each other
 
-          const shapePolygonTotal = new Polygon();
-          shapePolygonTotal.setPath(unionPath);
-          shapePolygonTotal.setMap(this.map);
-          shapePolygonTotal.setOptions({
-            fillColor: "#00fff0",
-            // fillOpacity: 0.5,
-            // strokeWeight: 0,
-            zIndex: this.SELECTED_SHAPE_ZINDEX
-          });
+
+        // on base of this two and calculator.shadowPointArr we calculate final shadow
+        let printOriginShadow = false;
+
+
+        if (printOriginShadow) {
+          for (let i = 0; i < calculator.shadowBlockPointsArr.length; i++) {
+            const latLangPath = calculator.toLatLang(calculator.shadowBlockPointsArr[i], 0.0005);
+            const blockShadowPath = this.printPolygon(latLangPath);
+            sh.shadowShapes.push(blockShadowPath);
+          }
+
+
+          const shapePolygonTotal = this.printPolygon(pathShadowTotal, "#00ff00", this.SELECTED_SHAPE_ZINDEX - 2);
           sh.shadowShapes.push(shapePolygonTotal);
-
-        });
-
-
-        const shapePolygonTotal = new Polygon();
-        shapePolygonTotal.setPath(pathShadowTotal);
-        shapePolygonTotal.setMap(this.map);
-        shapePolygonTotal.setOptions({
-          fillColor: "#00ff00",
-          // fillOpacity: 0.5,
-          // strokeWeight: 0,
-          zIndex: this.SELECTED_SHAPE_ZINDEX - 2
-        });
-        sh.shadowShapes.push(shapePolygonTotal);
-
-
-        /*        // offseted totatl shadow with markers
-                const npo = pathShadowTotal.map(p=> {
-                  // console.log("p "+p.x+", "+p.y+" "+this.map.getProjection().fromPointToLatLng(new Point(p.x, p.y)));
-                  const po = this.map.getProjection().fromLatLngToPoint(p);
-                  return this.map.getProjection().fromPointToLatLng(new Point(po.x+0.0001, po.y+0.0001));
-                });
-                const shapePolygonTotal2 = new Polygon();
-                shapePolygonTotal2.setPath(npo);
-                shapePolygonTotal2.setMap(this.map);
-                shapePolygonTotal2.setOptions({
-                  fillColor: "#ffff00",
-                  // fillOpacity: 0.5,
-                  // strokeWeight: 0,
-                  zIndex: this.SELECTED_SHAPE_ZINDEX - 2
-                });
-                sh.shadowShapes.push(shapePolygonTotal2);
-               this.shadowMarkersSet.createMarkers(shapePolygonTotal2);*/
-
-        const shapePolygon = new Polygon();
-        shapePolygon.setPath(pathShadowTop);
-        shapePolygon.setMap(this.map);
-        const options: PolygonOptions = {
-          fillColor: "#ff00ff",
-          // fillOpacity: 0.5,
-          //strokeWeight: 1,
-          // strokeColor: "#ffffff",
-          zIndex: this.SELECTED_SHAPE_ZINDEX - 1
-        };
-        shapePolygon.setOptions(options);
-        sh.shadowShapes.push(shapePolygon);
-
-        /*
-                const shapePolygon2 = new Polygon();
-                shapePolygon2.setPath(pathRotatedTowardsSun);
-                shapePolygon2.setMap(this.map);
-                const options2: PolygonOptions = {
-                  fillColor: "#0faff0",
-                  zIndex: this.SELECTED_SHAPE_ZINDEX + 1
-                };
-                shapePolygon2.setOptions(options2);
-                sh.shadowShapes.push(shapePolygon2);
-        */
+          const shapePolygon = this.printPolygon(calculator.rawShadowTopPath, "#ff00ff", this.SELECTED_SHAPE_ZINDEX - 1);
+          sh.shadowShapes.push(shapePolygon);
+        }
+        // const shapePolygon2 = this.printPolygon(pathRotatedTowardsSun, "#0faff0", this.SELECTED_SHAPE_ZINDEX + 1);
+        // sh.shadowShapes.push(shapePolygon2);
       }
     }
   }
 
-  private createPolygon(sh: ShadowShape, path: LatLng[], fillColor = "#00fff0") {
+
+  private static clearShadowShapes(sh) {
+    if (sh.shadowShapes != null) {
+      sh.shadowShapes.forEach(shape => shape.setMap(null))
+    }
+    sh.shadowShapes = [];
+  }
+
+  private printPolygon(pp: google.maps.LatLng[], fillColor = "#ff0ff0", zIndex = this.SELECTED_SHAPE_ZINDEX) {
     const shapePolygonTotal = new Polygon();
-    shapePolygonTotal.setPath(path);
+    shapePolygonTotal.setPath(pp);
     shapePolygonTotal.setMap(this.map);
     shapePolygonTotal.setOptions({
-      fillColor: fillColor,
+      fillColor,
       // fillOpacity: 0.5,
       // strokeWeight: 0,
-      zIndex: this.SELECTED_SHAPE_ZINDEX
+      zIndex
     });
-    sh.shadowShapes.push(shapePolygonTotal);
+    return shapePolygonTotal;
   }
 
   private rotateTowardsSun(point: google.maps.LatLng, polygon: Polygon, sunAzimuthRad: number) {
@@ -256,7 +324,7 @@ export class ShadowShapeSet {
     this.initListeners(shape, _ngZone, shadowService);
   }
 
-  private clearSelection() {
+  public clearSelection() {
     if (this.currentShape) {
       this.markersSet.clearMarkers();
       this.currentShape.shape.setEditable(false);
@@ -264,7 +332,7 @@ export class ShadowShapeSet {
     }
   }
 
-  private setSelection(shape, toggle?: boolean) {
+  private setSelection(shape, toggle ?: boolean) {
     const previousShape = this.currentShape;
     const foundShape = this.shadowShapes.find((s) => s.shape === shape);
     if (previousShape === foundShape && !toggle) {
@@ -315,14 +383,19 @@ export class ShadowShapeSet {
       if (e.vertex == undefined) {
         return;
       }
-      shape.getPath().removeAt(e.vertex);
+
       const shadowShape = this.shadowShapes.find((s) => s.shape === shape);
-      shadowShape.heights.splice(e.vertex, 1);
-      if (shadowShape.heights.length === 0) {
+
+      if (shadowShape.heights.length <= 2) {
         // if last vertex, remove whole shadowShape (TODO with listeners)
         const indexToDelete = this.shadowShapes.indexOf(shadowShape);
         shadowShape.shape.setMap(null);
+        this.markersSet.clearMarkers();
         this.shadowShapes.splice(indexToDelete, 1);
+        ShadowShapeSet.clearShadowShapes(shadowShape);
+      } else {
+        shadowShape.heights.splice(e.vertex, 1);
+        shape.getPath().removeAt(e.vertex);
       }
     });
 
