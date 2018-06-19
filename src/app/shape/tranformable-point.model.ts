@@ -74,9 +74,9 @@ export function findMinMax(path: TransformablePoint[], prefix = ''): MinmaxIndic
   const prevy = path[temp].y;
   minLngIndexSlope = (minLatIndex < maxLatIndex) ? nexty < prevy : nexty > prevy;
 
-  console.log("compare " + ((minLngIndex + 1) % path.length) + " " + temp + "  " + minLngIndexSlope);
-  console.log(prefix + " x: min=" + (minLatIndex + 1) + ", max=" + (maxLatIndex + 1));
-  console.log(prefix + " y: min=" + (minLngIndex + 1) + ", max=" + (maxLngIndex + 1));
+  // console.log("compare " + ((minLngIndex + 1) % path.length) + " " + temp + "  " + minLngIndexSlope);
+  // console.log(prefix + " x: min=" + (minLatIndex + 1) + ", max=" + (maxLatIndex + 1));
+  // console.log(prefix + " y: min=" + (minLngIndex + 1) + ", max=" + (maxLngIndex + 1));
 
   return {
     maxLatIndex,

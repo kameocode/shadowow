@@ -18,6 +18,7 @@ export class ShadowCalculatorService {
   public setTime(hour: number, minutes: number) {
     this.hour = hour;
     this.minutes = minutes;
+    this.shadowShapeSet.clearSelection();
     this.recalculateShadows();
   }
   setDay(day: Date) {
