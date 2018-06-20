@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {MatSliderChange} from "@angular/material";
 import {ShadowCalculatorService} from "../shadow-calculator.service";
 
@@ -17,18 +17,13 @@ export class TimeDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.value = this.shadowService.getHour() * 60 + this.shadowService.getMinutes();
-
   }
 
   onChanged(event: MatSliderChange) {
-    //this.shadowService.setTime(event.value/10);
-
     this.updateHour();
-
   }
 
   onDayChanged(day: Date) {
-    console.log(this.date, event);
     this.shadowService.setDay(day);
   }
 
@@ -56,4 +51,23 @@ export class TimeDetailsComponent implements OnInit {
     // console.log("value "+this.value+" hour "+hour+" "+minutes+" "+(24*60));
     this.shadowService.setTime(hour, minutes);
   }
+
+  @HostListener('document:keypress', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key === 'b')
+      this.decrement();
+    else if (event.key === 'n')
+      this.increment();
+    else if (event.key === 'c') {
+      const temp = new Date(this.date.getTime() - 1000*60*60*24);
+      this.date = temp;
+      this.shadowService.setDay(this.date);
+    } else if (event.key === 'v') {
+      const temp = new Date(this.date.getTime()+ 1000*60*60*24);
+      this.date = temp;
+      this.shadowService.setDay(this.date);
+    }
+  }
+
+
 }

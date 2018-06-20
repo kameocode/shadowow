@@ -33,9 +33,9 @@ export class MarkersSet {
       map: this.map,
       label,
       icon: {
-        labelOrigin: new google.maps.Point(15, 13),
+        labelOrigin: new google.maps.Point(11, 13),
         url: 'assets/pin.svg',
-        anchor: new google.maps.Point(15, 43),
+        anchor: new google.maps.Point(11, 33),
       }
     });
 

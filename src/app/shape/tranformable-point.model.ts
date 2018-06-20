@@ -12,6 +12,10 @@ export class TransformablePoint {
     return new TransformablePoint(this.x + x, this.y + y);
   }
 
+  public scale(ratio: number): TransformablePoint {
+    return new TransformablePoint(this.x * ratio, this.y * ratio);
+  }
+
   public rotatePo(angleRad: number): TransformablePoint {
     const y = this.x * Math.sin(angleRad) + this.y * Math.cos(angleRad);
     const x = this.x * Math.cos(angleRad) - this.y * Math.sin(angleRad);

@@ -22,7 +22,7 @@ export class ShadowCalculatorService {
     this.recalculateShadows();
   }
   setDay(day: Date) {
-    this.date = day;
+    this.date = new Date(day);
     this.recalculateShadows();
   }
 
