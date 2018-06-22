@@ -10,8 +10,30 @@ export class ShadowShapeCalculator {
   rawShadowTopPath: LatLng[] = [];
   rawBasePath: LatLng[] = [];
 
-  constructor(private map: google.maps.Map, private sunAltitudeRad: number, private sunAzimuthRad: number) {
+  constructor(sh: ShadowShape, private map: google.maps.Map, private sunAltitudeRad: number, private sunAzimuthRad: number) {
     this.diff = this.r * 10;
+    this.collectPoints(sh);
+  }
+
+
+  private collectPoints(sh: ShadowShape) {
+    const polygon = sh.origin;
+    for (let i = 0; i < polygon.getPath().getLength(); i++) {
+      const point: LatLng = polygon.getPath().getAt(i);
+      const shadowPoint = this.calculateShadowPoint(sh, i);
+      this.addBasePoint(point);
+      this.addShadowTopPoint(shadowPoint);
+
+      // we need to compute shadow blocks for each two consecutive points,
+      // in order to property render shadow for protruding parts (between min and max x)
+      let j = i + 1;
+      if (j >= polygon.getPath().getLength()) {
+        j = 0;
+      }
+      const point2: LatLng = polygon.getPath().getAt(j);
+      const shadowPoint2 = this.calculateShadowPoint(sh, j);
+      this.addShadowBlockPath([point, point2, shadowPoint2, shadowPoint]);
+    }
   }
 
   private perturbate() {
@@ -104,7 +126,7 @@ export class ShadowShapeCalculator {
     if (arr1.length !=arr2.length)
       return false;
     for (let i=0; i<arr1.length; i++) {
-      if (arr1[i]!=arr2[i]) {
+      if (arr1[i].x!=arr2[i].x || arr1[i].y!=arr2[i].y) {
         return false;
       }
     }
@@ -189,6 +211,11 @@ export class ShadowShapeCalculator {
     const shadowLength = sh.heights[i] / Math.tan(this.sunAltitudeRad);
     return google.maps.geometry.spherical.computeOffset(point, shadowLength, this.sunAzimuthRad * 180 / Math.PI);
   }
+  polygonInside(vertices: {x: number, y: number}[], outerVertices: {x: number, y: number}[]): boolean {
+    return vertices.every(point=>
+      this.inside(point, outerVertices)
+    )
+  }
 
   inside(point: {x: number, y: number}, vs: {x: number, y: number}[]) {
     // ray-casting algorithm based on
@@ -259,5 +286,7 @@ export class ShadowShapeCalculator {
       return false;
     })
   }
+
+
 
 }

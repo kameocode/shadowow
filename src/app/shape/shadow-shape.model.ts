@@ -37,154 +37,226 @@ export class ShadowShapeSet {
   public createShadows(sunAltitudeRad: number, sunAzimuthRad: number) {
     this.shadowMarkersSet.clearMarkers();
     for (let sh of this.shadowShapes) {
-      const polygon = sh.origin;
       ShadowShapeSet.clearShadowShapes(sh);
 
-      const calculator = new ShadowShapeCalculator(this.map, sunAltitudeRad, sunAzimuthRad);
-
-      if (sunAltitudeRad > 0) {
-        ShadowShapeSet.collectPoints(calculator, sh);
-
-        let uu;
-        let u = calculator.toNotPerturbatedPoint(calculator.rawShadowTopPath);
-
-        const finalShadows = new Set();
-        const probablyHoles = new Set();
-
-
-        let mergeIndex = 0;
-        for (let j = 0; j < calculator.rawShadowBlockPathsArr.length; j++) {
-          const points = calculator.toPerturbatedPoint(calculator.rawShadowBlockPathsArr[j]);
-          uu = greinerHormann.union(u, points);
-          if (uu.length > 1) {
-            console.log("ERROR2, union failed:" + uu.length + " for index " + j + " ");
-
-            // display what parts are problematic to merge
-            mergeIndex++;
-            this.displayProblematicParts(calculator, u, mergeIndex, sh, points);
-
-
-            // union is the biggest part, other are holes
-            let indexOfMaxArea = calculator.findIndexOfMaxArea(uu);
-            uu.forEach((ua, index) => {
-              if (index == indexOfMaxArea) {
-                u = ua;
-              } else {
-                probablyHoles.add(ua);
-              }
-              calculator.reverseToNotPerturbatedPoints(ua, points, calculator.toNotPerturbatedPoint(calculator.rawShadowBlockPathsArr[j]));
-
-              /*// display parts after problematic union
-              const uarescaled = calculator.rescaleArray(ua, 0.5);
-              const u3 = calculator.toLatLang(uarescaled, 0.0002 + mergeIndex++ / 9000, 0.00015);
-              this.printPolygon(u3, sh, (index == indexOfMaxArea) ? "#9517ff"
-                : "#260036");*/
-            });
-
-
-          } else {
-            u = uu[0];
-            calculator.reverseToNotPerturbatedPoints(u, points, calculator.toNotPerturbatedPoint(calculator.rawShadowBlockPathsArr[j]));
-            // calculator.cleanupAfterDegeneracies(u);
-
-          }
-        }
-
-
-        if (uu.length > 1)
-          console.log("Blocks after diff: " + uu.length, uu);
-        uu.forEach(u => {
-          finalShadows.add(u);
-        });
-        const rawBasePathPerturbated = calculator.toPerturbatedPoint2(calculator.rawBasePath);
-        this.makeDiffAndRemoveIfEmpty(probablyHoles, rawBasePathPerturbated, calculator, sh);
-        //this.makeDiff(probablyHoles, rawBasePathPerturbated, calculator);
-
-
-        // this.makeUnions(finalShadows, calculator, sh);
-
-
-        let problematicToRemoveArrLatLang = [];
-        probablyHoles.forEach(p => {
-          problematicToRemoveArrLatLang.push([...calculator.toLatLang(p, 0)].reverse());
-        });
-        // problematicToRemoveArrLatLang = [];
-        problematicToRemoveArrLatLang.push([...calculator.rawBasePath].reverse());
-
-
-        finalShadows.forEach(u => {
-          calculator.reverseToNotPerturbatedPoints(u, rawBasePathPerturbated, calculator.toNotPerturbatedPoint(calculator.rawBasePath));
-          calculator.cleanupAfterDegeneracies(u);
-          const unionPath = calculator.toLatLang(u, 0);
-
-          if (problematicToRemoveArrLatLang.length > 0) {
-            const s1 = google.maps.geometry.spherical.computeSignedArea(unionPath);
-
-            //console.log("HERE", problematicToRemoveArrLatLang);
-            let holes = problematicToRemoveArrLatLang.map(e => {
-
-              let s2 = google.maps.geometry.spherical.computeSignedArea(e);
-              //console.log("areaaa "+s1+" "+s2);
-
-              const basePoints = calculator.toNotPerturbatedPoint(calculator.rawBasePath);
-              const ePoints = calculator.toNotPerturbatedPoint(e);
-
-              const inside = ePoints.filter(po => calculator.inside(po, basePoints)).length;
-              // console.log("AAis inside "+inside+" "+ePoints.length);
-              if (inside == ePoints.length) {
-                //return null;
-              }
-
-              if ((s1 > 0 && s2 > 0) || (s1 < 0 && s2 < 0)) {
-                e = [...e].reverse();
-                s2 = google.maps.geometry.spherical.computeSignedArea(e);
-                //console.log("areaaa2 "+s1+" "+s2);
-                return e;
-              } else return e;
-
-            });
-            holes = holes.filter(h => h != null)
-
-            this.printPolygonWithHole(unionPath, sh, holes, "#000000", this.SELECTED_SHAPE_ZINDEX - 2);
-          } else {
-            this.printPolygon(unionPath, sh, "#000000", this.SELECTED_SHAPE_ZINDEX - 2);
-          }
-
-        });
-
-
-        let printOriginShadow = false;
-        if (printOriginShadow) {
-          this.printPolygon(calculator.rawShadowTopPath, sh, "#ff00ff", this.SELECTED_SHAPE_ZINDEX - 1);
-        }
+      if (sunAltitudeRad <= 0) {
+        // there is already night
+        return;
       }
+      const calculator = new ShadowShapeCalculator(sh, this.map, sunAltitudeRad, sunAzimuthRad);
+
+      let mergedShadow = calculator.toNotPerturbatedPoint(calculator.rawBasePath);
+      const probablyHoles = new Set();
+      let mergeIndex = 0;
+      for (let j = 0; j < calculator.rawShadowBlockPathsArr.length; j++) {
+        const points = calculator.toPerturbatedPoint(calculator.rawShadowBlockPathsArr[j]);
+        const uu = greinerHormann.union(mergedShadow, points);
+        if (uu.length > 1) {
+          console.log("ERROR2, union failed:" + uu.length + " for index " + j + " ");
+         // this.displayPartsProblematicToMerge(calculator, mergedShadow, ++mergeIndex, sh, points);
+
+          // union is the biggest part, other are holes
+          let indexOfMaxArea = calculator.findIndexOfMaxArea(uu);
+          uu.forEach((ua, index) => {
+            if (index == indexOfMaxArea) {
+              mergedShadow = ua;
+            } else {
+              probablyHoles.add(ua);
+              calculator.reverseToNotPerturbatedPoints(ua, points, calculator.toNotPerturbatedPoint(calculator.rawShadowBlockPathsArr[j]));
+            }
+
+            /*if (index != indexOfMaxArea) {
+              // display parts after problematic union
+              const uarescaled = calculator.rescaleArray(ua, 1);
+              const u3 = calculator.toLatLang(uarescaled, 0.0002 + mergeIndex++ / 9000, 0.00015);
+              this.printPolygon(u3, sh, (index == indexOfMaxArea) ? "#00ffee"
+                : "#0025c3");
+            }*/
+          });
+        } else {
+          mergedShadow = uu[0];
+          // calculator.cleanupAfterDegeneracies(mergedShadow);
+        }
+        calculator.reverseToNotPerturbatedPoints(mergedShadow, points, calculator.toNotPerturbatedPoint(calculator.rawShadowBlockPathsArr[j]));
+
+
+       // const u3 = calculator.toLatLang(mergedShadow, 0.0002 + mergeIndex++ / 3000, 0.000);
+       // this.printPolygon(u3, sh, "#ff0100");
+      }
+
+
+      this.makeDiffAndRemoveIfEmpty(probablyHoles, calculator, sh);
+
+
+
+
+
+      let problematicToRemoveArrLatLang = [];
+      probablyHoles.forEach(p => {
+        problematicToRemoveArrLatLang.push([...calculator.toLatLang(p, 0)].reverse());
+      });
+      problematicToRemoveArrLatLang.push([...calculator.rawBasePath].reverse());
+      // problematicToRemoveArrLatLang = [];
+
+
+      const unionPath = calculator.toLatLang(mergedShadow, 0);
+
+      if (problematicToRemoveArrLatLang.length > 0) {
+        const s1 = google.maps.geometry.spherical.computeSignedArea(unionPath);
+
+        let holes = problematicToRemoveArrLatLang.map(e => {
+
+          let s2 = google.maps.geometry.spherical.computeSignedArea(e);
+
+          const basePoints = calculator.toNotPerturbatedPoint(calculator.rawBasePath);
+          const ePoints = calculator.toNotPerturbatedPoint(e);
+
+          const inside = ePoints.filter(po => calculator.inside(po, basePoints)).length;
+          // console.log("AAis inside "+inside+" "+ePoints.length);
+          if (inside == ePoints.length) {
+            //return null;
+          }
+
+          if ((s1 > 0 && s2 > 0) || (s1 < 0 && s2 < 0)) {
+            e = [...e].reverse();
+            s2 = google.maps.geometry.spherical.computeSignedArea(e);
+            //console.log("areaaa2 "+s1+" "+s2);
+            return e;
+          } else return e;
+
+        });
+        holes = holes.filter(h => h != null)
+
+        this.printPolygonWithHole(unionPath, sh, holes, "#000000", this.SELECTED_SHAPE_ZINDEX - 2);
+      } else {
+        this.printPolygon(unionPath, sh, "#000000", this.SELECTED_SHAPE_ZINDEX - 2);
+      }
+
+
     }
   }
 
 
-  private displayProblematicParts(calculator: ShadowShapeCalculator, u, mergeIndex: number, sh, points: TransformablePoint[]) {
-    const urescaled = calculator.rescaleArray(u, 0.5);
-    const u1 = calculator.toLatLang(urescaled, 0.0002 + mergeIndex / 9000, 0);
+  private displayPartsProblematicToMerge(calculator: ShadowShapeCalculator, u, mergeIndex: number, sh, points: TransformablePoint[]) {
+    const urescaled = calculator.rescaleArray(u, 1);
+    const u1 = calculator.toLatLang(urescaled, 0.0003 + mergeIndex / 9000, 0);
     const p1 = this.printPolygon(u1, sh, "#2bd0ff");
     sh.shadows.push(p1);
-    const pointsrescaled = calculator.rescaleArray(points, 0.5);
-    const u2 = calculator.toLatLang(pointsrescaled, 0.0002 + mergeIndex / 9000, 0);
+    const pointsrescaled = calculator.rescaleArray(points, 1);
+    const u2 = calculator.toLatLang(pointsrescaled, 0.0003 + mergeIndex / 9000, 0);
     this.printPolygon(u2, sh, "#ffe426");
   }
 
-  private makeDiffAndRemoveIfEmpty(finalShadows: Set<any>, rawBasePathPerturbated: TransformablePoint[], calculator: ShadowShapeCalculator, sh: ShadowShape) {
+  private makeDiffAndRemoveIfEmpty(probablyHoles: Set<any>,  calculator: ShadowShapeCalculator, sh: ShadowShape) {
+
+
+    const shadowPoints1 = calculator.toNotPerturbatedPoint(calculator.rawShadowTopPath);
+    const shadowPoints2 = calculator.toPerturbatedPoint2(calculator.rawShadowTopPath);
+
+   // const inters = greinerHormann.intersection(shadowPoints1, shadowPoints2);
+
+
+
+    const rawBasePathPerturbated = calculator.toPerturbatedPoint2(calculator.rawBasePath);
     const toRemove = new Set();
     const toAdd = new Set();
     let mergeIndex = 0;
-    finalShadows.forEach(p => {
+    let previous = probablyHoles.size
+
+    const tempa = [...calculator.rawShadowBlockPathsArr]//, calculator.rawShadowTopPath]
+
+    for (let shadowBlock of tempa) {
+
+      probablyHoles.forEach(probablyHole => {
+        // przy 1 nie usuwalo
+        const shadowPoints = calculator.toPerturbatedPoint2(shadowBlock);
+        let inters = greinerHormann.intersection(probablyHole, shadowPoints);
+     /*  if (calculator.polygonInside(probablyHole, calculator.toNotPerturbatedPoint(shadowBlock))) {
+          // hole is inside shadow
+         inters = null;
+         toRemove.add(probablyHole);
+
+/!*         const latLang1 = calculator.toLatLang(probablyHole, 0.0003 + mergeIndex / 9000, 0); //-0.00015
+         this.printPolygon(latLang1, sh, "#ff9b00");
+
+         const latLang2 = calculator.toLatLang(shadowPoints, 0.0003 + mergeIndex++ / 9000, 0);
+         this.printPolygon(latLang2, sh, "#4f0600");*!/
+        }
+*/
+        if (inters!=null && inters.length>0 && inters[0].length>0) {
+
+          const uu = greinerHormann.diff(probablyHole, shadowPoints);
+          uu.forEach(u1 => {
+
+            let same = false;
+            if (calculator.equals(u1, shadowPoints)) {
+              same = true;
+              console.log("SAMEEEEEEEE");
+            }
+            calculator.reverseToNotPerturbatedPoints(u1, rawBasePathPerturbated, calculator.toNotPerturbatedPoint(calculator.rawBasePath));
+            calculator.reverseToNotPerturbatedPoints(u1, shadowPoints, calculator.toNotPerturbatedPoint(shadowBlock));
+            calculator.cleanupAfterDegeneracies(u1);
+
+
+            const showShadows = true;
+            if (showShadows) {
+              const ratio = 1;
+              const eff = 9000;
+              {
+               // const prescaled = calculator.rescaleArray(probablyHole, ratio);
+                const latLang1 = calculator.toLatLang(probablyHole, 0.0003 + mergeIndex / eff, -0.00015);
+                this.printPolygon(latLang1, sh, "#59ff00");
+              }
+
+              {
+               // const prescaled = calculator.rescaleArray(shadowPoints, ratio);
+                const latLang1 = calculator.toLatLang(shadowPoints, 0.0003 + mergeIndex / eff, -0.00015);
+                this.printPolygon(latLang1, sh, "#ff0002");
+              }
+
+              {
+                //const prescaled = calculator.rescaleArray(u1, ratio);
+                const latLang1 = calculator.toLatLang(u1, 0.0003 + mergeIndex / eff, +0.00005);
+
+                let color="#9517ff";
+                if (calculator.polygonInside(probablyHole, shadowPoints))
+                  color="#ff10e7"
+                this.printPolygon(latLang1, sh, color);//"#9517ff");
+              }
+            }
+            mergeIndex++;
+            if (u1.length > 0 && !same) {
+
+              toAdd.add(u1);
+              toRemove.add(probablyHole);
+            } else {
+              toRemove.add(probablyHole);
+            }
+          });
+          mergeIndex++;
+          mergeIndex++;
+        }
+      });
+      toRemove.forEach(r => probablyHoles.delete(r));
+      toAdd.forEach(r => probablyHoles.add(r));
+      toAdd.clear();
+      toRemove.clear();
+    }
+    console.log("probably holes size "+previous+" -> "+probablyHoles.size);
+    // now remove shadows
+    toRemove.clear();
+    toAdd.clear();
+
+
+
+    probablyHoles.forEach(p => {
 
       const uu1 = greinerHormann.diff(p, rawBasePathPerturbated);
       // console.log("remove uuuuu", uu1.length);
 
       const prescaled = calculator.rescaleArray(p, 0.5);
       const latLang1 = calculator.toLatLang(prescaled, 0.0002 + mergeIndex++ / 9000, 0.0002);
-      const p1 = this.printPolygon(latLang1, sh, "#ff390d");
-      sh.shadows.push(p1);
+      //const p1 = this.printPolygon(latLang1, sh, "#ff390d");
       let s1 = google.maps.geometry.spherical.computeArea(latLang1);
 
       uu1.forEach(u1 => {
@@ -192,9 +264,9 @@ export class ShadowShapeSet {
         calculator.cleanupAfterDegeneracies(u1);
         if (u1.length > 0) {
 
-          const u1rescaled = calculator.rescaleArray(u1, 0.5);
+         const u1rescaled = calculator.rescaleArray(u1, 0.5);
           const u2 = calculator.toLatLang(u1rescaled, 0.0002 + mergeIndex++ / 9000, 0.0002);
-          this.printPolygon(u2, sh, "#16ff11");
+        //  this.printPolygon(u2, sh, "#16ff11");
 
           let s2 = google.maps.geometry.spherical.computeArea(u2);
 
@@ -202,10 +274,10 @@ export class ShadowShapeSet {
           const inOriginal = calculator.isInOriginalShadow(u1, calculator);
           const inOriginal2 = calculator.isInOriginalShadow(calculator.rescaleArray(u1, 0.0009), calculator);
 
-          console.log("ssss " + s2 + "  " + s1 + " " + Math.abs(s1 - s2) + " isInOriginalShadow " + inOriginal + " " + inOriginal2);
+          //console.log("ssss " + s2 + "  " + s1 + " " + Math.abs(s1 - s2) + " isInOriginalShadow " + inOriginal + " " + inOriginal2);
 
           if ((!inOriginal || !inOriginal2) && ((s2 < s1 && Math.abs(s1 - s2) > 0.00003) || uu1.length == 1)) {
-            console.log("ADDED " + inOriginal);
+           // console.log("ADDED " + inOriginal);
             toAdd.add(u1);
           }
 
@@ -216,29 +288,22 @@ export class ShadowShapeSet {
       toRemove.add(p);
 
     });
-    toRemove.forEach(r => finalShadows.delete(r));
-    toAdd.forEach(r => finalShadows.add(r));
-  }
+    toRemove.forEach(r => probablyHoles.delete(r));
+    toAdd.forEach(r => probablyHoles.add(r));
 
-  private static collectPoints(calculator: ShadowShapeCalculator, sh: ShadowShape) {
-    const polygon = sh.origin;
-    for (let i = 0; i < polygon.getPath().getLength(); i++) {
-      const point: LatLng = polygon.getPath().getAt(i);
-      const shadowPoint = calculator.calculateShadowPoint(sh, i);
-      calculator.addBasePoint(point);
-      calculator.addShadowTopPoint(shadowPoint);
 
-      // we need to compute shadow blocks for each two consecutive points,
-      // in order to property render shadow for protruding parts (between min and max x)
-      let j = i + 1;
-      if (j >= polygon.getPath().getLength()) {
-        j = 0;
+
+    let printOriginShadow = false;
+    if (printOriginShadow) {
+
+      for (let pp of calculator.rawShadowBlockPathsArr) {
+        this.printPolygon(pp, sh, "#11ff0d", this.SELECTED_SHAPE_ZINDEX - 2);
       }
-      const point2: LatLng = polygon.getPath().getAt(j);
-      const shadowPoint2 = calculator.calculateShadowPoint(sh, j);
-      calculator.addShadowBlockPath([point, point2, shadowPoint2, shadowPoint]);
+      this.printPolygon(calculator.rawShadowTopPath, sh, "#ff00ff", this.SELECTED_SHAPE_ZINDEX - 1);
     }
+
   }
+
 
   private static clearShadowShapes(sh) {
     if (sh.shadows != null) {
@@ -247,7 +312,7 @@ export class ShadowShapeSet {
     sh.shadows = [];
   }
 
-  private printPolygon(pp: google.maps.LatLng[], sh: ShadowShape, fillColor = "#ff0ff0", zIndex = this.SELECTED_SHAPE_ZINDEX) {
+  private printPolygon(pp: google.maps.LatLng[], sh: ShadowShape, fillColor: string , zIndex = this.SELECTED_SHAPE_ZINDEX) {
     const shapePolygonTotal = new Polygon();
     shapePolygonTotal.setPath(pp);
     shapePolygonTotal.setMap(this.map);
@@ -261,7 +326,7 @@ export class ShadowShapeSet {
     return shapePolygonTotal;
   }
 
-  private printPolygonWithHole(pp: google.maps.LatLng[], sh: ShadowShape, pp2: google.maps.LatLng[][], fillColor = "#ff0ff0", zIndex = this.SELECTED_SHAPE_ZINDEX) {
+  private printPolygonWithHole(pp: google.maps.LatLng[], sh: ShadowShape, pp2: google.maps.LatLng[][], fillColor: string , zIndex = this.SELECTED_SHAPE_ZINDEX) {
     const shapePolygonTotal = new Polygon();
     shapePolygonTotal.setPaths([pp, ...pp2]);
     shapePolygonTotal.setMap(this.map);
@@ -371,11 +436,11 @@ export class ShadowShapeSet {
       shadowService.recalculateShadows();
     });
     google.maps.event.addListener(shape, 'rightclick', () => {
-      const shadowShape = this.shadowShapes.find(s => s.origin === shape);
-      this.deleteShadowShape(shadowShape);
+      //const shadowShape = this.shadowShapes.find(s => s.origin === shape);
+      //this.deleteShadowShape(shadowShape);
 
-      this.clearSelection();
-      shadowService.recalculateShadows();
+      //this.clearSelection();
+      //shadowService.recalculateShadows();
     });
 
     _ngZone.run(() => this.setSelection(shape, true));
