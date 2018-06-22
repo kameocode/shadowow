@@ -11,7 +11,7 @@ export class ShadowShapeCalculator {
   rawBasePath: LatLng[] = [];
 
   constructor(private map: google.maps.Map, private sunAltitudeRad: number, private sunAzimuthRad: number) {
-    this.diff = this.r * 100;
+    this.diff = this.r * 10;
   }
 
   private perturbate() {
@@ -41,24 +41,35 @@ export class ShadowShapeCalculator {
       const p = this.map.getProjection().fromLatLngToPoint(latLng);
       return new TransformablePoint(p.x, p.y).rotatePo(-this.sunAzimuthRad);//.movePo(this.perturbate(), this.perturbate());
     });
-    const center = this.centerOfPolygon(points);
-    points = points.map(p => p.movePo(-center.x, -center.y));
-    points = points.map(p => p.scale(1 + 0.0001+this.perturbate()));// 0.0001 //this.perturbate()*100)
-    points = points.map(p => p.movePo(center.x, center.y));
-    return points;
+    return this.perturbateArray(points);
   }
-
   public toPerturbatedPoint2(u: google.maps.LatLng[]) {
     let points = u.map(latLng => {
       const p = this.map.getProjection().fromLatLngToPoint(latLng);
       return new TransformablePoint(p.x, p.y).rotatePo(-this.sunAzimuthRad);//.movePo(this.perturbate(), this.perturbate());
     });
+    return this.perturbateArray(points, 1 + 0.0002 + this.perturbate());
+  }
+
+  public perturbateArray(arr: { x: number, y: number }[], ratio = 1 + 0.0001 + this.perturbate()) {
+    let points = arr.map(p => {
+      return new TransformablePoint(p.x, p.y);
+    });
     const center = this.centerOfPolygon(points);
     points = points.map(p => p.movePo(-center.x, -center.y));
-    points = points.map(p => p.scale(1 + 0.0002+this.perturbate()));// 0.0001 //this.perturbate()*100)
+    points = points.map(p => p.scale(ratio));// 0.0001 //this.perturbate()*100)
     points = points.map(p => p.movePo(center.x, center.y));
     return points;
   }
+
+  public toNotPerturbatedPoint(u: google.maps.LatLng[]) {
+    let points = u.map(latLng => {
+      const p = this.map.getProjection().fromLatLngToPoint(latLng);
+      return new TransformablePoint(p.x, p.y).rotatePo(-this.sunAzimuthRad);//.movePo(this.perturbate(), this.perturbate());
+    });
+    return points;
+  }
+
   public toPerturbatedPoint3(u: google.maps.LatLng[]) {
     let points = u.map(latLng => {
       const p = this.map.getProjection().fromLatLngToPoint(latLng);
@@ -101,6 +112,18 @@ export class ShadowShapeCalculator {
     while (this.removeTooSmallAngles(u)>0) {
       this.removeTooClosedPoints(u);
     }
+  }
+  public reverseToNotPerturbatedPoints(u: { x: number, y: number }[], perturbated: { x: number, y: number }[], notPerturbated: { x: number, y: number }[]) {
+    let reversed=0;
+    u.forEach(p=> {
+      const elem = perturbated.find(p1=>p1.x==p.x && p1.y == p.y);
+      if (elem!=null) {
+        const index = perturbated.indexOf(elem);
+        p.x = notPerturbated[index].x;
+        p.y = notPerturbated[index].y;
+        reversed++;
+      }
+    })
   }
   private removeTooClosedPoints(u: { x: number, y: number }[]) {
     // remove points with too little distances
@@ -150,10 +173,10 @@ export class ShadowShapeCalculator {
   }
 
 
-  toLatLang(numbers: { x: number, y: number }[], xoffset = 0) {
+  toLatLang(numbers: { x: number, y: number }[], xoffset = 0, yoffset = 0) {
     return numbers.map(p => {
       p = new TransformablePoint(p.x, p.y).rotatePo(+this.sunAzimuthRad);
-      return this.map.getProjection().fromPointToLatLng(new Point(p.x + xoffset, p.y));
+      return this.map.getProjection().fromPointToLatLng(new Point(p.x + xoffset, p.y + yoffset));
     });
   }
 
@@ -162,6 +185,41 @@ export class ShadowShapeCalculator {
     const point: LatLng = sh.shape.getPath().getAt(i);
     const shadowLength = sh.heights[i] / Math.tan(this.sunAltitudeRad);
     return google.maps.geometry.spherical.computeOffset(point, shadowLength, this.sunAzimuthRad * 180 / Math.PI);
+  }
+
+  inside(point: {x: number, y: number}, vs: {x: number, y: number}[]) {
+    // ray-casting algorithm based on
+    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+
+    var x = point.x, y = point.y;
+
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+      var xi = vs[i].x, yi = vs[i].y;
+      var xj = vs[j].x, yj = vs[j].y;
+
+      var intersect = ((yi > y) != (yj > y))
+        && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+    }
+
+    return inside;
+  };
+
+  calcPolygonArea(vertices: {x: number, y: number}[]) {
+    var total = 0;
+
+    for (var i = 0, l = vertices.length; i < l; i++) {
+      var addX = vertices[i].x;
+      var addY = vertices[i == vertices.length - 1 ? 0 : i + 1].y;
+      var subX = vertices[i == vertices.length - 1 ? 0 : i + 1].x;
+      var subY = vertices[i].y;
+
+      total += (addX * addY * 0.5);
+      total -= (subX * subY * 0.5);
+    }
+
+    return Math.abs(total);
   }
 
 
