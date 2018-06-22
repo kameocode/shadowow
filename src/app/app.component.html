@@ -16,8 +16,17 @@
 <div class='row text-center'>
   <div class="col-8"><div class="" #gmap style="width:99%;height:800px"></div></div>
   <div class="col-4">
+
+    <textarea [(ngModel)]="json"></textarea>
+    <button md-button (click)="loadFromJSON()">load</button>
+    <button md-button (click)="saveToJSON()">save</button>
+
     <app-time-details></app-time-details>
-    <app-shape-details [shadowShape]="shadowShapesSet.currentShape"></app-shape-details></div>
+    <app-shape-details [shadowShape]="shadowShapesSet.currentShape"></app-shape-details>
+
+
+  </div>
+
 </div>
 
 

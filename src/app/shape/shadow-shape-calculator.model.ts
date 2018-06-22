@@ -61,6 +61,16 @@ export class ShadowShapeCalculator {
     points = points.map(p => p.movePo(center.x, center.y));
     return points;
   }
+  public rescaleArray(arr: { x: number, y: number }[], ratio = 1 + 0.0001 + this.perturbate()) {
+    let points = arr.map(p => {
+      return new TransformablePoint(p.x, p.y);
+    });
+    const center = this.centerOfPolygon(points);
+    points = points.map(p => p.movePo(-center.x, -center.y));
+    points = points.map(p => p.scale(ratio));
+    points = points.map(p => p.movePo(center.x, center.y));
+    return points;
+  }
 
   public toNotPerturbatedPoint(u: google.maps.LatLng[]) {
     let points = u.map(latLng => {
@@ -79,13 +89,6 @@ export class ShadowShapeCalculator {
     points = points.map(p => p.movePo(-center.x, -center.y));
     points = points.map(p => p.scale(1 +  0.0002+this.perturbate()));// 0.0001 //this.perturbate()*100)
     points = points.map(p => p.movePo(center.x, center.y));
-    return points;
-  }
-  public toPerturbatedPointOLD(u: google.maps.LatLng[]) {
-    const points = u.map(latLng => {
-      const p = this.map.getProjection().fromLatLngToPoint(latLng);
-      return new TransformablePoint(p.x, p.y).rotatePo(-this.sunAzimuthRad).movePo(-this.perturbate(), -this.perturbate());
-    });
     return points;
   }
 
@@ -182,7 +185,7 @@ export class ShadowShapeCalculator {
 
 
   calculateShadowPoint(sh: ShadowShape, i: number) {
-    const point: LatLng = sh.shape.getPath().getAt(i);
+    const point: LatLng = sh.origin.getPath().getAt(i);
     const shadowLength = sh.heights[i] / Math.tan(this.sunAltitudeRad);
     return google.maps.geometry.spherical.computeOffset(point, shadowLength, this.sunAzimuthRad * 180 / Math.PI);
   }
@@ -222,5 +225,39 @@ export class ShadowShapeCalculator {
     return Math.abs(total);
   }
 
+
+  public findIndexOfMaxArea(uu: {x: number, y: number}[][]) {
+    let indexOfMaxArea = 0;
+    let maxArea = 0;
+    uu.forEach((ua, index) => {
+      const currentArea = this.calcPolygonArea(ua);
+      if (currentArea > maxArea) {
+        indexOfMaxArea = index;
+        maxArea = currentArea;
+      }
+    });
+    return indexOfMaxArea;
+  }
+
+
+  public isInOriginalShadow(arr: { x: number, y: number }[], calculator: ShadowShapeCalculator) {
+    return arr.every(p => {
+      for (let j = 0; j < calculator.rawShadowBlockPathsArr.length; j++) {
+        const polygonInPoints = calculator.toNotPerturbatedPoint(calculator.rawShadowBlockPathsArr[j])
+        if (calculator.inside(p, polygonInPoints)) {
+          return true;
+        }
+      }
+      const polygonInPoints = calculator.toNotPerturbatedPoint(calculator.rawBasePath)
+      if (calculator.inside(p, polygonInPoints)) {
+        return true;
+      }
+      const polygonInPoints2 = calculator.toNotPerturbatedPoint(calculator.rawShadowTopPath)
+      if (calculator.inside(p, polygonInPoints2)) {
+        return true;
+      }
+      return false;
+    })
+  }
 
 }
