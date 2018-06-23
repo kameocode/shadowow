@@ -12,25 +12,30 @@ export class XYArray {
   private points: XY[] = null;
   private origin: XYArray = null;
   private map: google.maps.Map;
+  private sunAzimuthRad: number;
 
-  static fromLatLng(map: google.maps.Map, path: LatLng[]) {
+  static fromLatLng(map: google.maps.Map, sunAzimuthRad: number, path: LatLng[]) {
     const arr = new XYArray();
     arr.path = path;
     arr.map = map;
+    arr.sunAzimuthRad = sunAzimuthRad;
     return arr;
   }
 
-  static fromPoints(map: google.maps.Map, points: XY[]) {
+  static fromPoints(map: google.maps.Map, sunAzimuthRad: number, points: XY[]) {
     const arr = new XYArray();
     arr.points = points;
     arr.map = map;
+    arr.sunAzimuthRad = sunAzimuthRad;
     return arr;
   }
 
   public getPoints(): XY[] {
     if (this.points == null) {
-      this.points = this.path.map(latLng =>
-        this.map.getProjection().fromLatLngToPoint(latLng)
+      this.points = this.path.map(latLng => {
+          const p = this.map.getProjection().fromLatLngToPoint(latLng)
+          return new TransformablePoint(p.x, p.y).rotatePo(-this.sunAzimuthRad);
+        }
       );
     }
     return this.points;
@@ -44,9 +49,10 @@ export class XYArray {
 
   public getPath(): LatLng[] {
     if (this.path === null) {
-      this.path = this.points.map(xy =>
-        this.map.getProjection().fromPointToLatLng(new Point(xy.x, xy.y))
-      );
+      this.path = this.points.map(xy => {
+        xy = new TransformablePoint(xy.x, xy.y).rotatePo(this.sunAzimuthRad);
+        return this.map.getProjection().fromPointToLatLng(new Point(xy.x, xy.y))
+      });
     }
     return this.path;
   }
@@ -54,37 +60,37 @@ export class XYArray {
   public union(arr: XYArray): XYArray[] {
     const points = this.getPoints();
     const unionResult = greinerHormann.union(points, arr.getPoints());
-    return unionResult.map(ur => XYArray.fromPoints(this.map, ur));
+    return unionResult.map(ur => XYArray.fromPoints(this.map, this.sunAzimuthRad, ur));
   }
 
   public diff(arr: XYArray): XYArray[] {
     const points = this.getPoints();
     const diffResult = greinerHormann.diff(points, arr.getPoints());
-    return diffResult.map(ur => XYArray.fromPoints(this.map, ur));
+    return diffResult.map(ur => XYArray.fromPoints(this.map, this.sunAzimuthRad, ur));
   }
 
   public perturbate(): XYArray {
     const points = this.getPoints();
-    const arr = XYArray.fromPoints(this.map, this.rescaleArray(points, 1.0001 + this.smallRandom()));
+    const arr = XYArray.fromPoints(this.map, this.sunAzimuthRad, this.rescaleArray(points, 1.0001 + this.smallRandom()));
     arr.origin = this;
     return arr;
   }
 
   public perturbate2(): XYArray {
     const points = this.getPoints();
-    const arr = XYArray.fromPoints(this.map, this.rescaleArray(points, 1.0002 + this.smallRandom()));
+    const arr = XYArray.fromPoints(this.map, this.sunAzimuthRad, this.rescaleArray(points, 1.0002 + this.smallRandom()));
     arr.origin = this;
     return arr;
   }
 
   public rescale(ratio: number): XYArray {
-    const arr = XYArray.fromPoints(this.map, this.rescaleArray(this.getPoints(), ratio));
+    const arr = XYArray.fromPoints(this.map, this.sunAzimuthRad, this.rescaleArray(this.getPoints(), ratio));
     arr.origin = this;
     return arr;
   }
 
   public offset(xoffset: number, yoffset: number): XYArray {
-    const arr = XYArray.fromPoints(this.map, this.getPoints().map(p =>
+    const arr = XYArray.fromPoints(this.map, this.sunAzimuthRad, this.getPoints().map(p =>
       new TransformablePoint(p.x, p.y)
         .movePo(xoffset, yoffset)));
     arr.origin = this;
@@ -172,7 +178,17 @@ export class XYArray {
   }
 
 
-  private rescaleArray(arr: XY[], ratio: number) {
+  private rescaleAndRotateArray(arr: XY[], ratio: number, rotate?: number) {
+    const center = this.center();
+    return arr.map(p => {
+      return new TransformablePoint(p.x, p.y)
+        .movePo(-center.x, -center.y)
+        .scale(ratio)
+        .movePo(center.x, center.y);
+    });
+  }
+
+  private rescaleArray(arr: XY[], ratio: number, rotate?: number) {
     const center = this.center();
     return arr.map(p => {
       return new TransformablePoint(p.x, p.y)

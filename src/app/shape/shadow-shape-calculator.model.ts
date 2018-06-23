@@ -40,9 +40,9 @@ export class ShadowShapeCalculator {
       const shadowPoint2 = this.calculateShadowPoint(sh, j);
       rawShadowBlockPathsArr.push([point, point2, shadowPoint2, shadowPoint]);
     }
-    this.originPath = XYArray.fromLatLng(this.map, rawBasePath);
-    this.shadowTopPath = XYArray.fromLatLng(this.map, rawShadowTopPath);
-    this.shadowBlockPaths = rawShadowBlockPathsArr.map(ra => XYArray.fromLatLng(this.map, ra));
+    this.originPath = XYArray.fromLatLng(this.map, this.sunAzimuthRad, rawBasePath);
+    this.shadowTopPath = XYArray.fromLatLng(this.map, this.sunAzimuthRad, rawShadowTopPath);
+    this.shadowBlockPaths = rawShadowBlockPathsArr.map(ra => XYArray.fromLatLng(this.map, this.sunAzimuthRad, ra));
   }
 
 
@@ -109,13 +109,14 @@ export class ShadowShapeCalculator {
 
     probablyHoles.forEach(p => {
       const diffResult = p.diff(originPathPerturbated);
-      let areaOfHole = p.calcPolygonArea();
+
+      let areaOfHole = this.computeArea(p.getPoints());
 
       diffResult.forEach(u => {
         u.reverseToNotPerturbatedPoints(originPathPerturbated);
         this.cleanupAfterDegeneracies(u.getPoints());
         if (u.length > 0) {
-          let areaOfHoleAfterDiff = u.calcPolygonArea();
+          let areaOfHoleAfterDiff = this.computeArea(u.getPoints());
 
           const inOriginal = this.isInOriginalShadow(u);
           const inOriginal2 = this.isInOriginalShadow(u.rescale(0.0009));
@@ -202,6 +203,17 @@ export class ShadowShapeCalculator {
     }
     return removedCount;
   }
+
+  public computeArea(arr: XY[]): number {
+    return google.maps.geometry.spherical.computeArea(this.toLatLang(arr));
+  }
+
+  toLatLang(numbers: XY[], xoffset = 0, yoffset = 0) {
+    return numbers.map(p => {
+      return this.map.getProjection().fromPointToLatLng(new Point(p.x + xoffset, p.y + yoffset));
+    });
+  }
+
 
   private calculateShadowPoint(sh: ShadowShape, i: number) {
     const point: LatLng = sh.origin.getPath().getAt(i);
