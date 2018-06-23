@@ -2,3 +2,5 @@ node_modules
 e2e.*
 environment.prod.ts
 /package-lock.json
+.idea
+
