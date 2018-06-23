@@ -1,168 +1,178 @@
-import {TransformablePoint} from "./tranformable-point.model";
+import {TransformablePoint, XY} from "./tranformable-point.model";
 import {ShadowShape} from "./shadow-shape.model";
+import {XYArray} from "./xy-array.model";
 import LatLng = google.maps.LatLng;
 import Point = google.maps.Point;
 
+
 export class ShadowShapeCalculator {
-  r = 0.0000000001; //0.000000000001;
-  diff: number;
-  rawShadowBlockPathsArr: LatLng[][] = [];
-  rawShadowTopPath: LatLng[] = [];
-  rawBasePath: LatLng[] = [];
+  private r = 0.0000000001;
+  private diff: number;
+
+  private originPath: XYArray;
+  shadowTopPath: XYArray;
+  shadowBlockPaths: XYArray[];
 
   constructor(sh: ShadowShape, private map: google.maps.Map, private sunAltitudeRad: number, private sunAzimuthRad: number) {
     this.diff = this.r * 10;
     this.collectPoints(sh);
   }
 
-
   private collectPoints(sh: ShadowShape) {
     const polygon = sh.origin;
+
+    const rawShadowBlockPathsArr: LatLng[][] = [];
+    const rawShadowTopPath: LatLng[] = [];
+    const rawBasePath: LatLng[] = [];
+
     for (let i = 0; i < polygon.getPath().getLength(); i++) {
       const point: LatLng = polygon.getPath().getAt(i);
       const shadowPoint = this.calculateShadowPoint(sh, i);
-      this.addBasePoint(point);
-      this.addShadowTopPoint(shadowPoint);
+      rawBasePath.push(point);
+      rawShadowTopPath.push(point);
 
-      // we need to compute shadow blocks for each two consecutive points,
-      // in order to property render shadow for protruding parts (between min and max x)
+      // create shadow blocks for each two consecutive points,
       let j = i + 1;
       if (j >= polygon.getPath().getLength()) {
         j = 0;
       }
       const point2: LatLng = polygon.getPath().getAt(j);
       const shadowPoint2 = this.calculateShadowPoint(sh, j);
-      this.addShadowBlockPath([point, point2, shadowPoint2, shadowPoint]);
+      rawShadowBlockPathsArr.push([point, point2, shadowPoint2, shadowPoint]);
     }
-  }
-
-  private perturbate() {
-    const n = Math.random() * this.r;
-    if (n > this.r || n < -this.r) {
-      throw Error("Wrong n " + n);
-    }
-    return n;
-  }
-
-  public addShadowBlockPath(u: LatLng[],) {
-    this.rawShadowBlockPathsArr.push(u);
-    const points = this.toPerturbatedPoint(u);
-  }
-
-  addBasePoint(point: google.maps.LatLng) {
-    this.rawBasePath.push(point);
-  }
-
-  addShadowTopPoint(point: google.maps.LatLng) {
-    this.rawShadowTopPath.push(point);
+    this.originPath = XYArray.fromLatLng(this.map, rawBasePath);
+    this.shadowTopPath = XYArray.fromLatLng(this.map, rawShadowTopPath);
+    this.shadowBlockPaths = rawShadowBlockPathsArr.map(ra => XYArray.fromLatLng(this.map, ra));
   }
 
 
-  public toPerturbatedPoint(u: google.maps.LatLng[]) {
-    let points = u.map(latLng => {
-      const p = this.map.getProjection().fromLatLngToPoint(latLng);
-      return new TransformablePoint(p.x, p.y).rotatePo(-this.sunAzimuthRad);//.movePo(this.perturbate(), this.perturbate());
-    });
-    return this.perturbateArray(points);
-  }
-  public toPerturbatedPoint2(u: google.maps.LatLng[]) {
-    let points = u.map(latLng => {
-      const p = this.map.getProjection().fromLatLngToPoint(latLng);
-      return new TransformablePoint(p.x, p.y).rotatePo(-this.sunAzimuthRad);//.movePo(this.perturbate(), this.perturbate());
-    });
-    return this.perturbateArray(points, 1 + 0.0002 + this.perturbate());
-  }
+  public mergeShadowBlocksIntoOne(probablyHoles: Set<XYArray>) {
+    let mergedShadow = this.originPath;
+    for (let sbp of this.shadowBlockPaths) {
+      const points = sbp.perturbate();
 
-  public perturbateArray(arr: { x: number, y: number }[], ratio = 1 + 0.0001 + this.perturbate()) {
-    let points = arr.map(p => {
-      return new TransformablePoint(p.x, p.y);
-    });
-    const center = this.centerOfPolygon(points);
-    points = points.map(p => p.movePo(-center.x, -center.y));
-    points = points.map(p => p.scale(ratio));// 0.0001 //this.perturbate()*100)
-    points = points.map(p => p.movePo(center.x, center.y));
-    return points;
-  }
-  public rescaleArray(arr: { x: number, y: number }[], ratio = 1 + 0.0001 + this.perturbate()) {
-    let points = arr.map(p => {
-      return new TransformablePoint(p.x, p.y);
-    });
-    const center = this.centerOfPolygon(points);
-    points = points.map(p => p.movePo(-center.x, -center.y));
-    points = points.map(p => p.scale(ratio));
-    points = points.map(p => p.movePo(center.x, center.y));
-    return points;
-  }
-
-  public toNotPerturbatedPoint(u: google.maps.LatLng[]) {
-    let points = u.map(latLng => {
-      const p = this.map.getProjection().fromLatLngToPoint(latLng);
-      return new TransformablePoint(p.x, p.y).rotatePo(-this.sunAzimuthRad);//.movePo(this.perturbate(), this.perturbate());
-    });
-    return points;
-  }
-
-  public toPerturbatedPoint3(u: google.maps.LatLng[]) {
-    let points = u.map(latLng => {
-      const p = this.map.getProjection().fromLatLngToPoint(latLng);
-      return new TransformablePoint(p.x, p.y).rotatePo(-this.sunAzimuthRad);//.movePo(this.perturbate(), this.perturbate());
-    });
-    const center = this.centerOfPolygon(points);
-    points = points.map(p => p.movePo(-center.x, -center.y));
-    points = points.map(p => p.scale(1 +  0.0002+this.perturbate()));// 0.0001 //this.perturbate()*100)
-    points = points.map(p => p.movePo(center.x, center.y));
-    return points;
-  }
-
-  private centerOfPolygon(arr: { x: number, y: number }[]) {
-    let x = arr.map(x => x.x);
-    let y = arr.map(x => x.y);
-    let cx = (Math.min(...x) + Math.max(...x)) / 2;
-    let cy = (Math.min(...y) + Math.max(...y)) / 2;
-    return {x: cx, y: cy};
-  }
-
-  public equals(arr1: { x: number, y: number }[], arr2: { x: number, y: number }[])  {
-    if (arr1.length !=arr2.length)
-      return false;
-    for (let i=0; i<arr1.length; i++) {
-      if (arr1[i].x!=arr2[i].x || arr1[i].y!=arr2[i].y) {
-        return false;
+      const unionResults = mergedShadow.union(points);
+      if (unionResults.length > 1) {
+        console.log("ERROR2, union failed:" + unionResults.length + " for index " + this.shadowBlockPaths.indexOf(sbp) + " ");
+        // this.renderPartsProblematicToMerge(calculator, mergedShadow, ++mergeIndex, sh, points);
       }
+
+      // union is the biggest part, other are holes
+      let indexOfMaxArea = this.findIndexOfMaxArea(unionResults);
+      unionResults.forEach((ur, index) => {
+        if (index == indexOfMaxArea) {
+          mergedShadow = ur;
+        } else {
+          probablyHoles.add(ur);
+          ur.reverseToNotPerturbatedPoints(points);
+        }
+      });
+      mergedShadow.reverseToNotPerturbatedPoints(points);
     }
-    return true;
+    return mergedShadow;
   }
-  public cleanupAfterDegeneracies(u: { x: number, y: number }[]) {
-    this.removeTooClosedPoints(u);
-    while (this.removeTooSmallAngles(u)>0) {
-      this.removeTooClosedPoints(u);
+
+  public substractShadowBlocksFromHoles(probablyHoles: Set<XYArray>) {
+    const toRemove = new Set<XYArray>();
+    const toAdd = new Set<XYArray>();
+
+    for (let shadowBlock of this.shadowBlockPaths) {
+      probablyHoles.forEach(probablyHole => {
+        // for toPerturbatedPoint didn't diff properly??
+        const shadowPoints = shadowBlock.perturbate2();//calculator.toPerturbatedPoint2(shadowBlock);
+
+        // the diff doesn't work as expected, so subsequent filter was required
+        //const diffResult = greinerHormann.diff(probablyHole, shadowPoints);
+        const diffResult = probablyHole.diff(shadowPoints);
+        diffResult.filter(u1 => !u1.equals(shadowPoints))
+          .forEach(u1 => {
+            u1.reverseToNotPerturbatedPoints(shadowPoints)
+            this.cleanupAfterDegeneracies(u1.getPoints());
+            if (u1.length > 0) {
+              toAdd.add(u1);
+            }
+          });
+        if (diffResult.length > 0) {
+          toRemove.add(probablyHole);
+        }
+      });
+      toRemove.forEach(ph => probablyHoles.delete(ph));
+      toAdd.forEach(ph => probablyHoles.add(ph));
+      toAdd.clear();
+      toRemove.clear();
     }
   }
-  public reverseToNotPerturbatedPoints(u: { x: number, y: number }[], perturbated: { x: number, y: number }[], notPerturbated: { x: number, y: number }[]) {
-    let reversed=0;
-    u.forEach(p=> {
-      const elem = perturbated.find(p1=>p1.x==p.x && p1.y == p.y);
-      if (elem!=null) {
-        const index = perturbated.indexOf(elem);
-        p.x = notPerturbated[index].x;
-        p.y = notPerturbated[index].y;
-        reversed++;
-      }
-    })
+
+  public substractOriginFromHoles(probablyHoles: Set<XYArray>) {
+    const toAdd = new Set();
+    const originPathPerturbated = this.originPath.perturbate2();
+
+    probablyHoles.forEach(p => {
+      const diffResult = p.diff(originPathPerturbated);
+      let areaOfHole = p.calcPolygonArea();
+
+      diffResult.forEach(u => {
+        u.reverseToNotPerturbatedPoints(originPathPerturbated);
+        this.cleanupAfterDegeneracies(u.getPoints());
+        if (u.length > 0) {
+          let areaOfHoleAfterDiff = u.calcPolygonArea();
+
+          const inOriginal = this.isInOriginalShadow(u);
+          const inOriginal2 = this.isInOriginalShadow(u.rescale(0.0009));
+
+          //console.log("ssss " + areaOfHoleAfterDiff + "  " + areaOfHole + " " + Math.abs(areaOfHole - areaOfHoleAfterDiff) + " isInOriginalShadow " + inOriginal + " " + inOriginal2);
+
+          if ((!inOriginal || !inOriginal2) && ((areaOfHoleAfterDiff < areaOfHole && Math.abs(areaOfHole - areaOfHoleAfterDiff) > 0.00003) || diffResult.length == 1)) {
+            toAdd.add(u);
+          }
+        }
+      });
+    });
+    probablyHoles.clear();
+    toAdd.forEach(r => probablyHoles.add(r));
   }
-  private removeTooClosedPoints(u: { x: number, y: number }[]) {
+
+
+  public prepareHoles(mergedShadow: XYArray, probablyHoles: Set<XYArray>) {
+    const mergedShadowPath = mergedShadow.getPath()
+    let problematicToRemoveArrLatLang = [];
+    probablyHoles.forEach(ph =>
+      problematicToRemoveArrLatLang.push([...ph.getPath()].reverse())
+    );
+    problematicToRemoveArrLatLang.push([...this.originPath.getPath()].reverse());
+
+
+    if (problematicToRemoveArrLatLang.length > 0) {
+      const signedAreaOfShadow = google.maps.geometry.spherical.computeSignedArea(mergedShadowPath);
+      return problematicToRemoveArrLatLang.map(h => {
+        const signedAreaOfHole = google.maps.geometry.spherical.computeSignedArea(h);
+        const isDifferentSign = (signedAreaOfShadow > 0 && signedAreaOfHole > 0) || (signedAreaOfShadow < 0 && signedAreaOfHole < 0);
+        if (isDifferentSign) {
+          h = [...h].reverse();
+        }
+        return h;
+      })
+    } else
+      return null;
+  }
+
+  public cleanupAfterDegeneracies(u: XY[]) {
+    this.removeTooClosePoints(u);
+    while (this.removeTooSmallAngles(u) > 0) {
+      this.removeTooClosePoints(u);
+    }
+  }
+
+  private removeTooClosePoints(u: XY[]) {
     // remove points with too little distances
-
-    if (u.length ==0)
+    if (u.length == 0)
       return;
     for (let i = u.length - 1; i >= 0; i--) {
       const u1 = u[i];
       for (let j = i - 1; j >= 0; j--) {
         const u2 = u[j];
         const tooClose = Math.abs(u1.x - u2.x) + Math.abs(u1.y - u2.y) < this.diff;
-        // console.log("DIFF "+i+" "+j+" "+ ((Math.abs(u1.x-u2.x)+Math.abs(u1.y-u2.y))));
         if (tooClose) {
-          const p = new TransformablePoint(u1.x, u1.y).rotatePo(+this.sunAzimuthRad);
           u.splice(j, 1);
           i--;
         } else
@@ -174,7 +184,7 @@ export class ShadowShapeCalculator {
       u.splice(u.length - 1, 1);
   }
 
-  private removeTooSmallAngles(u: { x: number, y: number }[]) {
+  private removeTooSmallAngles(u: XY[]) {
     let removedCount = 0;
     for (let i = 1; i <= u.length; i += 1) {
       const a = u[i - 1];
@@ -184,80 +194,25 @@ export class ShadowShapeCalculator {
       const vector1 = new Point(b.x - a.x, b.y - a.y);
       const vector2 = new Point(b.x - c.x, b.y - c.y);
 
-      var angleDeg = (Math.atan2(vector2.y, vector2.x) - Math.atan2(vector1.y, vector1.x)) * 180 / Math.PI;//Math.atan2(vector2.y - vector1.y, vector2.x - vector1.x) * 180 / Math.PI;
+      const angleDeg = (Math.atan2(vector2.y, vector2.x) - Math.atan2(vector1.y, vector1.x)) * 180 / Math.PI;//Math.atan2(vector2.y - vector1.y, vector2.x - vector1.x) * 180 / Math.PI;
       if (Math.abs(angleDeg) < 0.01) {
-        // remove point b&c
-        // u.splice((i+1) % u.length, 1);
         u.splice(i % u.length, 1);
         removedCount++;
       }
-      const p = new TransformablePoint(b.x, b.y).rotatePo(this.sunAzimuthRad);
-      //this.shadowMarkersSet.addMarker(this.map.getProjection().fromPointToLatLng(new Point(p.x + 0.0002, p.y)),"M"+(i % u.length));
     }
     return removedCount;
   }
 
-
-  toLatLang(numbers: { x: number, y: number }[], xoffset = 0, yoffset = 0) {
-    return numbers.map(p => {
-      p = new TransformablePoint(p.x, p.y).rotatePo(+this.sunAzimuthRad);
-      return this.map.getProjection().fromPointToLatLng(new Point(p.x + xoffset, p.y + yoffset));
-    });
-  }
-
-
-  calculateShadowPoint(sh: ShadowShape, i: number) {
+  private calculateShadowPoint(sh: ShadowShape, i: number) {
     const point: LatLng = sh.origin.getPath().getAt(i);
     const shadowLength = sh.heights[i] / Math.tan(this.sunAltitudeRad);
     return google.maps.geometry.spherical.computeOffset(point, shadowLength, this.sunAzimuthRad * 180 / Math.PI);
   }
-  polygonInside(vertices: {x: number, y: number}[], outerVertices: {x: number, y: number}[]): boolean {
-    return vertices.every(point=>
-      this.inside(point, outerVertices)
-    )
-  }
 
-  inside(point: {x: number, y: number}, vs: {x: number, y: number}[]) {
-    // ray-casting algorithm based on
-    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-
-    var x = point.x, y = point.y;
-
-    var inside = false;
-    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-      var xi = vs[i].x, yi = vs[i].y;
-      var xj = vs[j].x, yj = vs[j].y;
-
-      var intersect = ((yi > y) != (yj > y))
-        && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-      if (intersect) inside = !inside;
-    }
-
-    return inside;
-  };
-
-  calcPolygonArea(vertices: {x: number, y: number}[]) {
-    var total = 0;
-
-    for (var i = 0, l = vertices.length; i < l; i++) {
-      var addX = vertices[i].x;
-      var addY = vertices[i == vertices.length - 1 ? 0 : i + 1].y;
-      var subX = vertices[i == vertices.length - 1 ? 0 : i + 1].x;
-      var subY = vertices[i].y;
-
-      total += (addX * addY * 0.5);
-      total -= (subX * subY * 0.5);
-    }
-
-    return Math.abs(total);
-  }
-
-
-  public findIndexOfMaxArea(uu: {x: number, y: number}[][]) {
-    let indexOfMaxArea = 0;
-    let maxArea = 0;
+  private findIndexOfMaxArea(uu: XYArray[]) {
+    let indexOfMaxArea = 0, maxArea = 0;
     uu.forEach((ua, index) => {
-      const currentArea = this.calcPolygonArea(ua);
+      const currentArea = ua.calcPolygonArea();
       if (currentArea > maxArea) {
         indexOfMaxArea = index;
         maxArea = currentArea;
@@ -266,27 +221,17 @@ export class ShadowShapeCalculator {
     return indexOfMaxArea;
   }
 
-
-  public isInOriginalShadow(arr: { x: number, y: number }[], calculator: ShadowShapeCalculator) {
-    return arr.every(p => {
-      for (let j = 0; j < calculator.rawShadowBlockPathsArr.length; j++) {
-        const polygonInPoints = calculator.toNotPerturbatedPoint(calculator.rawShadowBlockPathsArr[j])
-        if (calculator.inside(p, polygonInPoints)) {
+  private isInOriginalShadow(arr: XYArray) {
+    return arr.getPoints().every(p => {
+      for (let bp of this.shadowBlockPaths) {
+        if (bp.containsPoint(p))
           return true;
-        }
       }
-      const polygonInPoints = calculator.toNotPerturbatedPoint(calculator.rawBasePath)
-      if (calculator.inside(p, polygonInPoints)) {
+      if (this.originPath.containsPoint(p))
         return true;
-      }
-      const polygonInPoints2 = calculator.toNotPerturbatedPoint(calculator.rawShadowTopPath)
-      if (calculator.inside(p, polygonInPoints2)) {
-        return true;
-      }
-      return false;
+      return this.shadowTopPath.containsPoint(p);
     })
   }
-
 
 
 }
