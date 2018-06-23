@@ -48,13 +48,15 @@ export class ShadowShapeCalculator {
 
   public mergeShadowBlocksIntoOne(probablyHoles: Set<XYArray>) {
     let mergedShadow = this.originPath;
+    let mergeIndex=0;
     for (let sbp of this.shadowBlockPaths) {
       const points = sbp.perturbate();
 
       const unionResults = mergedShadow.union(points);
       if (unionResults.length > 1) {
         console.log("ERROR2, union failed:" + unionResults.length + " for index " + this.shadowBlockPaths.indexOf(sbp) + " ");
-        // this.renderPartsProblematicToMerge(calculator, mergedShadow, ++mergeIndex, sh, points);
+        // fun: (mergedShadow: XYArray, index: number, points: XYArray)=>void
+        // fun(mergedShadow, ++mergeIndex, points);
       }
 
       // union is the biggest part, other are holes

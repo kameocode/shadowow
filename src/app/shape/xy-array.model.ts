@@ -71,14 +71,14 @@ export class XYArray {
 
   public perturbate(): XYArray {
     const points = this.getPoints();
-    const arr = XYArray.fromPoints(this.map, this.sunAzimuthRad, this.rescaleArray(points, 1.0001 + this.smallRandom()));
+    const arr = XYArray.fromPoints(this.map, this.sunAzimuthRad, this.rescaleArray(points, 1.00001 + this.smallRandom()));
     arr.origin = this;
     return arr;
   }
 
   public perturbate2(): XYArray {
     const points = this.getPoints();
-    const arr = XYArray.fromPoints(this.map, this.sunAzimuthRad, this.rescaleArray(points, 1.0002 + this.smallRandom()));
+    const arr = XYArray.fromPoints(this.map, this.sunAzimuthRad, this.rescaleArray(points, 1.00002 + this.smallRandom()));
     arr.origin = this;
     return arr;
   }

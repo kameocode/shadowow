@@ -52,6 +52,10 @@ export class ShadowShapeSet {
     const calculator = new ShadowShapeCalculator(sh, this.map, sunAltitudeRad, sunAzimuthRad);
 
     const probablyHoles = new Set<XYArray>();
+
+    const fun = (y: XYArray, mergeIndex: number, points: XYArray) =>
+      this.renderPartsProblematicToMerge(y, mergeIndex, sh, points);
+
     const mergedShadow = calculator.mergeShadowBlocksIntoOne(probablyHoles);
     calculator.substractShadowBlocksFromHoles(probablyHoles);
     calculator.substractOriginFromHoles(probablyHoles);
@@ -73,7 +77,7 @@ export class ShadowShapeSet {
     }
   }
 
-  private renderPartsProblematicToMerge(calculator: ShadowShapeCalculator, u: XYArray, mergeIndex: number, sh, points: XYArray) {
+  private renderPartsProblematicToMerge(u: XYArray, mergeIndex: number, sh, points: XYArray) {
     const u1 = u.offset(0.0003 + mergeIndex / 9000, 0).getPath();//calculator.toLatLang(u, 0.0003 + mergeIndex / 9000, 0);
     const p1 = this.printPolygon(u1, sh, "#2bd0ff");
     const u2 = points.offset(0.0003 + mergeIndex / 9000, 0).getPath(); //calculator.toLatLang(points, 0.0003 + mergeIndex / 9000, 0);
