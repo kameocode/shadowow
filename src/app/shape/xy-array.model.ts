@@ -114,7 +114,7 @@ export class XYArray {
     return inside;
   };
 
-  public calcPolygonArea() {
+  public calculateArea() {
     const vertices: XY[] = this.getPoints();
     let total = 0;
     for (let i = 0, l = vertices.length; i < l; i++) {

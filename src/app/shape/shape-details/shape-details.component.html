@@ -1,7 +1,6 @@
-<div *ngIf="shadowShape != null" class="no-select">
+<div *ngIf="shadowShape != null" class="no-select heightsPanel">
   <div *ngFor="let h of shadowShape.heights; trackBy:trackByIdx; let i = index">
 
-      <!--<img src='assets/pin.svg'>-->
     <span class="pinBackground" (click)="openSettingsDialog()"><div class="pinLabel">{{ i+1 }}</div></span>
 
     <input [(ngModel)]="shadowShape.heights[i]" (ngModelChange)="onHeightChanged($event)" type=number min=0 max=50>

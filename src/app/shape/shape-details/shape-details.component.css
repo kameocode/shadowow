@@ -18,3 +18,10 @@
   display: inline-block;
   margin-top: 7px;
 }
+
+.heightsPanel {
+  display: flex;
+  max-height: 80vh;
+  flex-flow: column;
+  flex-wrap: wrap;
+}

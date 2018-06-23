@@ -61,7 +61,7 @@ export class ShadowShapeSet {
     calculator.substractOriginFromHoles(probablyHoles);
     const holes = calculator.prepareHoles(mergedShadow, probablyHoles);
 
-    this.printPolygonWithHoles(mergedShadow.getPath(), sh, holes, "#000000", this.SELECTED_SHAPE_ZINDEX - 2);
+    this.printPolygon(mergedShadow.getPath(), sh, holes, "#000000", this.SELECTED_SHAPE_ZINDEX - 2);
 
     // this.renderOriginShadow(calculator, sh);
   }
@@ -71,17 +71,16 @@ export class ShadowShapeSet {
     let printOriginShadow = false;
     if (printOriginShadow) {
       for (let pp of calculator.shadowBlockPaths) {
-        this.printPolygon(pp.getPath(), sh, "#11ff0d", this.SELECTED_SHAPE_ZINDEX - 2);
+        this.printPolygon(pp.getPath(), sh, [],"#11ff0d", this.SELECTED_SHAPE_ZINDEX - 2);
       }
-      this.printPolygon(calculator.shadowTopPath.getPath(), sh, "#ff00ff", this.SELECTED_SHAPE_ZINDEX - 1);
     }
   }
 
   private renderPartsProblematicToMerge(u: XYArray, mergeIndex: number, sh, points: XYArray) {
     const u1 = u.offset(0.0003 + mergeIndex / 9000, 0).getPath();//calculator.toLatLang(u, 0.0003 + mergeIndex / 9000, 0);
-    const p1 = this.printPolygon(u1, sh, "#2bd0ff");
+    this.printPolygon(u1, sh, [],"#2bd0ff");
     const u2 = points.offset(0.0003 + mergeIndex / 9000, 0).getPath(); //calculator.toLatLang(points, 0.0003 + mergeIndex / 9000, 0);
-    this.printPolygon(u2, sh, "#ffe426");
+    this.printPolygon(u2, sh, [],"#ffe426");
   }
 
   private static clearShadowShapes(sh) {
@@ -91,21 +90,8 @@ export class ShadowShapeSet {
     sh.shadows = [];
   }
 
-  private printPolygon(pp: LatLng[], sh: ShadowShape, fillColor: string, zIndex = this.SELECTED_SHAPE_ZINDEX) {
-    const shapePolygonTotal = new Polygon();
-    shapePolygonTotal.setPath(pp);
-    shapePolygonTotal.setMap(this.map);
-    shapePolygonTotal.setOptions({
-      fillColor,
-      // fillOpacity: 0.5,
-      // strokeWeight: 0,
-      zIndex
-    });
-    sh.shadows.push(shapePolygonTotal);
-    return shapePolygonTotal;
-  }
 
-  private printPolygonWithHoles(path: LatLng[], sh: ShadowShape, holes: LatLng[][], fillColor: string, zIndex = this.SELECTED_SHAPE_ZINDEX) {
+  private printPolygon(path: LatLng[], sh: ShadowShape, holes: LatLng[][], fillColor: string, zIndex = this.SELECTED_SHAPE_ZINDEX) {
     const shapePolygonTotal = new Polygon();
     if (holes == null || holes.length == 0)
       shapePolygonTotal.setPath(path);
@@ -211,11 +197,11 @@ export class ShadowShapeSet {
     });
 
     google.maps.event.addListener(shape, 'dragstart', () => {
-      this.setSelection(shape);
+      _ngZone.run(()=>
+      this.setSelection(shape));
     });
     google.maps.event.addListener(shape, 'dragend', () => {
-      this.markersSet.createMarkers(shape);
-      shadowService.recalculateShadows();
+      debouncedRecreateMarkersAndShadows(shape, shadowService)
     });
     google.maps.event.addListener(shape, 'rightclick', () => {
       //const shadowShape = this.shadowShapes.find(s => s.origin === shape);
@@ -260,7 +246,7 @@ export class ShadowShapeSet {
 
     const arr: any[] = JSON.parse(str);
     for (let a of arr) {
-      const p = new Polygon();
+      const p = new Polygon({ draggable: true});
       p.setPath(a.coords.map(c => new LatLng(c.lat, c.lng)));
       p.setMap(this.map);
       this.onShapeAdded(p, _ngZone, shadowService, a.heights);

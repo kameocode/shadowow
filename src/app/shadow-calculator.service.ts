@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ShadowShapeSet} from "./shape/shadow-shape.model";
+import {Subject} from "rxjs/Subject";
 
 let SunCalc = require('suncalc');
 
@@ -11,8 +12,10 @@ export class ShadowCalculatorService {
   private minutes: number = 20;
   private shadowShapeSet: ShadowShapeSet;
   private date = new Date();
+  public isDay = new Subject<boolean>();
 
   constructor() {
+
   }
 
   public setTime(hour: number, minutes: number) {
@@ -42,6 +45,7 @@ export class ShadowCalculatorService {
     console.log("altitude=" + altitudeDegrees + " azimuth=" + azimuthDegrees);
 
     this.shadowShapeSet.createShadows(position.altitude, position.azimuth);
+    this.isDay.next(position.altitude > 0);
 
 
   }

@@ -1,10 +1,10 @@
 {
   "name": "shadowow",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve -o --port 0",
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",

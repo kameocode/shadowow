@@ -1,5 +1,5 @@
 export const colors = {
-  colorArea: "#a7ffeb" //"#fffff0" //"#a7ffeb"
+  colorArea: "#a7ffeb"
 };
 
 export class MarkersSet {
@@ -21,7 +21,10 @@ export class MarkersSet {
       this.clearMarkers();
 
     const path: google.maps.MVCArray<google.maps.LatLng> = newShape.getPath();
-    for (let i = 0; i < path.getLength(); i++) {
+    let increment=1;
+    if (path.getLength() > 10)
+      increment=2;
+    for (let i = 0; i < path.getLength(); i+=increment) {
       const point = path.getAt(i);
       this.addMarker(point,  '' + (i + 1));
     }

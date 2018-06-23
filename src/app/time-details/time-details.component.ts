@@ -9,8 +9,9 @@ import {ShadowCalculatorService} from "../shadow-calculator.service";
 })
 export class TimeDetailsComponent implements OnInit {
   value: number = 17*60;
-  maxValue = 24*60;
+  readonly maxValue = 24*60;
   date = new Date();
+  private readonly step: number = 10;
 
 
   constructor(private shadowService: ShadowCalculatorService) { }
@@ -35,14 +36,17 @@ export class TimeDetailsComponent implements OnInit {
   }
 
   increment() {
-    this.value+=10;
-    this.updateHour();
+    if (this.value + this.step <= this.maxValue) {
+      this.value += this.step;
+      this.updateHour();
+    }
 
   }
   decrement() {
-    this.value-=10;
-    this.updateHour();
-
+    if (this.value - this.step > 0) {
+      this.value -= this.step;
+      this.updateHour();
+    }
   }
 
   private updateHour() {
