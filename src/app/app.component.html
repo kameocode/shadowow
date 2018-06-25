@@ -1,7 +1,8 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="#">Shadowow</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+          aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
@@ -9,22 +10,28 @@
       <li class="nav-item active">
         <a class="nav-link" href="#">Help<span class="sr-only">(current)</span></a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link">
+          <mat-icon (click)="openImportExportDialog()"aria-label="Import/export configuration">import_export</mat-icon>
+        </a>
+      </li>
     </ul>
   </div>
 </nav>
 
-<div class='row text-center'>
-  <div class="col-8" [class.gmap-wrapper-night]="!isDay">
-    <div [class.gmap-night]="!isDay" #gmap style="width:100%;height:800px"></div>
+<div class='row text-center x-content'>
+  <div class="col-8 x-gmap-wrapper" [class.x-gmap-wrapper-night]="isNight"
+       [class.x-gmap-wrapper-dusk-or-down]="isDuskOrDawn">
+    <div [class.x-gmap-night]="isNight" [class.x-gmap-dusk-or-down]="isDuskOrDawn" #gmap style="height:100%"></div>
   </div>
-  <div class="col-4">
+  <div class="col-4 x-details">
 
-    <textarea [(ngModel)]="json"></textarea>
-    <button md-button (click)="loadFromJSON()">load</button>
-    <button md-button (click)="saveToJSON()">save</button>
+
 
     <app-time-details></app-time-details>
     <app-shape-details [shadowShape]="shadowShapesSet.currentShape"></app-shape-details>
+
+
 
 
   </div>

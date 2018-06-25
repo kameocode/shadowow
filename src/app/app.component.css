@@ -1,6 +1,34 @@
-.gmap-wrapper-night {
+.x-gmap-wrapper-night, .x-gmap-wrapper-dusk-or-down {
   background-color: black;
  }
-.gmap-night {
-  opacity: 0.5
+
+.x-gmap-night {
+  opacity: 0.5;
 }
+
+.x-gmap-dusk-or-down {
+  opacity: 0.9;
+}
+
+.x-gmap-wrapper {
+  padding-right: 0;
+}
+
+
+.x-content {
+  min-height: calc(100vh - 120px);
+  max-height: calc(100vh - 120px);
+}
+
+.x-details {
+  padding: 10px;
+  background: linear-gradient(-45deg, #ddf9ee, rgba(215, 255, 255, 0.15));
+  transition: all 0.5s;
+}
+
+a > mat-icon {
+  cursor: pointer;
+}
+
+
+

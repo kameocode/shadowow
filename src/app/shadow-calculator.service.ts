@@ -12,7 +12,13 @@ export class ShadowCalculatorService {
   private minutes: number = 20;
   private shadowShapeSet: ShadowShapeSet;
   private date = new Date();
-  public isDay = new Subject<boolean>();
+
+
+  public isDay: boolean;
+  public isDuskOrDawn: boolean;
+  public sunrise: Date;
+  public sunset: Date;
+  public noon: Date;
 
   constructor() {
 
@@ -45,9 +51,15 @@ export class ShadowCalculatorService {
     console.log("altitude=" + altitudeDegrees + " azimuth=" + azimuthDegrees);
 
     this.shadowShapeSet.createShadows(position.altitude, position.azimuth);
-    this.isDay.next(position.altitude > 0);
+    this.isDay = position.altitude > 0;
+    this.isDuskOrDawn = position.altitude> 0 && (this.date.getTime()<times.goldenHourEnd.getTime() || this.date.getTime()>times.goldenHour);
+
+    this.sunrise = times.sunrise;
+    this.sunset = times.sunset;
+    this.noon = times.solarNoon;
 
 
+    console.log("this is Day "+this.isDay);
   }
 
 

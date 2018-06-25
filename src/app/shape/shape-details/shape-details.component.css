@@ -1,5 +1,6 @@
 
-.pinBackground {
+
+.x-pinBackground {
   display: inline-block;
   width: 30px;
   background-position: center center;
@@ -10,7 +11,7 @@
   line-height: 38px;
 
 }
-.pinLabel {
+.x-pinLabel {
   height: 12px;
   font-size: 12px;
   vertical-align: top;
@@ -19,9 +20,9 @@
   margin-top: 7px;
 }
 
-.heightsPanel {
+.x-heightsPanel {
   display: flex;
-  max-height: 80vh;
+  max-height: 40vh;
   flex-flow: column;
   flex-wrap: wrap;
 }

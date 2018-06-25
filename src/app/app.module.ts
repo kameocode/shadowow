@@ -1,15 +1,25 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
 
 
 import {AppComponent} from './app.component';
-import { ShapeDetailsComponent } from './shape/shape-details/shape-details.component';
+import {ShapeDetailsComponent} from './shape/shape-details/shape-details.component';
 import {FormsModule} from "@angular/forms";
-import {MatDatepickerModule, MatDialog, MatDialogModule, MatFormFieldModule, MatNativeDateModule, MatSliderModule} from "@angular/material";
+import {
+  MAT_DIALOG_DEFAULT_OPTIONS, MatButtonModule,
+  MatDatepickerModule,
+  MatDialog,
+  MatDialogModule,
+  MatFormFieldModule, MatIconModule,
+  MatNativeDateModule,
+  MatSliderModule
+} from "@angular/material";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
 import {TimeDetailsComponent} from "./time-details/time-details.component"
 import {ShapeBoundariesComponent} from "./shape/shape-details/shape-boundaries/shape-boundaries.component";
+import {DayInfoComponent} from './day-info/day-info.component';
+import {ShapesLoaderDialogComponent} from './shape/shapes-loader-dialog/shapes-loader-dialog.component';
 
 
 @NgModule({
@@ -18,6 +28,8 @@ import {ShapeBoundariesComponent} from "./shape/shape-details/shape-boundaries/s
     ShapeDetailsComponent,
     TimeDetailsComponent,
     ShapeBoundariesComponent,
+    DayInfoComponent,
+    ShapesLoaderDialogComponent,
 
   ],
   imports: [
@@ -29,9 +41,17 @@ import {ShapeBoundariesComponent} from "./shape/shape-details/shape-boundaries/s
     MatFormFieldModule,
     MatNativeDateModule,
     MatDialogModule,
+    MatIconModule,
+    MatButtonModule
   ],
-  providers: [ShadowCalculatorService, MatDialog],
+  providers: [
+    ShadowCalculatorService,
+    MatDialog
+  ],
   bootstrap: [AppComponent],
-  entryComponents: [ShapeBoundariesComponent]
+  entryComponents: [
+    ShapeBoundariesComponent,
+    ShapesLoaderDialogComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

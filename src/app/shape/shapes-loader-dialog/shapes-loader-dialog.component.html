@@ -1,0 +1,26 @@
+<div>
+  <h4 style="margin-bottom: 10px;">Import/Export</h4>
+
+  <div style="margin-top: 10px; display: flex; flex-flow: row; justify-content: flex-end">
+
+    <textarea [(ngModel)]="json" spellcheck="false" ></textarea>
+
+
+
+    <mat-icon
+      *ngIf="canExport"
+      aria-label="Copy to clipboard"
+              class="x-copy-icon"
+              matTooltip="Copy to clipboard"
+              (click)="copyToClipboard()">assignment</mat-icon>
+
+  </div>
+
+
+  <div style="margin-top: 10px; display: flex; justify-content: flex-end" [class.x-can-export]="canExport">
+    <button mat-raised-button color="accent" (click)="onImport()">Import</button>
+    &nbsp;
+    <button mat-raised-button (click)="onCancelClick()">Cancel</button>
+  </div>
+
+</div>

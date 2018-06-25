@@ -1,0 +1,14 @@
+.x-copy-icon {
+  cursor: pointer;
+  color: #16ead6;
+}
+.x-can-export {
+  margin-right: 22px;
+}
+
+textarea {
+  font-size: 10px;
+  width: 100%;
+  min-width: 300px;
+  min-height: 200px;
+}

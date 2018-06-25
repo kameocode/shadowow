@@ -1,14 +1,22 @@
-<p class="no-select">
-  <mat-slider thumbLabel (change)="onChanged($event)" [(ngModel)]="value" min="1" [max]="maxValue" step="1"
+<div class="no-select">
+
+  <div style="display: flex; flex-flow: row; justify-content: center; align-items: center">
+    <app-day-info></app-day-info>
+
+    <div>
+      <input matInput [matDatepicker]="picker" (ngModelChange)="onDayChanged($event)" [(ngModel)]="date"
+             style="width:100px"
+             placeholder="Choose a date">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </div>
+  </div>
+
+  <mat-slider style="width: 300px;" thumbLabel (change)="onChanged($event)" [(ngModel)]="value" min="1" [max]="maxValue"
+              step="1"
               tickInterval="4"></mat-slider>
-<span style="display: inline-block; min-width: 100px;">{{ hour }}h {{minutes }}min</span>
+  <span style="display: inline-block; min-width: 100px;">{{ hour }}h {{minutes }}min</span>
   <button md-button (click)="decrement()">-</button>
   <button md-button (click)="increment()">+</button>
-</p>
-
-
-<input matInput [matDatepicker]="picker" (ngModelChange)="onDayChanged($event)" [(ngModel)]="date"
-       placeholder="Choose a date">
-<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-<mat-datepicker #picker></mat-datepicker>
+</div>
 

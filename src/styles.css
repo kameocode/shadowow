@@ -23,3 +23,10 @@ a {
   -khtml-user-select: none;
   -webkit-user-select: none;
 }
+textarea:focus, input:focus{
+  outline: none;
+}
+*:focus {
+  outline: none !important;
+
+}
