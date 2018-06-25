@@ -18,8 +18,9 @@ import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
 import {TimeDetailsComponent} from "./time-details/time-details.component"
 import {ShapeBoundariesComponent} from "./shape/shape-details/shape-boundaries/shape-boundaries.component";
-import {DayInfoComponent} from './day-info/day-info.component';
+import {DayInfoComponent} from './time-details/day-info/day-info.component';
 import {ShapesLoaderDialogComponent} from './shape/shapes-loader-dialog/shapes-loader-dialog.component';
+import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 
 
 @NgModule({
@@ -30,6 +31,7 @@ import {ShapesLoaderDialogComponent} from './shape/shapes-loader-dialog/shapes-l
     ShapeBoundariesComponent,
     DayInfoComponent,
     ShapesLoaderDialogComponent,
+    HelpDialogComponent,
 
   ],
   imports: [
@@ -51,7 +53,8 @@ import {ShapesLoaderDialogComponent} from './shape/shapes-loader-dialog/shapes-l
   bootstrap: [AppComponent],
   entryComponents: [
     ShapeBoundariesComponent,
-    ShapesLoaderDialogComponent]
+    ShapesLoaderDialogComponent,
+    HelpDialogComponent]
 })
 export class AppModule {
 }

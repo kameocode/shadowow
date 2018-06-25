@@ -3,6 +3,7 @@ import {ShadowShape} from "../shadow-shape.model";
 import {ShadowCalculatorService} from "../../shadow-calculator.service";
 import {MatDialog} from "@angular/material";
 import {ShapeBoundariesComponent} from "./shape-boundaries/shape-boundaries.component";
+import Marker = google.maps.Marker;
 
 @Component({
   selector: 'app-shape-details',
@@ -12,12 +13,26 @@ import {ShapeBoundariesComponent} from "./shape-boundaries/shape-boundaries.comp
 export class ShapeDetailsComponent implements OnInit {
   @Input()
   shadowShape: ShadowShape;
+  @Input()
+  marker: Marker;
+  @Input()
+  markerIndex: number;
+  @Input()
+  currentHeight: number;
+
 
   constructor(private shadowService: ShadowCalculatorService, private dialog: MatDialog) {
   }
 
 
   ngOnInit() {
+
+  }
+
+  get markerLabel() {
+    if (this.marker!=null) {
+      return this.marker.getLabel();
+    } else return null;
   }
 
   trackByIdx(index: number, obj: any): any {
@@ -32,5 +47,12 @@ export class ShapeDetailsComponent implements OnInit {
     this.dialog.open(ShapeBoundariesComponent, {
       width: '550'
     });
+
+
+  }
+  onChangeCurrentHeight(height: number) {
+    console.log("current height "+height+" "+this.currentHeight);
+    this.shadowShape.heights[this.markerIndex] = height;
+    this.shadowService.recalculateShadows();
   }
 }

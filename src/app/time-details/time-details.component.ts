@@ -17,7 +17,15 @@ export class TimeDetailsComponent implements OnInit {
   constructor(private shadowService: ShadowCalculatorService) { }
 
   ngOnInit() {
-    this.value = this.shadowService.getHour() * 60 + this.shadowService.getMinutes();
+    this.value =  this.computeValue();
+    this.shadowService.date$.subscribe((date) => {
+      this.value = this.computeValue();
+      this.date = date;
+    })
+  }
+
+  private computeValue() {
+    return this.shadowService.getHour() * 60 + this.shadowService.getMinutes();
   }
 
   onChanged(event: MatSliderChange) {

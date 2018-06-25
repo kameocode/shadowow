@@ -3,7 +3,7 @@
 .x-pinBackground {
   display: inline-block;
   width: 30px;
-  background: url('../../../assets/pin.svg') no-repeat center center;
+  background: url('../../../assets/pin-white.svg') no-repeat center center;
   background-size: 20px auto;
   height: 38px;
   line-height: 38px;

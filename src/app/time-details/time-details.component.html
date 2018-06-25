@@ -12,7 +12,8 @@
     </div>
   </div>
 
-  <mat-slider style="width: 300px;" thumbLabel (change)="onChanged($event)" [(ngModel)]="value" min="1" [max]="maxValue"
+  <mat-slider style="width: 300px;" thumbLabel (change)="onChanged($event)" [(ngModel)]="value" min="1"
+              [max]="maxValue"
               step="1"
               tickInterval="4"></mat-slider>
   <span style="display: inline-block; min-width: 100px;">{{ hour }}h {{minutes }}min</span>

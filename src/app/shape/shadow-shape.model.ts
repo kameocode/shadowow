@@ -7,6 +7,7 @@ import {XYArray} from "./xy-array.model";
 import LatLng = google.maps.LatLng;
 import Polygon = google.maps.Polygon;
 import PolygonOptions = google.maps.PolygonOptions;
+import Marker = google.maps.Marker;
 
 
 export interface ShadowShape {
@@ -21,20 +22,33 @@ export class ShadowShapeSet {
   private readonly markersSet: MarkersSet;
   public map: google.maps.Map;
   public currentShape: ShadowShape;
+  public currentMarker: Marker;
   private SELECTED_SHAPE_ZINDEX = 200;
-  private DEFAULT_HEIGHT = 10;
+  public currentHeight = 10;
 
-  private readonly shadowMarkersSet: MarkersSet;
 
-  constructor(map: google.maps.Map) {
+  constructor(map: google.maps.Map, _ngZone: NgZone, ) {
     this.map = map;
-    this.markersSet = new MarkersSet(this.map);
-    this.shadowMarkersSet = new MarkersSet(this.map);
+    this.markersSet = new MarkersSet(this.map, (marker)=> {
+      _ngZone.run(() => {
+        this.currentMarker = marker;
+        if (marker != null) {
+          const markerIndex = marker.getLabel() as number - 1;
+          this.currentHeight = this.currentShape.heights[markerIndex];
+        }
+      });
+    });
+  }
+  get currentMarkerIndex() {
+    if (this.currentMarker != null) {
+      const markerIndex = this.currentMarker.getLabel() as number - 1;
+      return markerIndex;
+    }
+    return -1;
   }
 
 
   public createShadows(sunAltitudeRad: number, sunAzimuthRad: number) {
-    this.shadowMarkersSet.clearMarkers();
     for (let sh of this.shadowShapes) {
       ShadowShapeSet.clearShadowShapes(sh);
     }
@@ -71,16 +85,16 @@ export class ShadowShapeSet {
     let printOriginShadow = false;
     if (printOriginShadow) {
       for (let pp of calculator.shadowBlockPaths) {
-        this.printPolygon(pp.getPath(), sh, [],"#11ff0d", this.SELECTED_SHAPE_ZINDEX - 2);
+        this.printPolygon(pp.getPath(), sh, [], "#11ff0d", this.SELECTED_SHAPE_ZINDEX - 2);
       }
     }
   }
 
   private renderPartsProblematicToMerge(u: XYArray, mergeIndex: number, sh, points: XYArray) {
     const u1 = u.offset(0.0003 + mergeIndex / 9000, 0).getPath();//calculator.toLatLang(u, 0.0003 + mergeIndex / 9000, 0);
-    this.printPolygon(u1, sh, [],"#2bd0ff");
+    this.printPolygon(u1, sh, [], "#2bd0ff");
     const u2 = points.offset(0.0003 + mergeIndex / 9000, 0).getPath(); //calculator.toLatLang(points, 0.0003 + mergeIndex / 9000, 0);
-    this.printPolygon(u2, sh, [],"#ffe426");
+    this.printPolygon(u2, sh, [], "#ffe426");
   }
 
   private static clearShadowShapes(sh) {
@@ -115,7 +129,7 @@ export class ShadowShapeSet {
     };
     if (defaultHeights.length == 0) {
       for (let i = 0; i < shape.getPath().getLength(); i++) {
-        newShadowShape.heights.push(this.DEFAULT_HEIGHT);
+        newShadowShape.heights.push(this.currentHeight);
       }
     }
     this.shadowShapes.push(newShadowShape);
@@ -170,7 +184,7 @@ export class ShadowShapeSet {
     google.maps.event.addListener(shape.getPath(), 'insert_at', (vertex: number) => {
       this.markersSet.createMarkers(shape);
       const shadowShape = this.shadowShapes.find((s) => s.origin === shape);
-      shadowShape.heights.splice(vertex, 0, this.DEFAULT_HEIGHT);
+      shadowShape.heights.splice(vertex, 0, this.currentHeight);
       shadowService.recalculateShadows();
       _ngZone.run(() => this.setSelection(shape, false))
     });
@@ -197,8 +211,8 @@ export class ShadowShapeSet {
     });
 
     google.maps.event.addListener(shape, 'dragstart', () => {
-      _ngZone.run(()=>
-      this.setSelection(shape));
+      _ngZone.run(() =>
+        this.setSelection(shape));
     });
     google.maps.event.addListener(shape, 'dragend', () => {
       debouncedRecreateMarkersAndShadows(shape, shadowService)
@@ -222,7 +236,7 @@ export class ShadowShapeSet {
     _.remove(this.shadowShapes, shadowShape);
   }
 
-  public toJSON() {
+  public toJSON(): ShapesJSON {
     const arr = [];
     for (let sh of this.shadowShapes) {
       arr.push({
@@ -232,24 +246,25 @@ export class ShadowShapeSet {
         heights: sh.heights
       });
     }
-    return JSON.stringify(arr);
+    return { shapes: arr }
   }
 
-  public fromJSON(str: string, _ngZone: NgZone, shadowService: ShadowCalculatorService) {
-
-    this.markersSet.clearMarkers();
-    for (let sh of this.shadowShapes) {
-      sh.origin.setMap(null);
-      sh.shadows.forEach(ssh => ssh.setMap(null));
-    }
-    this.shadowShapes = [];
-
-    const arr: any[] = JSON.parse(str);
-    for (let a of arr) {
-      const p = new Polygon({ draggable: true});
+  public fromJSON(str: ShapesJSON, _ngZone: NgZone, shadowService: ShadowCalculatorService) {
+    for (let a of str.shapes) {
+      const p = new Polygon({draggable: true});
       p.setPath(a.coords.map(c => new LatLng(c.lat, c.lng)));
       p.setMap(this.map);
       this.onShapeAdded(p, _ngZone, shadowService, a.heights);
     }
   }
 }
+
+export interface ShapesJSON {
+  shapes: {
+    coords: { lat: number, lng: number } [],
+    heights: number[]
+  }[],
+  timestamp?: number,
+  mapCenterLat?: number,
+  mapCenterLng?: number
+ }

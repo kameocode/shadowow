@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
-import {ShadowShapeSet} from "./shape/shadow-shape.model";
+import {ShadowShapeSet, ShapesJSON} from "./shape/shadow-shape.model";
+import {Subject} from "rxjs/Subject";
 
 let SunCalc = require('suncalc');
 
@@ -19,6 +20,8 @@ export class ShadowCalculatorService {
   public sunset: Date;
   public noon: Date;
 
+  public date$ = new Subject<Date>();
+
   constructor() {
 
   }
@@ -32,6 +35,14 @@ export class ShadowCalculatorService {
   setDay(day: Date) {
     this.date = new Date(day);
     this.recalculateShadows();
+  }
+  public setDateAndTime(model: ShapesJSON) {
+    if (model.timestamp != null) {
+      this.date = new Date(model.timestamp);
+      this.hour = this.date.getHours();
+      this.minutes = this.date.getMinutes();
+      this.date$.next(this.date);
+    }
   }
 
   public setShadowShapeSet(shadowShapeSet: ShadowShapeSet) {
@@ -54,10 +65,11 @@ export class ShadowCalculatorService {
     this.sunset = times.sunset;
     this.noon = times.solarNoon;
 
-
-    console.log("this is Day "+this.isDay);
   }
 
+  getDate() {
+    return this.date;
+  }
 
   getMinutes() {
     return this.minutes;
@@ -66,6 +78,5 @@ export class ShadowCalculatorService {
   getHour() {
     return this.hour;
   }
-
 
 }

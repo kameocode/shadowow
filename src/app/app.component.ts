@@ -3,14 +3,15 @@ import {Component, NgZone, OnInit, ViewChild} from '@angular/core';
 import {environment} from "../environments/environment";
 import {colors} from "./shape/marker-set.model";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
-import {ShadowShapeSet} from "./shape/shadow-shape.model";
+import {ShadowShapeSet, ShapesJSON} from "./shape/shadow-shape.model";
 import {MatDialog} from "@angular/material";
 import {ShapesLoaderDialogComponent} from "./shape/shapes-loader-dialog/shapes-loader-dialog.component";
+import {HelpDialogComponent} from "./help-dialog/help-dialog.component";
 import DrawingControlOptions = google.maps.drawing.DrawingControlOptions;
 import OverlayType = google.maps.drawing.OverlayType;
 import MarkerOptions = google.maps.MarkerOptions;
 import DrawingManager = google.maps.drawing.DrawingManager;
-import {} from '@types/googlemaps';
+import LatLng = google.maps.LatLng;
 
 @Component({
   selector: 'app-root',
@@ -30,6 +31,7 @@ export class AppComponent implements OnInit {
 
   }
 
+
   ngOnInit() {
     let mapProp = {
       center: new google.maps.LatLng(environment.initLat, environment.initLng),
@@ -41,7 +43,7 @@ export class AppComponent implements OnInit {
     };
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
     this.map.setTilt(0);
-    this.shadowShapesSet = new ShadowShapeSet(this.map);
+    this.shadowShapesSet = new ShadowShapeSet(this.map, this._ngZone);
     this.shadowService.setShadowShapeSet(this.shadowShapesSet);
 
     this.initializeDrawingManager();
@@ -97,17 +99,32 @@ export class AppComponent implements OnInit {
     this.drawingManager.setMap(this.map);
   }
 
+  openHelpDialog() {
+    let dialogRef = this.dialog.open(HelpDialogComponent);
+  }
 
-  openImportExportDialog() {
+  private openImportExportDialog() {
+    const jsonObj = this.shadowShapesSet.toJSON();
+    jsonObj.timestamp = this.shadowService.getDate().getTime();
+    jsonObj.mapCenterLat = this.map.getCenter().lat();
+    jsonObj.mapCenterLng = this.map.getCenter().lng();
     let dialogRef = this.dialog.open(ShapesLoaderDialogComponent, {
-      data: {json: this.shadowShapesSet.toJSON()}
+      data: jsonObj
     });
-    dialogRef.afterClosed().subscribe((json) => {
-      if (json != null && json != "") {
-        this.drawingManager.setDrawingMode(null);
+    dialogRef.afterClosed().subscribe((jsonText) => {
+      if (jsonText != null && jsonText != "") {
+        const json: ShapesJSON = JSON.parse(jsonText);
+        if (json.timestamp != null) {
+          this.shadowService.setDateAndTime(json);
+        }
+        if (json.mapCenterLng != null && json.mapCenterLat != null) {
+          this.map.setCenter(new LatLng(json.mapCenterLat, json.mapCenterLng));
+        }
         this.shadowShapesSet.fromJSON(json, this._ngZone, this.shadowService);
+        this.drawingManager.setDrawingMode(null);
+
       }
-    })
+    });
   }
 
 

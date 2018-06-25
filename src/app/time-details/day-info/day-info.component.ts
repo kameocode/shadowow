@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ShadowCalculatorService} from "../shadow-calculator.service";
+import {ShadowCalculatorService} from "../../shadow-calculator.service";
 
 @Component({
   selector: 'app-day-info',

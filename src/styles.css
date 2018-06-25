@@ -28,5 +28,9 @@ textarea:focus, input:focus{
 }
 *:focus {
   outline: none !important;
+}
 
+.nopadding {
+  padding: 0 !important;
+  margin: 0 !important;
 }

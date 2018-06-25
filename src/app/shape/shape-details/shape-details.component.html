@@ -1,12 +1,22 @@
 <div *ngIf="shadowShape != null" class="no-select x-heightsPanel">
-  <div *ngFor="let h of shadowShape.heights; trackBy:trackByIdx; let i = index">
 
-    <span class="x-pinBackground" (click)="openSettingsDialog()"><div class="x-pinLabel">{{ i+1 }}</div></span>
 
-    <input [(ngModel)]="shadowShape.heights[i]" (ngModelChange)="onHeightChanged($event)" type=number min=0 max=50>
-  </div>
+  <!--  <div *ngFor="let h of shadowShape.heights; trackBy:trackByIdx; let i = index">
+
+      <span class="x-pinBackground" (click)="openSettingsDialog()"><div class="x-pinLabel">{{ i+1 }}</div></span>
+
+      <input [(ngModel)]="shadowShape.heights[i]" (ngModelChange)="onHeightChanged($event)" type=number min=0 max=50>
+    </div>-->
 </div>
 
 <div class="row" *ngIf="shadowShape != null">
   <button mat-raised-button (click)="openSettingsDialog()">Settings</button>
+</div>
+
+
+<div style="display: flex; align-items: center; justify-content: center">
+  Height:&nbsp;
+  <span class="x-pinBackground" (click)="openSettingsDialog()"><div class="x-pinLabel">{{ markerLabel }}</div></span>
+  <input style="width: 40px;" [(ngModel)]="currentHeight" (ngModelChange)="onChangeCurrentHeight($event)" type=number
+         min=0 max=50>&nbsp;[meters]
 </div>
