@@ -6,7 +6,7 @@ import {AppComponent} from './app.component';
 import {ShapeDetailsComponent} from './shape/shape-details/shape-details.component';
 import {FormsModule} from "@angular/forms";
 import {
-  MAT_DIALOG_DEFAULT_OPTIONS, MatButtonModule,
+  MatButtonModule,
   MatDatepickerModule,
   MatDialog,
   MatDialogModule,

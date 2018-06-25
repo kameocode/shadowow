@@ -84,7 +84,7 @@ export class ShadowShapeCalculator {
         const diffResult = probablyHole.diff(shadowPoints);
         diffResult.filter(u1 => !u1.equals(shadowPoints))
           .forEach(u1 => {
-            u1.reverseToNotPerturbatedPoints(shadowPoints)
+            u1.reverseToNotPerturbatedPoints(shadowPoints);
             this.cleanupAfterDegeneracies(u1.getPoints());
             if (u1.length > 0) {
               toAdd.add(u1);
@@ -133,7 +133,7 @@ export class ShadowShapeCalculator {
 
 
   public prepareHoles(mergedShadow: XYArray, probablyHoles: Set<XYArray>) {
-    const mergedShadowPath = mergedShadow.getPath()
+    const mergedShadowPath = mergedShadow.getPath();
     let problematicToRemoveArrLatLang = [];
     probablyHoles.forEach(ph =>
       problematicToRemoveArrLatLang.push([...ph.getPath()].reverse())
@@ -226,10 +226,8 @@ export class ShadowShapeCalculator {
         if (bp.containsPoint(p))
           return true;
       }
-      if (this.originPath.containsPoint(p))
-        return true;
-      return false; //this.shadowTopPath.containsPoint(p);
-    })
+      return this.originPath.containsPoint(p);
+    });
   }
 
 

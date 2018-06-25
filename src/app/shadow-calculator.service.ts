@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {ShadowShapeSet} from "./shape/shadow-shape.model";
-import {Subject} from "rxjs/Subject";
 
 let SunCalc = require('suncalc');
 
@@ -43,9 +42,6 @@ export class ShadowCalculatorService {
     this.date.setHours(this.hour, this.minutes, 0, 0);
     const times = SunCalc.getTimes(/*Date*/ this.date, /*Number*/ this.shadowShapeSet.map.getCenter().lat(), /*Number*/ this.shadowShapeSet.map.getCenter().lng());
     const position = SunCalc.getPosition(/*Date*/ this.date, /*Number*/ this.shadowShapeSet.map.getCenter().lat(), /*Number*/ this.shadowShapeSet.map.getCenter().lng());
-    const azimuth = position.azimuth;
-    const altitude = position.altitude;
-
     const altitudeDegrees = position.altitude * (180 / Math.PI);
     const azimuthDegrees = position.azimuth * (180 / Math.PI);
     console.log("altitude=" + altitudeDegrees + " azimuth=" + azimuthDegrees);

@@ -1,12 +1,11 @@
 import 'hammerjs';
-import {Component, NgZone, ViewChild} from '@angular/core';
+import {Component, NgZone, OnInit, ViewChild} from '@angular/core';
 import {environment} from "../environments/environment";
 import {colors} from "./shape/marker-set.model";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
 import {ShadowShapeSet} from "./shape/shadow-shape.model";
 import {MatDialog} from "@angular/material";
 import {ShapesLoaderDialogComponent} from "./shape/shapes-loader-dialog/shapes-loader-dialog.component";
-import {copyTextToClipboard} from "./utils"; // left intentionally
 import DrawingControlOptions = google.maps.drawing.DrawingControlOptions;
 import OverlayType = google.maps.drawing.OverlayType;
 import MarkerOptions = google.maps.MarkerOptions;
@@ -18,7 +17,7 @@ import {} from '@types/googlemaps';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   @ViewChild('gmap') gmapElement: any;
   map: google.maps.Map;

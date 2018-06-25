@@ -33,7 +33,7 @@ export class XYArray {
   public getPoints(): XY[] {
     if (this.points == null) {
       this.points = this.path.map(latLng => {
-          const p = this.map.getProjection().fromLatLngToPoint(latLng)
+          const p = this.map.getProjection().fromLatLngToPoint(latLng);
           return new TransformablePoint(p.x, p.y).rotatePo(-this.sunAzimuthRad);
         }
       );

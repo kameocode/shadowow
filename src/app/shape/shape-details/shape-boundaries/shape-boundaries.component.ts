@@ -1,6 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {ShadowShape} from "../../shadow-shape.model";
 
 @Component({
   selector: 'app-shape-boundaries',

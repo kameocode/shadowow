@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import {copyTextToClipboard} from "../../utils";
 
 
@@ -46,7 +46,7 @@ export class ShapesLoaderDialogComponent implements OnInit {
         "{\"lat\":50.08011703793582,\"lng\":19.89978101330621},{\"lat\":50.08011961975971,\"lng\":19.89984940963609},{\"lat\":50.08014974102773,\"lng\":19.89983868080003}," +
         "{\"lat\":50.08015318345718,\"lng\":19.899915123756955},{\"lat\":50.080082613604525,\"lng\":19.89991780596597},{\"lat\":50.08008003177866,\"lng\":19.899982178982327}," +
         "{\"lat\":50.08015232284984,\"lng\":19.899976814564297}," +
-        "{\"lat\":50.08016092892245,\"lng\":19.90005862193925},{\"lat\":50.08026248046294,\"lng\":19.90006532746179}],\"heights\":[10,10,10,10,10,10,10,10,60,10,10,10]}]"
+        "{\"lat\":50.08016092892245,\"lng\":19.90005862193925},{\"lat\":50.08026248046294,\"lng\":19.90006532746179}],\"heights\":[10,10,10,10,10,10,10,10,60,10,10,10]}]";
 
 
       // double C

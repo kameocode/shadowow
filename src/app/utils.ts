@@ -1,6 +1,6 @@
 
 export function copyTextToClipboard(text) {
-  var textArea = document.createElement("textarea");
+  const textArea = document.createElement("textarea");
 
   // Place in top-left corner of screen regardless of scroll position.
   textArea.style.position = 'fixed';
@@ -31,8 +31,8 @@ export function copyTextToClipboard(text) {
   textArea.select();
 
   try {
-    var successful = document.execCommand('copy');
-    var msg = successful ? 'successful' : 'unsuccessful';
+    const successful = document.execCommand('copy');
+    const msg = successful ? 'successful' : 'unsuccessful';
     console.log('Copying text command was ' + msg);
   } catch (err) {
     console.log('Oops, unable to copy');
