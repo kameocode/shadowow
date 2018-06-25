@@ -24,3 +24,7 @@
   flex-flow: column;
   flex-wrap: wrap;
 }
+.x-shadow-info {
+  margin-left: 40px;
+  text-shadow: 2px 2px 5px #8e8e8e;
+}

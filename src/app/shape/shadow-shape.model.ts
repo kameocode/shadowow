@@ -25,6 +25,7 @@ export class ShadowShapeSet {
   public currentMarker: Marker;
   private SELECTED_SHAPE_ZINDEX = 200;
   public currentHeight = 10;
+  private sunAltitudeRad: number;
 
 
   constructor(map: google.maps.Map, _ngZone: NgZone, ) {
@@ -47,8 +48,13 @@ export class ShadowShapeSet {
     return -1;
   }
 
+  get currentShadowLength() {
+    return this.currentHeight / Math.tan(this.sunAltitudeRad);
+  }
+
 
   public createShadows(sunAltitudeRad: number, sunAzimuthRad: number) {
+    this.sunAltitudeRad = sunAltitudeRad;
     for (let sh of this.shadowShapes) {
       ShadowShapeSet.clearShadowShapes(sh);
     }

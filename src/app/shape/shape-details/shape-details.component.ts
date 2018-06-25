@@ -19,6 +19,8 @@ export class ShapeDetailsComponent implements OnInit {
   markerIndex: number;
   @Input()
   currentHeight: number;
+  @Input()
+  currentShadow: number;
 
 
   constructor(private shadowService: ShadowCalculatorService, private dialog: MatDialog) {
@@ -47,11 +49,12 @@ export class ShapeDetailsComponent implements OnInit {
     this.dialog.open(ShapeBoundariesComponent, {
       width: '550'
     });
-
-
   }
+
+
   onChangeCurrentHeight(height: number) {
-    console.log("current height "+height+" "+this.currentHeight);
+    this.currentHeight = height;
+    this.shadowService.setCurrentHeight(height);
     this.shadowShape.heights[this.markerIndex] = height;
     this.shadowService.recalculateShadows();
   }

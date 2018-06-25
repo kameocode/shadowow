@@ -79,4 +79,7 @@ export class ShadowCalculatorService {
     return this.hour;
   }
 
+  setCurrentHeight(height: number) {
+    this.shadowShapeSet.currentHeight = height;
+  }
 }
