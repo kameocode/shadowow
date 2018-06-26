@@ -89,6 +89,17 @@ export class XYArray {
     return arr;
   }
 
+  public move(x: number, y: number): XYArray {
+    const path = this.path.map(point => {
+      const latLng1 = google.maps.geometry.spherical.computeOffset(point, x, 90);
+      const latLng2 = google.maps.geometry.spherical.computeOffset(latLng1, y, 0);
+      return latLng2;
+    });
+    const arr = XYArray.fromLatLng(this.map, this.sunAzimuthRad, path);
+    arr.origin = this;
+    return arr;
+  }
+
   public offset(xoffset: number, yoffset: number): XYArray {
     const arr = XYArray.fromPoints(this.map, this.sunAzimuthRad, this.getPoints().map(p =>
       new TransformablePoint(p.x, p.y)

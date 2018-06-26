@@ -28,9 +28,9 @@ export class ShadowShapeSet {
   private sunAltitudeRad: number;
 
 
-  constructor(map: google.maps.Map, _ngZone: NgZone, ) {
+  constructor(map: google.maps.Map, _ngZone: NgZone,) {
     this.map = map;
-    this.markersSet = new MarkersSet(this.map, (marker)=> {
+    this.markersSet = new MarkersSet(this.map, (marker) => {
       _ngZone.run(() => {
         this.currentMarker = marker;
         if (marker != null) {
@@ -40,6 +40,7 @@ export class ShadowShapeSet {
       });
     });
   }
+
   get currentMarkerIndex() {
     if (this.currentMarker != null) {
       const markerIndex = this.currentMarker.getLabel() as number - 1;
@@ -120,6 +121,7 @@ export class ShadowShapeSet {
     shapePolygonTotal.setMap(this.map);
     shapePolygonTotal.setOptions({
       fillColor,
+
       // fillOpacity: 0.5,
       // strokeWeight: 0,
       zIndex
@@ -252,7 +254,7 @@ export class ShadowShapeSet {
         heights: sh.heights
       });
     }
-    return { shapes: arr }
+    return {shapes: arr}
   }
 
   public fromJSON(str: ShapesJSON, _ngZone: NgZone, shadowService: ShadowCalculatorService) {
@@ -263,6 +265,28 @@ export class ShadowShapeSet {
       this.onShapeAdded(p, _ngZone, shadowService, a.heights);
     }
   }
+
+  moveShape(currentShape: ShadowShape, x: number, y: number) {
+    const array = XYArray.fromLatLng(this.map, 0, currentShape.origin.getPath().getArray());
+    currentShape.origin.setPath(array.move(x, y).getPath());
+    this.currentShape.shadows.forEach(shadow=> {
+
+      const newPaths = [];
+        shadow.getPaths().forEach(path=> {
+        const array = XYArray.fromLatLng(this.map, 0, path.getArray());
+        newPaths.push(array.move(x, y).getPath());
+      });
+      shadow.setPaths(newPaths);
+
+    });
+    if (currentShape != null) {
+      this.markersSet.moveMarkers(x, y);
+    } else
+      this.markersSet.clearMarkers();
+
+
+  }
+
 }
 
 export interface ShapesJSON {
@@ -273,4 +297,4 @@ export interface ShapesJSON {
   timestamp?: number,
   mapCenterLat?: number,
   mapCenterLng?: number
- }
+}

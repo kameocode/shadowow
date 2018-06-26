@@ -1,5 +1,5 @@
 import 'hammerjs';
-import {Component, NgZone, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, NgZone, OnInit, ViewChild} from '@angular/core';
 import {environment} from "../environments/environment";
 import {colors} from "./shape/marker-set.model";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
@@ -12,6 +12,7 @@ import OverlayType = google.maps.drawing.OverlayType;
 import MarkerOptions = google.maps.MarkerOptions;
 import DrawingManager = google.maps.drawing.DrawingManager;
 import LatLng = google.maps.LatLng;
+import * as _ from "lodash";
 
 @Component({
   selector: 'app-root',
@@ -127,5 +128,24 @@ export class AppComponent implements OnInit {
     });
   }
 
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.ctrlKey && this.shadowShapesSet.currentShape!=null) {
+      let x=0, y=0;
+
+      if (event.key == "ArrowLeft") {
+        x=-0.1;
+      } else if (event.key == "ArrowRight") {
+        x=0.1;
+      } else if (event.key == "ArrowUp") {
+        y=0.1;
+      } else if (event.key == "ArrowDown") {
+        y=-0.1;
+      }
+      if (x!=0 || y!=0) {
+        this.shadowShapesSet.moveShape(this.shadowShapesSet.currentShape, x, y);
+      }
+    }
+  }
 
 }

@@ -79,7 +79,8 @@ export class TimeDetailsComponent implements OnInit {
       this.date = temp;
       this.shadowService.setDay(this.date);
     }
-  }
 
+
+  }
 
 }

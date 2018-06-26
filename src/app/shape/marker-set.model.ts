@@ -20,6 +20,16 @@ export class MarkersSet {
     this.nodeSelectedCallback(null);
   }
 
+  public moveMarkers(x: number, y: number) {
+    this.currentMarkers.forEach(m => {
+      const pos = m.getPosition();
+      const latLng1 = google.maps.geometry.spherical.computeOffset(pos, x, 90);
+      const latLng2 = google.maps.geometry.spherical.computeOffset(latLng1, y, 0);
+      m.setPosition(latLng2)
+    });
+  }
+
+
   public createMarkers(newShape: google.maps.Polygon, withClear: boolean = true) {
     if (withClear)
       this.clearMarkers();
