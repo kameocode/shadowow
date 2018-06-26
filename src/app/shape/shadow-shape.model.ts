@@ -269,10 +269,9 @@ export class ShadowShapeSet {
   moveShape(currentShape: ShadowShape, x: number, y: number) {
     const array = XYArray.fromLatLng(this.map, 0, currentShape.origin.getPath().getArray());
     currentShape.origin.setPath(array.move(x, y).getPath());
-    this.currentShape.shadows.forEach(shadow=> {
-
+    this.currentShape.shadows.forEach(shadow => {
       const newPaths = [];
-        shadow.getPaths().forEach(path=> {
+      shadow.getPaths().forEach(path => {
         const array = XYArray.fromLatLng(this.map, 0, path.getArray());
         newPaths.push(array.move(x, y).getPath());
       });
@@ -283,10 +282,16 @@ export class ShadowShapeSet {
       this.markersSet.moveMarkers(x, y);
     } else
       this.markersSet.clearMarkers();
-
-
   }
-
+  rotateShape(currentShape: ShadowShape, x: number, shadowService: ShadowCalculatorService) {
+    const array = XYArray.fromLatLng(this.map, 0, currentShape.origin.getPath().getArray());
+    currentShape.origin.setPath(array.rotate(x).getPath());
+    if (currentShape != null) {
+      this.markersSet.createMarkers(currentShape.origin, true);
+    } else
+      this.markersSet.clearMarkers();
+    shadowService.recalculateShadows()
+  }
 }
 
 export interface ShapesJSON {

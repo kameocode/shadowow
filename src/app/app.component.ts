@@ -12,7 +12,7 @@ import OverlayType = google.maps.drawing.OverlayType;
 import MarkerOptions = google.maps.MarkerOptions;
 import DrawingManager = google.maps.drawing.DrawingManager;
 import LatLng = google.maps.LatLng;
-import * as _ from "lodash";
+import {} from '@types/googlemaps';
 
 @Component({
   selector: 'app-root',
@@ -130,20 +130,32 @@ export class AppComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (event.ctrlKey && this.shadowShapesSet.currentShape!=null) {
-      let x=0, y=0;
+    if (event.ctrlKey && this.shadowShapesSet.currentShape != null) {
+      let x = 0, y = 0;
 
       if (event.key == "ArrowLeft") {
-        x=-0.1;
+        x = -0.1;
       } else if (event.key == "ArrowRight") {
-        x=0.1;
+        x = 0.1;
       } else if (event.key == "ArrowUp") {
-        y=0.1;
+        y = 0.1;
       } else if (event.key == "ArrowDown") {
-        y=-0.1;
+        y = -0.1;
       }
-      if (x!=0 || y!=0) {
+      if (x != 0 || y != 0) {
         this.shadowShapesSet.moveShape(this.shadowShapesSet.currentShape, x, y);
+      }
+    }
+    if (event.shiftKey && event.ctrlKey && this.shadowShapesSet.currentShape != null) {
+      let r = 0;
+      const degreeToRatate = 1;
+      if (event.key == "ArrowLeft") {
+        r = -degreeToRatate * Math.PI / 180;
+      } else if (event.key == "ArrowRight") {
+        r = degreeToRatate * Math.PI / 180;
+      }
+      if (r != 0) {
+        this.shadowShapesSet.rotateShape(this.shadowShapesSet.currentShape, r, this.shadowService);
       }
     }
   }

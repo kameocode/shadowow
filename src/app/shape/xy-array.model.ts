@@ -89,6 +89,12 @@ export class XYArray {
     return arr;
   }
 
+  public rotate(ratio: number): XYArray {
+    const arr = XYArray.fromPoints(this.map, this.sunAzimuthRad, this.rotateArray(this.getPoints(), ratio));
+    arr.origin = this;
+    return arr;
+  }
+
   public move(x: number, y: number): XYArray {
     const path = this.path.map(point => {
       const latLng1 = google.maps.geometry.spherical.computeOffset(point, x, 90);
@@ -208,5 +214,13 @@ export class XYArray {
         .movePo(center.x, center.y);
     });
   }
-
+  private rotateArray(arr: XY[], ratio: number) {
+    const center = this.center();
+    return arr.map(p => {
+      return new TransformablePoint(p.x, p.y)
+        .movePo(-center.x, -center.y)
+        .rotatePo(ratio)
+        .movePo(center.x, center.y);
+    });
+  }
 }
