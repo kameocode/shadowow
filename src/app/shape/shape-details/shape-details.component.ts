@@ -32,7 +32,7 @@ export class ShapeDetailsComponent implements OnInit {
   }
 
   get markerLabel() {
-    if (this.marker!=null) {
+    if (this.marker != null) {
       return this.marker.getLabel();
     } else return null;
   }
@@ -55,7 +55,9 @@ export class ShapeDetailsComponent implements OnInit {
   onChangeCurrentHeight(height: number) {
     this.currentHeight = height;
     this.shadowService.setCurrentHeight(height);
-    this.shadowShape.heights[this.markerIndex] = height;
+    if (this.shadowShape != null) {
+      this.shadowShape.heights[this.markerIndex] = height;
+    }
     this.shadowService.recalculateShadows();
   }
 }

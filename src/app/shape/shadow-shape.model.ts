@@ -190,11 +190,14 @@ export class ShadowShapeSet {
     );
 
     google.maps.event.addListener(shape.getPath(), 'insert_at', (vertex: number) => {
-      this.markersSet.createMarkers(shape);
-      const shadowShape = this.shadowShapes.find((s) => s.origin === shape);
-      shadowShape.heights.splice(vertex, 0, this.currentHeight);
-      shadowService.recalculateShadows();
-      _ngZone.run(() => this.setSelection(shape, false))
+
+      _ngZone.run(() => {
+        this.markersSet.createMarkers(shape);
+        const shadowShape = this.shadowShapes.find((s) => s.origin === shape);
+        shadowShape.heights.splice(vertex, 0, this.currentHeight);
+        shadowService.recalculateShadows();
+        this.setSelection(shape, false); }
+        )
     });
 
     google.maps.event.addListener(shape, 'rightclick', (e) => {

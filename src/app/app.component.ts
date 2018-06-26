@@ -13,6 +13,8 @@ import MarkerOptions = google.maps.MarkerOptions;
 import DrawingManager = google.maps.drawing.DrawingManager;
 import LatLng = google.maps.LatLng;
 import {} from '@types/googlemaps';
+import Rectangle = google.maps.Rectangle;
+import Polygon = google.maps.Polygon;
 
 @Component({
   selector: 'app-root',
@@ -69,14 +71,14 @@ export class AppComponent implements OnInit {
   private initializeDrawingManager() {
     const drawingControlOptions: DrawingControlOptions = {
       position: google.maps.ControlPosition.TOP_CENTER,
-      drawingModes: [OverlayType.POLYGON]
+      drawingModes: [OverlayType.RECTANGLE, OverlayType.POLYGON]
     };
     const markerOptions: MarkerOptions = {
       icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
       position: new google.maps.LatLng(environment.initLat, environment.initLng)
     };
     this.drawingManager = new google.maps.drawing.DrawingManager({
-      drawingMode: OverlayType.POLYGON,
+      drawingMode: OverlayType.RECTANGLE,
       drawingControl: true,
       drawingControlOptions,
       markerOptions,
@@ -94,7 +96,23 @@ export class AppComponent implements OnInit {
       if (e.type != google.maps.drawing.OverlayType.MARKER) {
         // Switch back to non-drawing mode after drawing a origin.
         this.drawingManager.setDrawingMode(null);
+
+        if (e.type==OverlayType.RECTANGLE) {
+          const r = e.overlay as Rectangle;
+
+          // create polygon from bounds
+          const polygon = new Polygon();
+          let northEast = r.getBounds().getNorthEast();
+          let southWest = r.getBounds().getSouthWest();
+          polygon.setPath([northEast, new LatLng(northEast.lat(), southWest.lng()), southWest, new LatLng(southWest.lat(), northEast.lng())]);
+          polygon.setOptions({ draggable: true })
+          polygon.setMap(this.map);
+          e.overlay.setMap(null);
+          e.overlay = polygon;
+        }
+
         this.shadowShapesSet.onShapeAdded(e.overlay, this._ngZone, this.shadowService);
+        this.drawingManager.setDrawingMode(null);
       }
     });
     this.drawingManager.setMap(this.map);
