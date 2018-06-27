@@ -1,8 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 /*@import '~@angular/material/prebuilt-themes/indigo-pink.css';*/
 
-
-
+body {
+  overflow-x: hidden;
+}
 
 #footer {
   background: #fff;
@@ -11,21 +12,23 @@
   color: #333;
   font-size: 14px;
 }
+
 a {
   color: #1dc8cd;
 }
 
-.no-select
-{
+.no-select {
   user-select: none;
-  -o-user-select:none;
+  -o-user-select: none;
   -moz-user-select: none;
   -khtml-user-select: none;
   -webkit-user-select: none;
 }
-textarea:focus, input:focus{
+
+textarea:focus, input:focus {
   outline: none;
 }
+
 *:focus {
   outline: none !important;
 }
@@ -33,4 +36,18 @@ textarea:focus, input:focus{
 .nopadding {
   padding: 0 !important;
   margin: 0 !important;
+}
+
+.x-box-shadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.x-icon-link {
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.x-icon-link:hover {
+  opacity: 1;
+  color: red;
 }

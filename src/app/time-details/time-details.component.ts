@@ -60,7 +60,6 @@ export class TimeDetailsComponent implements OnInit {
   private updateHour() {
     const hour = this.hour;
     const minutes = this.minutes;
-    // console.log("value "+this.value+" hour "+hour+" "+minutes+" "+(24*60));
     this.shadowService.setTime(hour, minutes);
   }
 

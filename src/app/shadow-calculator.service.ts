@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {ShadowShapeSet, ShapesJSON} from "./shape/shadow-shape.model";
 import {Subject} from "rxjs/Subject";
+import LatLng = google.maps.LatLng;
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 let SunCalc = require('suncalc');
 
@@ -20,7 +22,8 @@ export class ShadowCalculatorService {
   public sunset: Date;
   public noon: Date;
 
-  public date$ = new Subject<Date>();
+  public date$ = new BehaviorSubject<Date>(this.date);
+  public pos$ = new BehaviorSubject<LatLng>(null);
 
   constructor() {
 
@@ -29,14 +32,25 @@ export class ShadowCalculatorService {
   public setTime(hour: number, minutes: number) {
     this.hour = hour;
     this.minutes = minutes;
+    this.date.setHours(this.hour, this.minutes, 0, 0);
+    this.date$.next(new Date(this.date));
     this.shadowShapeSet.clearSelection();
     this.recalculateShadows();
   }
   setDay(day: Date) {
     this.date = new Date(day);
+    this.date.setHours(this.hour, this.minutes, 0, 0);
+    this.date$.next(this.date);
     this.recalculateShadows();
   }
-  public setDateAndTime(model: ShapesJSON) {
+  public setDateAndTime(day: Date) {
+    this.date = new Date(day);
+    this.date$.next(this.date);
+    this.hour=day.getHours();
+    this.minutes=day.getMinutes();
+    this.recalculateShadows();
+  }
+  public setDateAndTimeFromModel(model: ShapesJSON) {
     if (model.timestamp != null) {
       this.date = new Date(model.timestamp);
       this.hour = this.date.getHours();
@@ -50,9 +64,10 @@ export class ShadowCalculatorService {
   }
 
   public recalculateShadows() {
-    this.date.setHours(this.hour, this.minutes, 0, 0);
-    const times = SunCalc.getTimes(/*Date*/ this.date, /*Number*/ this.shadowShapeSet.map.getCenter().lat(), /*Number*/ this.shadowShapeSet.map.getCenter().lng());
-    const position = SunCalc.getPosition(/*Date*/ this.date, /*Number*/ this.shadowShapeSet.map.getCenter().lat(), /*Number*/ this.shadowShapeSet.map.getCenter().lng());
+
+    const center = this.shadowShapeSet.map.getCenter();
+    const times = SunCalc.getTimes(this.date, center.lat(), center.lng());
+    const position = SunCalc.getPosition(this.date, center.lat(), center.lng());
     const altitudeDegrees = position.altitude * (180 / Math.PI);
     const azimuthDegrees = position.azimuth * (180 / Math.PI);
     console.log("altitude=" + altitudeDegrees + " azimuth=" + azimuthDegrees);
@@ -81,5 +96,9 @@ export class ShadowCalculatorService {
 
   setCurrentHeight(height: number) {
     this.shadowShapeSet.currentHeight = height;
+  }
+
+  setPosition(pos: LatLng) {
+    this.pos$.next(pos);
   }
 }

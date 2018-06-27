@@ -20,5 +20,5 @@
   <input style="width: 40px;" [(ngModel)]="currentHeight" (ngModelChange)="onChangeCurrentHeight($event)" type=number
          min=0 max=50>[m]
 
-  <div class="x-shadow-info">&nbsp;Shadow: {{currentShadow.toFixed(2)}}[m]</div>
+  <div class="x-shadow-info">&nbsp;Shadow: {{currentShadow>0? currentShadow.toFixed(2)+"[m]": "&#8734;"}}</div>
 </div>

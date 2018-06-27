@@ -160,7 +160,6 @@ export class XYArray {
         reversed++;
       }
     });
-    // console.log("REVERSED "+reversed);
     this.path = null;
   }
 

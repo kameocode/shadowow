@@ -54,9 +54,13 @@ export class AppComponent implements OnInit {
     google.maps.event.addListener(this.map, "click", () =>
       this._ngZone.run(() => this.shadowShapesSet.clearSelection())
     );
-    google.maps.event.addListener(this.map, "center_changed", () =>
-      this._ngZone.run(() => this.shadowService.recalculateShadows()));
+    google.maps.event.addListener(this.map, "center_changed", () => {
+      this.shadowService.setPosition(this.map.getCenter());
+      this._ngZone.run(() => this.shadowService.recalculateShadows())
+    });
 
+    this.shadowService.setPosition(this.map.getCenter());
+    this.shadowService.setDay(this.shadowService.getDate());
     this.shadowService.recalculateShadows();
   }
 
@@ -134,7 +138,7 @@ export class AppComponent implements OnInit {
       if (jsonText != null && jsonText != "") {
         const json: ShapesJSON = JSON.parse(jsonText);
         if (json.timestamp != null) {
-          this.shadowService.setDateAndTime(json);
+          this.shadowService.setDateAndTimeFromModel(json);
         }
         if (json.mapCenterLng != null && json.mapCenterLat != null) {
           this.map.setCenter(new LatLng(json.mapCenterLat, json.mapCenterLng));
