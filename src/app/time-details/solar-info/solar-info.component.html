@@ -1,3 +1,4 @@
+<!--
 <div class="x-time-1">
   <div class="x-icon-block">
     <img class="x-icon" src="assets/sunrise.svg"/>
@@ -24,7 +25,36 @@
     <div>&nbsp;</div>
   </div>
 </div>
+-->
+
+
 <div class="x-time-1">
+
+
+  <div class="x-icon-block x-margin">
+    <img class="x-icon" src="assets/noon_selected.svg"/>
+    <div class="x-altitude" >selected day</div>
+    {{noon_winter.toLocaleDateString()}}
+
+    <div class="x-mini-row" style="margin-top: 10px;">
+      <img class="x-icon" src="assets/noon_duration.svg" style="width:28px;"/> 6h 12m
+    </div>
+    <div class="x-mini-row-group">
+      <div class="x-mini-row">
+        <b class="x-minitime">noon:</b>&nbsp;12:11&nbsp;
+        <mat-icon matTooltip="noon azimuth in degrees">arrow_upward</mat-icon>
+        {{noonAltitudeDegrees}}&deg;
+      </div>
+      <div class="x-mini-row">
+        <b class="x-minitime">sunrise:</b>&nbsp;03:15&nbsp;
+        <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
+      </div>
+      <div class="x-mini-row">
+        <b class="x-minitime">sunset:</b>&nbsp;22:15&nbsp;
+        <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
+      </div>
+    </div>
+  </div>
 
   <div class="x-icon-block x-margin">
     <img class="x-icon" src="assets/noon_summer.svg"/>
@@ -36,16 +66,16 @@
     </div>
     <div class="x-mini-row-group">
       <div class="x-mini-row">
-        <b>noon:</b>&nbsp;12:11&nbsp;
+        <b class="x-minitime">noon:</b>&nbsp;12:11&nbsp;
         <mat-icon matTooltip="noon azimuth in degrees">arrow_upward</mat-icon>
         {{noonAltitudeDegrees}}&deg;
       </div>
       <div class="x-mini-row">
-        <b>sunrise:</b>&nbsp;03:15&nbsp;
+        <b class="x-minitime">sunrise:</b>&nbsp;03:15&nbsp;
         <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
       </div>
       <div class="x-mini-row">
-        <b>sunset:</b>&nbsp;22:15&nbsp;
+        <b class="x-minitime">sunset:</b>&nbsp;22:15&nbsp;
         <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
       </div>
     </div>
@@ -61,51 +91,21 @@
     </div>
     <div class="x-mini-row-group">
       <div class="x-mini-row">
-        <b>noon:</b>&nbsp;12:11&nbsp;
+        <b class="x-minitime">noon:</b>&nbsp;12:11&nbsp;
         <mat-icon matTooltip="noon azimuth in degrees">arrow_upward</mat-icon>
         {{noonAltitudeDegrees}}&deg;
       </div>
       <div class="x-mini-row">
-        <b>sunrise:</b>&nbsp;03:15&nbsp;
+        <b class="x-minitime">sunrise:</b>&nbsp;03:15&nbsp;
         <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
       </div>
       <div class="x-mini-row">
-        <b>sunset:</b>&nbsp;22:15&nbsp;
+        <b class="x-minitime">sunset:</b>&nbsp;22:15&nbsp;
         <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
-
-
       </div>
-
     </div>
   </div>
 
 
-  <div class="x-icon-block x-margin">
-    <img class="x-icon" src="assets/noon.svg"/>
-    <div class="x-altitude" >selected day</div>
-    {{noon_winter.toLocaleDateString()}}
-
-    <div class="x-mini-row" style="margin-top: 10px;">
-      <img class="x-icon" src="assets/noon_duration.svg" style="width:28px;"/> 6h 12m
-    </div>
-    <div class="x-mini-row-group">
-      <div class="x-mini-row">
-        <b>noon:</b>&nbsp;12:11&nbsp;
-        <mat-icon matTooltip="noon azimuth in degrees">arrow_upward</mat-icon>
-        {{noonAltitudeDegrees}}&deg;
-      </div>
-      <div class="x-mini-row">
-        <b>sunrise:</b>&nbsp;03:15&nbsp;
-        <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
-      </div>
-      <div class="x-mini-row">
-        <b>sunset:</b>&nbsp;22:15&nbsp;
-        <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
-
-
-      </div>
-
-    </div>
-  </div>
 
 </div>
