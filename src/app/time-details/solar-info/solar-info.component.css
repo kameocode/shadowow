@@ -1,0 +1,40 @@
+.x-time-1 {
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+  padding-bottom: 5px;
+}
+
+.x-icon-block {
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.x-icon {
+  width: 64px;
+}
+.x-icon-large {
+  width: 84px;
+  margin-top:-20px;
+}
+
+.x-altitude {
+  font-size:12px;
+}
+.x-mini-row-group {
+  display: flex; flex-flow: column;
+  justify-content: flex-start;
+}
+.x-mini-row {
+  display: flex; flex-flow: row; align-items: center; justify-content: flex-start;
+  font-size:12px;
+}
+.x-mini-row mat-icon {
+  font-size: 20px;
+}
+.x-margin {
+  margin-left:15px;
+  margin-right:15px;
+}

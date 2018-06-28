@@ -5,19 +5,7 @@
   ópadding-bottom: 50px;
 }
 
-.x-icon-block {
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-}
 
-.x-icon {
-  width: 64px;
-}
-.x-icon-large {
-  width: 84px;
-  margin-top:-20px;
-}
 canvas {
   cursor: pointer;
 }

@@ -1,6 +1,7 @@
-import {Component, Input, OnChanges, OnInit} from '@angular/core';
+import {Component, HostListener, Input, OnChanges, OnInit} from '@angular/core';
 import {ShadowCalculatorService} from "../../shadow-calculator.service";
 import LatLng = google.maps.LatLng;
+import {OutletContext} from "@angular/router";
 
 let SunCalc = require('suncalc');
 
@@ -11,14 +12,18 @@ let SunCalc = require('suncalc');
   styleUrls: ['./day-info.component.css']
 })
 export class DayInfoComponent implements OnInit, OnChanges {
+  private readonly offsetTop=40;
+  private readonly offsetLeft=23;
+  private readonly sunImg = new Image();
+  private readonly sunImgFocused = new Image();
+  private readonly sunImgSunrise = new Image();
+  private readonly sunImgSize = 50;
+
   @Input()
   private date: Date;
   private latLng: LatLng;
-  private offsetTop=40;
-  private offsetLeft=23;
-  private sunImg = new Image();
-  private sunImgSunrise = new Image();
   private buttonPressed = false;
+  private sunFocued = false;
 
   constructor(private shadowService: ShadowCalculatorService) {
   }
@@ -32,11 +37,8 @@ export class DayInfoComponent implements OnInit, OnChanges {
       this.latLng = latLng;
       this.onInputChanged();
     });
-  /* this.shadowService.date$.subscribe((date: Date) => {
-      this.date = date;
-      this.onInputChanged();
-    });*/
     this.sunImg.src = "assets/noon_small.svg"; //"assets/wb_sunny.svg";
+    this.sunImgFocused.src = "assets/noon_small_focused.svg"; //"assets/wb_sunny.svg";
     this.sunImgSunrise.src = "assets/sunrise_small.svg";
 
     this.sunImg.addEventListener('load', ()=>{
@@ -54,6 +56,11 @@ export class DayInfoComponent implements OnInit, OnChanges {
     canvas.addEventListener('mouseout', () => {
       this.buttonPressed = false;
     });
+    canvas.addEventListener('mouseenter', (e) => {
+     this.buttonPressed = e.buttons === undefined
+        ? e.which === 1
+        : e.buttons === 1;
+    });
     canvas.addEventListener('mousemove', (evt) => {
       if (!this.buttonPressed) {
         return;
@@ -66,26 +73,21 @@ export class DayInfoComponent implements OnInit, OnChanges {
   }
 
 
-  private updateSunPosition(canvas: any, evt) {
-    var rect = canvas.getBoundingClientRect();
-    const mousePos = {
-      x: evt.clientX - rect.left,
-      y: evt.clientY - rect.top
-    };
-    const x = mousePos.x;
-    const y = mousePos.y;
-    const diff = this.getDiff(canvas);
 
-    let hour = (Math.max(0,x - this.offsetLeft)) / diff;
+  private updateSunPosition(canvas: any, evt) {
+    const rect = canvas.getBoundingClientRect();
+    const x = evt.clientX - rect.left;
+    const y = evt.clientY - rect.top;
+
+    const hourSpanPixels = this.getXSpanPixels(canvas);
+
+    let hour = (Math.max(0,x - this.offsetLeft)) / hourSpanPixels;
     const hourInMinutes = hour * 60;
     let minutes = hourInMinutes - Math.floor(hour) * 60;
-    console.log("hour "+hour+" "+minutes);
-
     if (hour>=24) {
       hour = 23;
       minutes = 59;
     }
-
     this.date.setHours( Math.floor(hour));
     this.date.setMinutes(minutes);
     this.onInputChanged();
@@ -97,63 +99,71 @@ export class DayInfoComponent implements OnInit, OnChanges {
       return;
     }
 
+    const canvas = document.getElementById("canv") as any;
+    const ctx = canvas.getContext("2d");
 
-    var canvas = document.getElementById("canv") as any;
-
-    const ch = canvas.height - 2*this.offsetTop;
-    const diff = this.getDiff(canvas);
-
-    var ctx = canvas.getContext("2d");
-    let d = new Date(this.date);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 
+
+    this.drawAltitudeFor24h(canvas, ctx);
+    const sunPos = this.drawSun(canvas, ctx);
+    this.drawNight(ctx, canvas);
+    const noonX = this.drawSunriseNoonAndSunsetLabels(canvas, ctx);
+
+    ctx.font = "12px \"-apple-system\", \"BlinkMacSystemFont\", \"Segoe UI\", \"Roboto\", \"Helvetica Neu\"";
+    ctx.fillText(this.getAltitudeInDegrees(this.shadowService.noon).toFixed(0)+" "+String.fromCharCode(176), noonX, this.offsetTop-8);
+    ctx.fillText(this.getAltitudeInDegrees(sunPos.date).toFixed(0)+" "+String.fromCharCode(176), sunPos.sunX+this.sunImgSize/2, sunPos.sunY+70+12);
+    // ctx.fillText(this.getAzimuthInDegrees(d).toFixed(0)+" "+String.fromCharCode(176), sunX+imgSize/2, sunY+70+12+12);
+
+
+  }
+
+
+  private drawSunriseNoonAndSunsetLabels(canvas: any, ctx: any) {
     ctx.fillStyle="#000000";
-
-
-    for (let i = 0; i < 24; i++) {
-      d.setHours(i);
-      d.setMinutes(0);
-      const times = SunCalc.getTimes(d, this.latLng.lat(), this.latLng.lng());
-      const position = SunCalc.getPosition(d, this.latLng.lat(), this.latLng.lng());
-      const altitudeDegrees = position.altitude * (180 / Math.PI);
-
-
-      ctx.fillRect(this.getHourOffset(d, canvas, diff), this.offsetTop+ 90 - (altitudeDegrees), 3, 3);
-
+    const hourSpan = this.getXSpanPixels(canvas);
+    const noonX = this.getHourOffset(this.shadowService.noon, hourSpan);
+    let sunsetX = this.getHourOffset(this.shadowService.sunset, hourSpan);
+    let sunriseX = this.getHourOffset(this.shadowService.sunrise, hourSpan);
+    const spaceX = 50; // margin to avoid text overlapping
+    if (sunsetX - noonX < spaceX) {
+      sunsetX = noonX + spaceX;
+    }
+    if (noonX - sunriseX < spaceX) {
+      sunriseX = noonX - spaceX;
     }
 
-    // draw sunrise
-  /*  {
-      d = new Date(this.shadowService.sunrise);
-      const times = SunCalc.getTimes(d, this.latLng.lat(), this.latLng.lng());
-      const position = SunCalc.getPosition(d, this.latLng.lat(), this.latLng.lng());
-      const altitudeDegrees = position.altitude * (180 / Math.PI);
-      const imgSize = 30;
-      ctx.drawImage(this.sunImgSunrise, this.getHourOffset(d, diff)+this.offsetLeft - imgSize / 2, this.offsetTop+90 - altitudeDegrees - imgSize / 2, imgSize, imgSize);
+    const upperTextPosY = this.offsetTop - 20;
+    ctx.fillText(this.noon, noonX, upperTextPosY);
+    ctx.fillText(this.sunset, sunsetX, upperTextPosY);
+    ctx.fillText(this.sunrise, sunriseX, upperTextPosY);
+    return noonX;
+  }
 
-    }*/
-
-
-    // draw sun
-    d = new Date(this.date);
-    const times = SunCalc.getTimes(d, this.latLng.lat(), this.latLng.lng());
-    const altitudeDegrees = this.getAltitude(d);
-    const imgSize = 50;
-    const sunX=this.getHourOffset(d, canvas, diff) - imgSize / 2;
-    const sunY=this.offsetTop+90 - altitudeDegrees - imgSize / 2;
-    ctx.drawImage(this.sunImg, sunX, sunY, imgSize, imgSize);
-
-
-
-    // draw night
+  private drawNight(ctx: any, canvas: any) {
     var grd = ctx.createLinearGradient(0, 0, 190, 190);
     grd.addColorStop(0, "#1DC8CD"); //"#d5d5d5"
     grd.addColorStop(1, "#16EAD6");
     ctx.fillStyle = grd;
     ctx.globalAlpha = 0.5;
-    ctx.fillRect(0, this.offsetTop+90, canvas.width, ch);
+    ctx.fillRect(0, this.offsetTop + 90 * this.getYSpanPixels(canvas), canvas.width, canvas.height - 2 * this.offsetTop);
     ctx.globalAlpha = 1;
+  }
+
+  private drawSun(canvas: any, ctx: any) {
+    const height = (canvas.height - this.offsetTop)/2;
+    const hourSpan = this.getXSpanPixels(canvas);
+    const imgSize = this.sunImgSize;
+    let d = new Date(this.date);
+    const times = SunCalc.getTimes(d, this.latLng.lat(), this.latLng.lng());
+    const altitudeDegrees = this.getAltitudeInDegrees(d)*this.getYSpanPixels(canvas);
+    const sunX=this.getHourOffset(d, hourSpan) - imgSize / 2;
+    const sunY=this.offsetTop+height - altitudeDegrees - imgSize / 2;
+    if (!this.sunFocued)
+      ctx.drawImage(this.sunImg, sunX, sunY, imgSize, imgSize);
+    else
+      ctx.drawImage(this.sunImgFocused, sunX, sunY, imgSize, imgSize);
 
     // draw sun current hour
     ctx.fillStyle = "#000000";
@@ -161,56 +171,47 @@ export class DayInfoComponent implements OnInit, OnChanges {
     ctx.textAlign="center";
     ctx.fillText(this.formatTime(d), sunX+imgSize/2, sunY+70);
 
-
-
-
-    const noonX = this.getHourOffset(this.shadowService.noon, canvas, diff);
-    let sunsetX = this.getHourOffset(this.shadowService.sunset, canvas, diff);
-    let sunriseX = this.getHourOffset(this.shadowService.sunrise, canvas, diff);
-
-
-    const spaceX = 50;
-    if (sunsetX-noonX<spaceX) {
-      sunsetX = noonX+spaceX;
+    return {date: d, sunX, sunY, imgSize}
+  }
+  private drawAltitudeFor24h(canvas: any, ctx: any) {
+    const height = (canvas.height - this.offsetTop)/2;
+    const hourSpan = this.getXSpanPixels(canvas);
+    ctx.fillStyle="#000000";
+    for (let i = 0; i < 24; i++) {
+      let d = new Date(this.date);
+      d.setHours(i);
+      d.setMinutes(0);
+      const times = SunCalc.getTimes(d, this.latLng.lat(), this.latLng.lng());
+      const position = SunCalc.getPosition(d, this.latLng.lat(), this.latLng.lng());
+      const altitudeDegrees = position.altitude * (180 / Math.PI) * this.getYSpanPixels(canvas);
+      ctx.fillRect(this.getHourOffset(d, hourSpan), this.offsetTop + height - (altitudeDegrees), 2, 2);
     }
-    if (noonX-sunriseX<spaceX) {
-      sunriseX = noonX-spaceX;
-    }
-
-    ctx.fillText(this.noon, noonX, this.offsetTop-20);
-    ctx.fillText(this.sunset, sunsetX, this.offsetTop-20);
-    ctx.fillText(this.sunrise, sunriseX, this.offsetTop-20);
-
-    ctx.font = "12px \"-apple-system\", \"BlinkMacSystemFont\", \"Segoe UI\", \"Roboto\", \"Helvetica Neu\"";
-    ctx.fillText(this.getAltitude(this.shadowService.noon).toFixed(0)+" "+String.fromCharCode(176), noonX, this.offsetTop-8);
-    ctx.fillText(this.getAltitude(d).toFixed(0)+" "+String.fromCharCode(176), sunX+imgSize/2, sunY+70+12);
-    // ctx.fillText(this.getAzimuth(d).toFixed(0)+" "+String.fromCharCode(176), sunX+imgSize/2, sunY+70+12+12);
-
-    ctx.fillStyle = "#000000";
   }
 
-  private getAltitude(d: Date) {
+
+  private getAltitudeInDegrees(d: Date) {
     const position = SunCalc.getPosition(d, this.latLng.lat(), this.latLng.lng());
     const altitudeDegrees = position.altitude * (180 / Math.PI);
     return altitudeDegrees;
   }
-  private getAzimuth(d: Date) {
+  private getAzimuthInDegrees(d: Date) {
     const position = SunCalc.getPosition(d, this.latLng.lat(), this.latLng.lng());
     const azimuthDegrees = position.azimuth * (180 / Math.PI);
     return azimuthDegrees;
   }
-  private getDiff(canvas: any) {
+  private getXSpanPixels(canvas: any) {
     const cw = canvas.width - 2 * this.offsetLeft;
-    const diff = cw / 24;
-    return diff;
+    return cw / 24; //2ltitude is 4 hours
   }
-
-  private getHourOffset(d: Date, canvas: any, diff: number) {
-
+  private getYSpanPixels(canvas: any) {
+    const cw = canvas.height - 1 * this.offsetTop;
+    return cw / 180; // a<-90;90>
+  }
+  private getHourOffset(d: Date, diff: number) {
     const h = d.getHours() * 60;
     const m = d.getMinutes();
     const res = (h + m) / 60 * diff;
-    return res+this.offsetLeft; //canvas.width-res-2*this.offsetLeft;
+    return res+this.offsetLeft;
   }
 
 
@@ -226,10 +227,36 @@ export class DayInfoComponent implements OnInit, OnChanges {
     return this.formatTime(this.shadowService.noon);
   }
 
-  formatTime(time: any): string {
+  private formatTime(time: any): string {
     if (time == null || time == "Invalid Date")
       return "";
     return time.getHours() + ':' + (time.getMinutes() < 10 ? "0" : "") + time.getMinutes();
+  }
+
+  increment() {
+    this.date.setTime(this.date.getTime()+1000*60*10);
+
+    this.updateHour();
+
+
+  }
+  decrement() {
+    this.date.setTime(this.date.getTime()-1000*60*10);
+    this.updateHour();
+
+  }
+  private updateHour() {
+
+    this.shadowService.setDateAndTime(this.date);
+  }
+
+
+  @HostListener('document:keypress', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key === 'b')
+      this.decrement();
+    else if (event.key === 'n')
+      this.increment();
   }
 
 }

@@ -12,7 +12,7 @@ import {
   MatDialogModule,
   MatFormFieldModule, MatIconModule,
   MatNativeDateModule,
-  MatSliderModule
+  MatSliderModule, MatTooltipModule
 } from "@angular/material";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
@@ -21,6 +21,7 @@ import {ShapeBoundariesComponent} from "./shape/shape-details/shape-boundaries/s
 import {DayInfoComponent} from './time-details/day-info/day-info.component';
 import {ShapesLoaderDialogComponent} from './shape/shapes-loader-dialog/shapes-loader-dialog.component';
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
+import { SolarInfoComponent } from './time-details/solar-info/solar-info.component';
 
 
 @NgModule({
@@ -32,19 +33,21 @@ import { HelpDialogComponent } from './help-dialog/help-dialog.component';
     DayInfoComponent,
     ShapesLoaderDialogComponent,
     HelpDialogComponent,
+    SolarInfoComponent,
 
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    MatSliderModule,
+    // MatSliderModule,
     NoopAnimationsModule,
     MatDatepickerModule,
     MatFormFieldModule,
     MatNativeDateModule,
     MatDialogModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTooltipModule
   ],
   providers: [
     ShadowCalculatorService,

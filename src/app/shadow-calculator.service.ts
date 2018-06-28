@@ -21,6 +21,7 @@ export class ShadowCalculatorService {
   public sunrise: Date;
   public sunset: Date;
   public noon: Date;
+
   public azimuthDegrees: number;
   public azimuthRad: number;
 

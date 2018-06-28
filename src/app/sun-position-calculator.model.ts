@@ -84,7 +84,7 @@ export class SunPositionCalculator {
         map: this.map,
         icon: {
           url: 'assets/noon_small_white.svg',
-          anchor: new google.maps.Point(20, 20), // half size of image
+          anchor: new google.maps.Point(30, 30), // half size of image
         }
       });
     } else {

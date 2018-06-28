@@ -32,13 +32,16 @@ export class ShadowShapeSet {
   constructor(map: google.maps.Map, _ngZone: NgZone,) {
     this.map = map;
     this.markersSet = new MarkersSet(this.map, (marker) => {
-      _ngZone.run(() => {
-        this.currentMarker = marker;
-        if (marker != null) {
-          const markerIndex = marker.getLabel() as number - 1;
-          this.currentHeight = this.currentShape.heights[markerIndex];
-        }
-      });
+      const cs = this.currentShape;
+      if (cs!=null && cs.heights!=null) {
+        _ngZone.run(() => {
+          this.currentMarker = marker;
+          if (marker != null) {
+            const markerIndex = marker.getLabel() as number - 1;
+            this.currentHeight = cs.heights[markerIndex];
+          }
+        });
+      }
     });
   }
 
