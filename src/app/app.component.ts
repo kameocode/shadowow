@@ -15,6 +15,7 @@ import LatLng = google.maps.LatLng;
 import {} from '@types/googlemaps';
 import Rectangle = google.maps.Rectangle;
 import Polygon = google.maps.Polygon;
+import {XYArray} from "./shape/xy-array.model";
 
 @Component({
   selector: 'app-root',
@@ -46,6 +47,7 @@ export class AppComponent implements OnInit {
     };
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
     this.map.setTilt(0);
+
     this.shadowShapesSet = new ShadowShapeSet(this.map, this._ngZone);
     this.shadowService.setShadowShapeSet(this.shadowShapesSet);
 
@@ -58,11 +60,15 @@ export class AppComponent implements OnInit {
       this.shadowService.setPosition(this.map.getCenter());
       this._ngZone.run(() => this.shadowService.recalculateShadows())
     });
-
+    google.maps.event.addListener(this.map, 'bounds_changed', () => {
+      this.shadowService.recalculateShadows();
+    });
     this.shadowService.setPosition(this.map.getCenter());
     this.shadowService.setDay(this.shadowService.getDate());
     this.shadowService.recalculateShadows();
   }
+
+
 
   public get isNight() {
     return !this.shadowService.isDay;

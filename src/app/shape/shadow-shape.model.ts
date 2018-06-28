@@ -8,6 +8,7 @@ import LatLng = google.maps.LatLng;
 import Polygon = google.maps.Polygon;
 import PolygonOptions = google.maps.PolygonOptions;
 import Marker = google.maps.Marker;
+import {SunPositionCalculator} from "../sun-position-calculator.model";
 
 
 export interface ShadowShape {
@@ -66,6 +67,7 @@ export class ShadowShapeSet {
     for (let sh of this.shadowShapes) {
       this.createShadow(sh, sunAltitudeRad, sunAzimuthRad);
     }
+
   }
 
 

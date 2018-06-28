@@ -147,7 +147,7 @@ export class DayInfoComponent implements OnInit, OnChanges {
 
 
     // draw night
-    var grd = ctx.createLinearGradient(0, 0, 170, 0);
+    var grd = ctx.createLinearGradient(0, 0, 190, 190);
     grd.addColorStop(0, "#1DC8CD"); //"#d5d5d5"
     grd.addColorStop(1, "#16EAD6");
     ctx.fillStyle = grd;
@@ -184,6 +184,7 @@ export class DayInfoComponent implements OnInit, OnChanges {
     ctx.font = "12px \"-apple-system\", \"BlinkMacSystemFont\", \"Segoe UI\", \"Roboto\", \"Helvetica Neu\"";
     ctx.fillText(this.getAltitude(this.shadowService.noon).toFixed(0)+" "+String.fromCharCode(176), noonX, this.offsetTop-8);
     ctx.fillText(this.getAltitude(d).toFixed(0)+" "+String.fromCharCode(176), sunX+imgSize/2, sunY+70+12);
+    // ctx.fillText(this.getAzimuth(d).toFixed(0)+" "+String.fromCharCode(176), sunX+imgSize/2, sunY+70+12+12);
 
     ctx.fillStyle = "#000000";
   }
@@ -193,7 +194,11 @@ export class DayInfoComponent implements OnInit, OnChanges {
     const altitudeDegrees = position.altitude * (180 / Math.PI);
     return altitudeDegrees;
   }
-
+  private getAzimuth(d: Date) {
+    const position = SunCalc.getPosition(d, this.latLng.lat(), this.latLng.lng());
+    const azimuthDegrees = position.azimuth * (180 / Math.PI);
+    return azimuthDegrees;
+  }
   private getDiff(canvas: any) {
     const cw = canvas.width - 2 * this.offsetLeft;
     const diff = cw / 24;

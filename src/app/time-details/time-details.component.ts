@@ -44,17 +44,21 @@ export class TimeDetailsComponent implements OnInit {
   }
 
   increment() {
-    if (this.value + this.step <= this.maxValue) {
+    if (this.value + this.step > this.maxValue) {
+      this.value=0;
+    }
       this.value += this.step;
       this.updateHour();
-    }
+
 
   }
   decrement() {
-    if (this.value - this.step > 0) {
+    if (this.value - this.step < 0) {
+      this.value=this.maxValue-1;
+    }
       this.value -= this.step;
       this.updateHour();
-    }
+
   }
 
   private updateHour() {
