@@ -30,4 +30,8 @@ export class ShapeBoundariesComponent implements OnInit {
   onAngleChange($event) {
 
   }
+
+  onSaveData($event) {
+
+  }
 }
