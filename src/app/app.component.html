@@ -38,7 +38,26 @@
   </div>
 
   <div class="col-md-4 col-xs-12 x-details">
-    <app-time-details [shadowShapesSet]="shadowShapesSet"></app-time-details>
+
+    <div class="row no-select">
+      <app-day-info class="col-md-7 col-xs-12"></app-day-info>
+
+      <div class="col-md-5 col-xs-12" style="display: flex; flex-flow: column; align-items: flex-end; justify-content: center; min-height: 180px;">
+
+
+        <app-time-details></app-time-details>
+        <app-shape-details [shadowShape]="shadowShapesSet.currentShape"
+                           [marker]="shadowShapesSet.currentMarker"
+                           [markerIndex]="shadowShapesSet.currentMarkerIndex"
+                           [currentHeight]="shadowShapesSet.currentHeight"
+                           [currentShadow]="shadowShapesSet.currentShadowLength"
+        ></app-shape-details>
+
+      </div>
+
+    </div>
+
+
 
     <app-solar-info></app-solar-info>
   </div>

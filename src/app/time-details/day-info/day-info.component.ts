@@ -19,7 +19,7 @@ export class DayInfoComponent implements OnInit, OnChanges {
   private readonly sunImgSunrise = new Image();
   private readonly sunImgSize = 50;
 
-  @Input()
+
   private date: Date;
   private latLng: LatLng;
   private buttonPressed = false;
@@ -37,9 +37,13 @@ export class DayInfoComponent implements OnInit, OnChanges {
       this.latLng = latLng;
       this.onInputChanged();
     });
+    this.shadowService.date$.subscribe((date: Date) => {
+      this.date = date;
+      this.onInputChanged();
+    });
     this.sunImg.src = "assets/noon_small.svg"; //"assets/wb_sunny.svg";
     this.sunImgFocused.src = "assets/noon_small_focused.svg"; //"assets/wb_sunny.svg";
-    this.sunImgSunrise.src = "assets/sunrise_small.svg";
+    // this.sunImgSunrise.src = "assets/sunrise_small.svg";
 
     this.sunImg.addEventListener('load', ()=>{
       // we need to have proper width and height

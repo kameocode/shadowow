@@ -27,6 +27,9 @@
 .x-altitude {
   font-size:12px;
 }
+.x-mini-row-group {
+  max-width: 150px;
+}
 
 .x-section-divider {
   display: block;

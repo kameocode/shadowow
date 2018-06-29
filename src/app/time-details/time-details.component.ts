@@ -10,8 +10,7 @@ import {ShadowShapeSet} from "../shape/shadow-shape.model";
 })
 export class TimeDetailsComponent implements OnInit {
   date = new Date();
-  @Input()
-  shadowShapesSet: ShadowShapeSet
+
 
   constructor(private shadowService: ShadowCalculatorService) { }
 
