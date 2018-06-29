@@ -4,14 +4,28 @@
 body {
   overflow-x: hidden;
 }
-
+#wrap {
+  min-height: 100%;
+}
+#main {
+  overflow:auto;
+  padding-bottom:50px; /* this needs to be bigger than footer height*/
+}
 #footer {
   background: #fff;
   box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.1);
   padding: 10px 0;
   color: #333;
   font-size: 14px;
+
+  position: relative;
+  margin-top: -50px; /* negative value of footer height */
+  height: 50px;
+  clear:both;
+  padding-top:20px;
 }
+
+
 
 a {
   color: #1dc8cd;

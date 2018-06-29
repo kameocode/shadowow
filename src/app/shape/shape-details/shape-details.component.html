@@ -1,24 +1,11 @@
-<div *ngIf="shadowShape != null" class="no-select x-heightsPanel">
 
+<div style="display: flex; flex-flow: column; align-items: flex-end;  margin-left: 18px; margin-top:10px;">
+  <div style="padding-top: 20px;">
+    Height:&nbsp;
+    <span class="x-pinBackground" (click)="openSettingsDialog()"><div class="x-pinLabel">{{ markerLabel }}</div></span>
+    <input style="width: 40px;" [(ngModel)]="currentHeight" (ngModelChange)="onChangeCurrentHeight($event)" type=number
+           min=0 max=50>[m]
+  </div>
 
-  <!--  <div *ngFor="let h of shadowShape.heights; trackBy:trackByIdx; let i = index">
-
-      <span class="x-pinBackground" (click)="openSettingsDialog()"><div class="x-pinLabel">{{ i+1 }}</div></span>
-
-      <input [(ngModel)]="shadowShape.heights[i]" (ngModelChange)="onHeightChanged($event)" type=number min=0 max=50>
-    </div>-->
-</div>
-
-<div class="row" *ngIf="shadowShape != null">
-  <button mat-raised-button (click)="openSettingsDialog()">Settings</button>
-</div>
-
-
-<div style="display: flex; align-items: center; justify-content: center">
-  Height:&nbsp;
-  <span class="x-pinBackground" (click)="openSettingsDialog()"><div class="x-pinLabel">{{ markerLabel }}</div></span>
-  <input style="width: 40px;" [(ngModel)]="currentHeight" (ngModelChange)="onChangeCurrentHeight($event)" type=number
-         min=0 max=50>[m]
-
-  <div class="x-shadow-info">&nbsp;Shadow: {{currentShadow>0? currentShadow.toFixed(2)+"[m]": "&#8734;"}}</div>
+  <div style="margin-top:10px;" class="x-shadow-info">Shadow: {{currentShadow>0? currentShadow.toFixed(2)+"[m]": "&#8734;"}}</div>
 </div>

@@ -5,7 +5,7 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
+    <ul class="nav navbar-nav navbar-right">
       <li class="nav-item active">
         <a class="nav-link"
            (click)="openHelpDialog()"
@@ -29,20 +29,17 @@
   </div>
 </nav>
 
+
+
 <div class='row text-center x-content nopadding'>
-  <div class="col-8 x-gmap-wrapper" [class.x-gmap-wrapper-night]="isNight"
+  <div class="col-md-8 col-xs-12 x-gmap-wrapper" [class.x-gmap-wrapper-night]="isNight"
        [class.x-gmap-wrapper-dusk-or-down]="isDuskOrDawn">
-    <div [class.x-gmap-night]="isNight" [class.x-gmap-dusk-or-down]="isDuskOrDawn" #gmap style="height:100%"></div>
+    <div [class.x-gmap-night]="isNight" [class.x-gmap-dusk-or-down]="isDuskOrDawn" #gmap style="min-height:50vh; height: 100%;"></div>
   </div>
 
-  <div class="col-4 x-details">
-    <app-time-details></app-time-details>
-    <app-shape-details [shadowShape]="shadowShapesSet.currentShape"
-                       [marker]="shadowShapesSet.currentMarker"
-                       [markerIndex]="shadowShapesSet.currentMarkerIndex"
-                       [currentHeight]="shadowShapesSet.currentHeight"
-                       [currentShadow]="shadowShapesSet.currentShadowLength"
-    ></app-shape-details>
+  <div class="col-md-4 col-xs-12 x-details">
+    <app-time-details [shadowShapesSet]="shadowShapesSet"></app-time-details>
+
     <app-solar-info></app-solar-info>
   </div>
 

@@ -1,6 +1,7 @@
-<div class="no-select">
+<div class="row no-select">
+  <app-day-info class="col-md-7 col-xs-12" [date]="date"></app-day-info>
 
-  <div style="display: flex; flex-flow: column; justify-content: center; align-items: center">
+  <div class="col-md-5 col-xs-12" style="display: flex; flex-flow: column; align-items: flex-end; ">
     <div>
       <input matInput [matDatepicker]="picker" (ngModelChange)="onDayChanged($event)" [(ngModel)]="date"
              style="width:100px"
@@ -8,19 +9,16 @@
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </div>
-    <app-day-info [date]="date"></app-day-info>
-
-    <div>
 
 
-
+    <app-shape-details [shadowShape]="shadowShapesSet.currentShape"
+                       [marker]="shadowShapesSet.currentMarker"
+                       [markerIndex]="shadowShapesSet.currentMarkerIndex"
+                       [currentHeight]="shadowShapesSet.currentHeight"
+                       [currentShadow]="shadowShapesSet.currentShadowLength"
+    ></app-shape-details>
   </div>
-  </div>
-<!--  <mat-slider style="width: 300px;" thumbLabel (change)="onChanged($event)" [(ngModel)]="value" min="1"
-              [max]="maxValue"
-              step="1"
-              tickInterval="4"></mat-slider>
-  <span style="display: inline-block; min-width: 100px;">{{ hour }}h {{minutes }}min</span>-->
 
 </div>
+
 

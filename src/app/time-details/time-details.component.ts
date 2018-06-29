@@ -1,6 +1,7 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {Component, HostListener, Input, OnInit} from '@angular/core';
 import {MatSliderChange} from "@angular/material";
 import {ShadowCalculatorService} from "../shadow-calculator.service";
+import {ShadowShapeSet} from "../shape/shadow-shape.model";
 
 @Component({
   selector: 'app-time-details',
@@ -9,6 +10,8 @@ import {ShadowCalculatorService} from "../shadow-calculator.service";
 })
 export class TimeDetailsComponent implements OnInit {
   date = new Date();
+  @Input()
+  shadowShapesSet: ShadowShapeSet
 
   constructor(private shadowService: ShadowCalculatorService) { }
 
@@ -36,5 +39,7 @@ export class TimeDetailsComponent implements OnInit {
       this.shadowService.setDay(this.date);
     }
   }
+
+
 
 }

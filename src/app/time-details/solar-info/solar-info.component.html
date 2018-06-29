@@ -28,12 +28,12 @@
 -->
 
 
-<div class="x-time-1">
+<div class="row x-time-1">
 
 
-  <app-solar-info-column [date]="date" type="CUSTOM" [pos]="pos"></app-solar-info-column>
-  <app-solar-info-column [date]="midsummer" type="MIDSUMMER" [pos]="pos"></app-solar-info-column>
-  <app-solar-info-column [date]="midwinter" type="MIDWINTER" [pos]="pos"></app-solar-info-column>
+  <app-solar-info-column class="col-md-4 col-xs-6" [date]="date" type="CUSTOM" [pos]="pos" withNowAltitudeAndAzimuth="true" (change)="selectDate($event)"></app-solar-info-column>
+  <app-solar-info-column class="col-md-4 col-xs-6" [date]="midsummer" type="MIDSUMMER" [pos]="pos" (change)="selectDate($event)"></app-solar-info-column>
+  <app-solar-info-column class="col-md-4 col-xs-6" [date]="midwinter" type="MIDWINTER" [pos]="pos" (change)="selectDate($event)"></app-solar-info-column>
 
 
 

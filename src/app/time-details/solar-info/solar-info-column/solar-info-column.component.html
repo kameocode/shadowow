@@ -1,10 +1,10 @@
 <div class="x-icon-block x-margin">
-  <img class="x-icon" [src]="iconUrl"/>
+  <img class="x-icon" [src]="iconUrl"  (click)="onDaySelected()"/>
   <div class="x-altitude">{{typeLabel}}</div>
   {{date.toLocaleDateString()}}
 
-  <div class="x-mini-row" style="margin-top: 10px;">
-    <img class="x-icon" src="assets/noon_duration.svg" style="width:28px;"/> {{dayDuration}}
+  <div  [matTooltip]="tooltip" class="x-mini-row" style="margin-top: 10px;">
+    <img src="assets/noon_duration.svg" style="width:28px;"/> {{dayDuration}}
   </div>
   <div class="x-mini-row-group">
     <div class="x-mini-row">
@@ -20,6 +20,13 @@
       <div class="x-minitime">sunset:</div>&nbsp;<div>{{sunsetHour}}</div>&nbsp;
       <mat-icon matTooltip="sun azimuth in degrees">explore</mat-icon>&nbsp;{{sunsetAzimuthDegrees}}&deg;
     </div>
+
+    <div *ngIf="withNowAltitudeAndAzimuth"  class="x-mini-row">
+      <div class="x-minitime">now:</div>&nbsp;<div>{{nowHour}}</div>&nbsp;
+      <mat-icon matTooltip="sun azimuth in degrees">explore</mat-icon>&nbsp;{{nowAzimuthDegrees}}&deg;
+      <mat-icon matTooltip="sun altitude in degrees">arrow_upward</mat-icon>&nbsp;{{nowAltitudeDegrees}}&deg;
+    </div>
   </div>
+  <span class="d-sm-none x-section-divider"></span>
 </div>
 

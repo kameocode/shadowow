@@ -1,27 +1,14 @@
+<div style="position: relative;"  class="x-box-shadow">
+<canvas id="canv" width="360" height="220"></canvas><!-- width: 240 height: 180 -->
 
-<!--  <div class="x-icon-block">
-    <img class="x-icon" src="assets/sunrise.svg"/>
-    {{sunrise}}
-  </div>
-  <div class="x-icon-block">
-    <img class="x-icon-large" src="assets/noon.svg"/>
-    {{noon}}
-  </div>
-  <div class="x-icon-block">
-    <img class="x-icon" src="assets/sunset.svg"/>
-    {{sunset}}
-  </div>-->
-
- <canvas id="canv" width="400" height="220" class="x-box-shadow"></canvas><!-- width: 240 height: 180 -->
-
-  <div style="margin-left:-90px;margin-top: 177px;min-width:70px;">
-    <button mat-icon-button (click)="decrement()">
-      <mat-icon class="x-icon-link" aria-label="-10 min">navigate_before</mat-icon>
-    </button>
-    <button mat-icon-button (click)="increment()">
-      <mat-icon class="x-icon-link" aria-label="+10 min">navigate_next</mat-icon>
-    </button>
-  </div>
-
+<div style="bottom: 8px;right: 5px; position: absolute;">
+  <button mat-icon-button (click)="decrement()">
+    <mat-icon class="x-icon-link" aria-label="-10 min">navigate_before</mat-icon>
+  </button>
+  <button mat-icon-button (click)="increment()">
+    <mat-icon class="x-icon-link" aria-label="+10 min">navigate_next</mat-icon>
+  </button>
+</div>
+</div>
 
 

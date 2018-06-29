@@ -28,6 +28,7 @@
     "core-js": "^2.4.1",
     "greiner-hormann": "^1.3.4",
     "hammerjs": "^2.0.8",
+    "jquery": "^3.3.1",
     "lodash": "^4.17.10",
     "rxjs": "^5.5.6",
     "suncalc": "^1.8.0",

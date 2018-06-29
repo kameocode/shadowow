@@ -120,4 +120,8 @@ export class SolarInfoComponent implements OnInit {
     return time.getHours() + ':' + (time.getMinutes() < 10 ? "0" : "") + time.getMinutes();
   }
 
+  selectDate(date: Date) {
+    this.shadowService.setDay(date);
+  }
+
 }
