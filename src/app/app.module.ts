@@ -21,7 +21,10 @@ import {ShapeBoundariesComponent} from "./shape/shape-details/shape-boundaries/s
 import {DayInfoComponent} from './time-details/day-info/day-info.component';
 import {ShapesLoaderDialogComponent} from './shape/shapes-loader-dialog/shapes-loader-dialog.component';
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
-import { SolarInfoComponent } from './time-details/solar-info/solar-info.component';
+import {
+  SolarInfoComponent
+} from './time-details/solar-info/solar-info.component';
+import {SolarInfoColumnComponent} from "./time-details/solar-info/solar-info-column/solar-info-column.component";
 
 
 @NgModule({
@@ -34,6 +37,7 @@ import { SolarInfoComponent } from './time-details/solar-info/solar-info.compone
     ShapesLoaderDialogComponent,
     HelpDialogComponent,
     SolarInfoComponent,
+    SolarInfoColumnComponent
 
   ],
   imports: [

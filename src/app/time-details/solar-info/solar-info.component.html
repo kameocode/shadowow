@@ -31,80 +31,10 @@
 <div class="x-time-1">
 
 
-  <div class="x-icon-block x-margin">
-    <img class="x-icon" src="assets/noon_selected.svg"/>
-    <div class="x-altitude" >selected day</div>
-    {{noon_winter.toLocaleDateString()}}
+  <app-solar-info-column [date]="date" type="CUSTOM" [pos]="pos"></app-solar-info-column>
+  <app-solar-info-column [date]="midsummer" type="MIDSUMMER" [pos]="pos"></app-solar-info-column>
+  <app-solar-info-column [date]="midwinter" type="MIDWINTER" [pos]="pos"></app-solar-info-column>
 
-    <div class="x-mini-row" style="margin-top: 10px;">
-      <img class="x-icon" src="assets/noon_duration.svg" style="width:28px;"/> 6h 12m
-    </div>
-    <div class="x-mini-row-group">
-      <div class="x-mini-row">
-        <b class="x-minitime">noon:</b>&nbsp;12:11&nbsp;
-        <mat-icon matTooltip="noon azimuth in degrees">arrow_upward</mat-icon>
-        {{noonAltitudeDegrees}}&deg;
-      </div>
-      <div class="x-mini-row">
-        <b class="x-minitime">sunrise:</b>&nbsp;03:15&nbsp;
-        <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
-      </div>
-      <div class="x-mini-row">
-        <b class="x-minitime">sunset:</b>&nbsp;22:15&nbsp;
-        <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
-      </div>
-    </div>
-  </div>
-
-  <div class="x-icon-block x-margin">
-    <img class="x-icon" src="assets/noon_summer.svg"/>
-    <div class="x-altitude">summer solastice</div>
-    {{noon_summer.toLocaleDateString()}}
-
-    <div class="x-mini-row" style="margin-top: 10px;">
-      <img class="x-icon" src="assets/noon_duration.svg" style="width:28px;"/> 12h 42m
-    </div>
-    <div class="x-mini-row-group">
-      <div class="x-mini-row">
-        <b class="x-minitime">noon:</b>&nbsp;12:11&nbsp;
-        <mat-icon matTooltip="noon azimuth in degrees">arrow_upward</mat-icon>
-        {{noonAltitudeDegrees}}&deg;
-      </div>
-      <div class="x-mini-row">
-        <b class="x-minitime">sunrise:</b>&nbsp;03:15&nbsp;
-        <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
-      </div>
-      <div class="x-mini-row">
-        <b class="x-minitime">sunset:</b>&nbsp;22:15&nbsp;
-        <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
-      </div>
-    </div>
-
-  </div>
-  <div class="x-icon-block x-margin">
-    <img class="x-icon" src="assets/noon_winter.svg"/>
-    <div class="x-altitude" >winter solastice</div>
-    {{noon_winter.toLocaleDateString()}}
-
-    <div class="x-mini-row" style="margin-top: 10px;">
-      <img class="x-icon" src="assets/noon_duration.svg" style="width:28px;"/> 6h 12m
-    </div>
-    <div class="x-mini-row-group">
-      <div class="x-mini-row">
-        <b class="x-minitime">noon:</b>&nbsp;12:11&nbsp;
-        <mat-icon matTooltip="noon azimuth in degrees">arrow_upward</mat-icon>
-        {{noonAltitudeDegrees}}&deg;
-      </div>
-      <div class="x-mini-row">
-        <b class="x-minitime">sunrise:</b>&nbsp;03:15&nbsp;
-        <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
-      </div>
-      <div class="x-mini-row">
-        <b class="x-minitime">sunset:</b>&nbsp;22:15&nbsp;
-        <mat-icon matTooltip="noon altitude in degrees">explore</mat-icon>&nbsp;{{noonAzimuthDegrees}}&deg;
-      </div>
-    </div>
-  </div>
 
 
 

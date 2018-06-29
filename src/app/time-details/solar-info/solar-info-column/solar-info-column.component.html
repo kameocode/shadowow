@@ -1,0 +1,25 @@
+<div class="x-icon-block x-margin">
+  <img class="x-icon" [src]="iconUrl"/>
+  <div class="x-altitude">{{typeLabel}}</div>
+  {{date.toLocaleDateString()}}
+
+  <div class="x-mini-row" style="margin-top: 10px;">
+    <img class="x-icon" src="assets/noon_duration.svg" style="width:28px;"/> {{dayDuration}}
+  </div>
+  <div class="x-mini-row-group">
+    <div class="x-mini-row">
+      <div class="x-minitime">noon:</div>&nbsp;<div>{{noonHour}}</div>&nbsp;
+      <mat-icon matTooltip="sun altitude in degrees">arrow_upward</mat-icon>
+      {{noonAltitudeDegrees}}&deg;
+    </div>
+    <div class="x-mini-row">
+      <div class="x-minitime">sunrise:</div>&nbsp;<div>{{sunriseHour}}</div>&nbsp;
+      <mat-icon matTooltip="sun azimuth in degrees">explore</mat-icon>&nbsp;{{sunriseAzimuthDegrees}}&deg;
+    </div>
+    <div class="x-mini-row">
+      <div class="x-minitime">sunset:</div>&nbsp;<div>{{sunsetHour}}</div>&nbsp;
+      <mat-icon matTooltip="sun azimuth in degrees">explore</mat-icon>&nbsp;{{sunsetAzimuthDegrees}}&deg;
+    </div>
+  </div>
+</div>
+

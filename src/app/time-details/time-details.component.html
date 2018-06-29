@@ -1,9 +1,6 @@
 <div class="no-select">
 
-  <div style="display: flex; flex-flow: row; justify-content: center; align-items: center">
-    <app-day-info [date]="date"></app-day-info>
-
-    <div>
+  <div style="display: flex; flex-flow: column; justify-content: center; align-items: center">
     <div>
       <input matInput [matDatepicker]="picker" (ngModelChange)="onDayChanged($event)" [(ngModel)]="date"
              style="width:100px"
@@ -11,6 +8,10 @@
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </div>
+    <app-day-info [date]="date"></app-day-info>
+
+    <div>
+
 
 
   </div>
