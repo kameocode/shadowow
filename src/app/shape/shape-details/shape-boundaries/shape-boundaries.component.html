@@ -1,16 +1,15 @@
-<h2>Shape settings</h2>
-<div>
-  <form>
-    <div class="form-group" *ngFor="let height of shadowShape.heights; trackBy:trackByIdx; let i = index">
+<h3>Shape settings</h3>
+<div style="margin: 15px 0px;">
+    <div *ngFor="let height of shadowShape.heights; trackBy:heightTracker; let i = index">
+
       <div class="row">
         <label style="margin: 0px 10px;">Distance between: {{i+1}} - {{i+2}}</label>
-        <input style="width: 60px" [(ngModel)]="shadowShape.heights[i]" (ngModelChange)="onDistanceChange($event)" type=number min=1 max=50 value="10">
+        <input style="width: 160px" [(ngModel)]="distances[i]" (ngModelChange)="onDistanceChange($event)" type=number min=1 max=50 value="distances[i]">
 
         <label style="margin: 0px 10px;">Angle: </label>
-        <input style="width: 40px" [(ngModel)]="shadowShape.heights[i]" (ngModelChange)="onAngleChange($event)" type=number min=1 max=179 value="90">
+        <input style="width: 160px" [(ngModel)]="angles[i]" (ngModelChange)="onAngleChange($event)" type=number min=1 max=179 value="distances[i]">
       </div>
     </div>
-  </form>
 </div>
 
 <div class="row">

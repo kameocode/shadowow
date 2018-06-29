@@ -8,10 +8,16 @@ import {ShadowShape} from "../../shadow-shape.model";
   styleUrls: ['./shape-boundaries.component.css']
 })
 export class ShapeBoundariesComponent implements OnInit {
+  private shadowShapes: ShadowShape[] = [];
+  private distances =[];
+  private angles = [];
 
-  constructor(public dialogRef: MatDialogRef<ShapeBoundariesComponent>, @Inject(MAT_DIALOG_DATA) public shadowShape: ShadowShape) { }
+  constructor(public dialogRef: MatDialogRef<ShapeBoundariesComponent>, @Inject(MAT_DIALOG_DATA) public shadowShape: ShadowShape) {
+  }
 
   ngOnInit() {
+     this.calculateDistances();
+     this.calculateAngles();
   }
 
   onNoClick(): void {
@@ -19,7 +25,7 @@ export class ShapeBoundariesComponent implements OnInit {
   }
 
 
-  trackByIdx(index: number, obj: any): any {
+  heightTracker(index, obj): any {
     return index;
   }
 
@@ -32,6 +38,38 @@ export class ShapeBoundariesComponent implements OnInit {
   }
 
   onSaveData($event) {
+
+  }
+
+  calculateDistances() {
+    this.shadowShape.origin.getPaths().getArray().forEach(path => {
+      path.getArray().forEach( (value, i) => {
+        //console.log(value);
+        let tempIndex = i + 1;
+        if (i === path.getArray().length - 1) {
+          tempIndex = 0
+        }
+        this.distances[i] = google.maps.geometry.spherical.computeDistanceBetween(value, path.getAt(tempIndex))
+      })
+    });
+    this.distances.forEach(dist => {
+      console.log(dist)
+    })
+  }
+
+  calculateAngles() {
+    this.shadowShape.origin.getPaths().getArray().forEach(path => {
+      path.getArray().forEach( (value, i) => {
+        console.log(value);
+        let tempIndex = i + 1;
+        if (i === path.getArray().length - 1) {
+          tempIndex = 0
+        }
+        this.distances[i] = google.maps.geometry.spherical.computeDistanceBetween(value, path.getAt(tempIndex))
+
+      })
+    });
+
 
   }
 }
