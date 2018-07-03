@@ -31,6 +31,10 @@ export class DayInfoComponent implements OnInit, OnChanges {
   private buttonPressed = false;
   private sunFocued = false;
 
+  private sunX: number;
+  private sunY: number;
+  private mouseoverSun: boolean;
+
   constructor(private shadowService: ShadowCalculatorService) {
   }
 
@@ -76,17 +80,37 @@ export class DayInfoComponent implements OnInit, OnChanges {
         : e.buttons === 1;
     });
     canvas.addEventListener('mousemove', (evt) => {
-      if (!this.buttonPressed) {
+      let mouseIsOverSun = this.calculateMouseIsOverSun(canvas, evt);
+      if (mouseIsOverSun!=this.mouseoverSun) {
+        this.mouseoverSun = mouseIsOverSun;
+        this.onInputChanged();
+      }
+          if (!this.buttonPressed) {
         return;
       }
       this.updateSunPosition(canvas, evt);
     }, false);
     canvas.addEventListener('click', (evt) => {
+      this.mouseoverSun = true;
       this.updateSunPosition(canvas, evt);
     });
   }
 
+  private calculateMouseIsOverSun(canvas: HTMLElement | null, evt) {
+    const rect = canvas.getBoundingClientRect();
+    const x = evt.clientX - rect.left;
+    const y = evt.clientY - rect.top;
+    const hourSpanPixels = this.getXSpanPixelsForMouse(canvas);
+    const ratio = this.width / (canvas as any).width;
 
+    let mouseIsOverSun;
+    if (x * ratio > this.sunX && x * ratio < this.sunX + this.sunImgSize && y * ratio > this.sunY && y * ratio < this.sunY + this.sunImgSize) {
+      mouseIsOverSun = true;
+    } else {
+      mouseIsOverSun = false;
+    }
+    return mouseIsOverSun;
+  }
 
 
   private updateSunPosition(canvas: any, evt) {
@@ -189,9 +213,11 @@ export class DayInfoComponent implements OnInit, OnChanges {
     const altitudeDegrees = this.getAltitudeInDegrees(d)*this.getYSpanPixels(canvas);
     const sunX=this.getHourOffset(d, hourSpan) - imgSize / 2;
     const sunY=this.offsetTop+height - altitudeDegrees - imgSize / 2;
+    this.sunX = sunX;
+    this.sunY = sunY;
 
-
-    // ctx.drawImage(this.backgroundCircularImg, sunX-6, sunY-6, imgSize+12, imgSize+12);
+if (this.mouseoverSun || this.buttonPressed)
+     ctx.drawImage(this.backgroundCircularImg, sunX-6, sunY-6, imgSize+12, imgSize+12);
 
     let img = this.sunImg;
    if (this.shadowService.midsummer !=null && isSameDayOfYear(this.date, this.shadowService.midsummer)) {
