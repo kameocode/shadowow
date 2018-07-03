@@ -27,13 +27,43 @@
 </div>
 -->
 
-
+<button matTooltip="Toggle details" mat-icon-button (click)="toggleDetailed()">
+  <mat-icon class="x-icon-link" aria-label="-10 min">more_vert</mat-icon>
+</button>
 <div class="row x-time-1">
 
 
-  <app-solar-info-column class="col-md-4 col-xs-6" [date]="date" type="CUSTOM" [pos]="pos" withNowAltitudeAndAzimuth="true" (change)="selectDate($event)"></app-solar-info-column>
-  <app-solar-info-column class="col-md-4 col-xs-6" [date]="midsummer" type="MIDSUMMER" [pos]="pos" (change)="selectDate($event)"></app-solar-info-column>
-  <app-solar-info-column class="col-md-4 col-xs-6" [date]="midwinter" type="MIDWINTER" [pos]="pos" (change)="selectDate($event)"></app-solar-info-column>
+
+
+  <app-solar-info-column class="col-md-4 col-xs-6"
+                         [date]="today"
+                         type="TODAY"
+                         [pos]="pos"
+                         [detailed]="detailed"
+                         [selectedDate]="selectedDate"
+                         (change)="selectDate($event)"
+                         (changeWithTime)="selectDateWithTime($event)"
+  ></app-solar-info-column>
+
+  <app-solar-info-column class="col-md-4 col-xs-6"
+                         [date]="midsummer"
+                         [selectedDate]="selectedDate"
+                         type="MIDSUMMER"
+                         [pos]="pos"
+                         [detailed]="detailed"
+                         (change)="selectDate($event)"
+                         (changeWithTime)="selectDateWithTime($event)"
+  ></app-solar-info-column>
+
+  <app-solar-info-column class="col-md-4 col-xs-6"
+                         [date]="midwinter"
+                         [selectedDate]="selectedDate"
+                         type="MIDWINTER"
+                         [pos]="pos"
+                         [detailed]="detailed"
+                         (change)="selectDate($event)"
+                         (changeWithTime)="selectDateWithTime($event)"
+  ></app-solar-info-column>
 
 
 

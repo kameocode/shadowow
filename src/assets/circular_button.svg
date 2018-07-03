@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="30"
+   height="30"
+   viewBox="0 0 30 30"
+   id="svg4139"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="circular_button.svg">
+  <defs
+     id="defs4141">
+    <filter
+       style="color-interpolation-filters:sRGB"
+       inkscape:label="Clean Edges"
+       id="filter4282">
+      <feGaussianBlur
+         stdDeviation="0.979089"
+         result="blur"
+         id="feGaussianBlur4284" />
+      <feComposite
+         in="SourceGraphic"
+         in2="blur"
+         operator="in"
+         result="composite1"
+         id="feComposite4286" />
+      <feComposite
+         in="composite1"
+         in2="composite1"
+         operator="in"
+         result="fbSourceGraphic"
+         id="feComposite4288" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4290" />
+      <feGaussianBlur
+         id="feGaussianBlur4292"
+         stdDeviation="0.98"
+         result="blur"
+         in="fbSourceGraphic" />
+      <feComposite
+         id="feComposite4294"
+         in2="blur"
+         in="fbSourceGraphic"
+         operator="in"
+         result="composite1" />
+      <feComposite
+         id="feComposite4296"
+         in2="composite1"
+         in="composite1"
+         operator="in"
+         result="composite2" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="9.1175856"
+     inkscape:cx="-17.557499"
+     inkscape:cy="-0.64905866"
+     inkscape:document-units="px"
+     inkscape:current-layer="g4744"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata4144">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1022.3622)">
+    <g
+       id="g4744">
+      <ellipse
+         ry="13.200726"
+         rx="13.380735"
+         cy="1045.0784"
+         cx="11.561286"
+         id="ellipse4138"
+         style="fill:#999999;fill-opacity:0.99215686;stroke:none;stroke-width:0.616;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4282)"
+         transform="matrix(1.1521361,0,0,1.1521361,1.6710458,-165.46814)" />
+      <ellipse
+         style="fill:#16ead6;fill-opacity:1;stroke:none;stroke-width:0.616;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="path4136"
+         cx="14.96131"
+         cy="1037.1814"
+         rx="13.380735"
+         ry="13.200726" />
+    </g>
+  </g>
+</svg>

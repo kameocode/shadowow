@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ShadowCalculatorService} from "../../shadow-calculator.service";
 import LatLng = google.maps.LatLng;
+import {isSameDayOfYear} from "../../utils";
 
 let SunCalc = require('suncalc');
 
@@ -21,9 +22,13 @@ export class SolarInfoComponent implements OnInit {
   hours: number;
   minutes: number;
 
+  private detailed: boolean = false;
 
+
+  today: Date;
   midsummer: Date;
   midwinter: Date;
+  selectedDate: Date;
 
 
   constructor(private shadowService: ShadowCalculatorService) {
@@ -42,8 +47,10 @@ export class SolarInfoComponent implements OnInit {
   }
 
   private recalculateFields() {
+
     if (this.pos == null || this.date == null)
       return;
+    this.today=new Date();
     const times = SunCalc.getTimes(this.date, this.pos.lat(), this.pos.lng());
     // const position = SunCalc.getPosition(this.date, this.pos.lat(), this.pos.lng());
     this._sunrise = times.sunrise;
@@ -93,9 +100,9 @@ export class SolarInfoComponent implements OnInit {
     }
     this.midsummer = previousDateLong;
     this.midwinter = previousDateShort;
+    this.shadowService.registerMidsummerAndMidwinter(this.midsummer, this.midwinter);
 
-    console.log("midsummer", this.midsummer);
-    console.log("midwinter", this.midwinter);
+    this.selectedDate=this.date;
   }
 
   public get sunrise(): string {
@@ -123,5 +130,11 @@ export class SolarInfoComponent implements OnInit {
   selectDate(date: Date) {
     this.shadowService.setDay(date);
   }
+  selectDateWithTime(date: Date) {
+    this.shadowService.setDateAndTime(date);
+  }
 
+  toggleDetailed() {
+    this.detailed = !this.detailed;
+  }
 }

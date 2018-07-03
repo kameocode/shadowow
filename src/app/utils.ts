@@ -33,10 +33,14 @@ export function copyTextToClipboard(text) {
   try {
     const successful = document.execCommand('copy');
     const msg = successful ? 'successful' : 'unsuccessful';
-    console.log('Copying text command was ' + msg);
   } catch (err) {
-    console.log('Oops, unable to copy');
+    console.log('Oops, unable to copy', err);
   }
 
   document.body.removeChild(textArea);
+}
+export function isSameDayOfYear(d1: Date, d2: Date) {
+  return d1.getFullYear() === d2.getFullYear() &&
+  d1.getMonth() === d2.getMonth() &&
+  d1.getDate() === d2.getDate();
 }

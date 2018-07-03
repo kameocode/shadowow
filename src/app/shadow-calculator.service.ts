@@ -30,6 +30,9 @@ export class ShadowCalculatorService {
 
   private sunIconPositionCalculator: SunPositionCalculator;
 
+  public midsummer: Date;
+  public midwinter: Date;
+
   constructor() {
 
   }
@@ -117,5 +120,11 @@ export class ShadowCalculatorService {
 
   setPosition(pos: LatLng) {
     this.pos$.next(pos);
+  }
+
+  registerMidsummerAndMidwinter(midsummer: Date, midwinter: Date) {
+    this.midsummer = midsummer;
+    this.midwinter = midwinter;
+
   }
 }

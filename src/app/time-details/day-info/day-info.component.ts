@@ -2,6 +2,7 @@ import {Component, HostListener, Input, OnChanges, OnInit} from '@angular/core';
 import {ShadowCalculatorService} from "../../shadow-calculator.service";
 import LatLng = google.maps.LatLng;
 import {OutletContext} from "@angular/router";
+import {isSameDayOfYear} from "../../utils";
 
 let SunCalc = require('suncalc');
 
@@ -12,15 +13,20 @@ let SunCalc = require('suncalc');
   styleUrls: ['./day-info.component.css']
 })
 export class DayInfoComponent implements OnInit, OnChanges {
-  private readonly offsetTop=40;
+
   private readonly offsetLeft=23;
   private readonly sunImg = new Image();
+  private readonly backgroundCircularImg = new Image();
+  private readonly sunImgMidsummer = new Image();
+  private readonly sunImgMidwinter = new Image();
   private readonly sunImgFocused = new Image();
   private readonly sunImgSunrise = new Image();
+  private readonly sunImgToday = new Image();
   private readonly sunImgSize = 50;
+  private offsetTop: number=0;
 
 
-  private date: Date;
+  date: Date;
   private latLng: LatLng;
   private buttonPressed = false;
   private sunFocued = false;
@@ -41,8 +47,12 @@ export class DayInfoComponent implements OnInit, OnChanges {
       this.date = date;
       this.onInputChanged();
     });
-    this.sunImg.src = "assets/noon_small.svg"; //"assets/wb_sunny.svg";
-    this.sunImgFocused.src = "assets/noon_small_focused.svg"; //"assets/wb_sunny.svg";
+    this.sunImg.src = "assets/noon_small.svg";
+    this.sunImgFocused.src = "assets/noon_small_focused.svg";
+    this.sunImgMidsummer.src = "assets/midsummer.svg";
+    this.sunImgMidwinter.src = "assets/midwinter.svg";
+    this.backgroundCircularImg.src = "assets/circular_button.svg";
+    this.sunImgToday.src =  "assets/sun_today.svg";
     // this.sunImgSunrise.src = "assets/sunrise_small.svg";
 
     this.sunImg.addEventListener('load', ()=>{
@@ -78,14 +88,15 @@ export class DayInfoComponent implements OnInit, OnChanges {
 
 
 
+
   private updateSunPosition(canvas: any, evt) {
     const rect = canvas.getBoundingClientRect();
     const x = evt.clientX - rect.left;
     const y = evt.clientY - rect.top;
 
-    const hourSpanPixels = this.getXSpanPixels(canvas);
+    const hourSpanPixels = this.getXSpanPixelsForMouse(canvas);
 
-    let hour = (Math.max(0,x - this.offsetLeft)) / hourSpanPixels;
+    let hour = (Math.max(0,x - this.offsetLeft*this.width/canvas.width)) / hourSpanPixels;
     const hourInMinutes = hour * 60;
     let minutes = hourInMinutes - Math.floor(hour) * 60;
     if (hour>=24) {
@@ -97,6 +108,7 @@ export class DayInfoComponent implements OnInit, OnChanges {
     this.onInputChanged();
     this.shadowService.setDateAndTime(this.date);
   }
+  private width: number; // for mouse
 
   private onInputChanged() {
     if (this.latLng == null || this.date == null) {
@@ -105,6 +117,8 @@ export class DayInfoComponent implements OnInit, OnChanges {
 
     const canvas = document.getElementById("canv") as any;
     const ctx = canvas.getContext("2d");
+    this.width = canvas.getBoundingClientRect().width;
+
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -121,11 +135,22 @@ export class DayInfoComponent implements OnInit, OnChanges {
     // ctx.fillText(this.getAzimuthInDegrees(d).toFixed(0)+" "+String.fromCharCode(176), sunX+imgSize/2, sunY+70+12+12);
 
 
+    // draw sun current hour
+    ctx.fillStyle = "#000000";
+    ctx.font = "16px \"-apple-system\", \"BlinkMacSystemFont\", \"Segoe UI\", \"Roboto\", \"Helvetica Neu\"";
+    ctx.textAlign="center";
+    ctx.fillText(this.formatTime(sunPos.date), sunPos.sunX+sunPos.imgSize/2, sunPos.sunY+70);
+
   }
 
 
   private drawSunriseNoonAndSunsetLabels(canvas: any, ctx: any) {
     ctx.fillStyle="#000000";
+    if (this.offsetTop==0) {
+      return;
+    }
+
+
     const hourSpan = this.getXSpanPixels(canvas);
     const noonX = this.getHourOffset(this.shadowService.noon, hourSpan);
     let sunsetX = this.getHourOffset(this.shadowService.sunset, hourSpan);
@@ -151,7 +176,7 @@ export class DayInfoComponent implements OnInit, OnChanges {
     grd.addColorStop(1, "#16EAD6");
     ctx.fillStyle = grd;
     ctx.globalAlpha = 0.5;
-    ctx.fillRect(0, this.offsetTop + 90 * this.getYSpanPixels(canvas), canvas.width, canvas.height - 2 * this.offsetTop);
+    ctx.fillRect(0, canvas.height/2-this.offsetTop * this.getYSpanPixels(canvas), canvas.width, canvas.height - 1 * this.offsetTop);
     ctx.globalAlpha = 1;
   }
 
@@ -164,19 +189,30 @@ export class DayInfoComponent implements OnInit, OnChanges {
     const altitudeDegrees = this.getAltitudeInDegrees(d)*this.getYSpanPixels(canvas);
     const sunX=this.getHourOffset(d, hourSpan) - imgSize / 2;
     const sunY=this.offsetTop+height - altitudeDegrees - imgSize / 2;
+
+
+    // ctx.drawImage(this.backgroundCircularImg, sunX-6, sunY-6, imgSize+12, imgSize+12);
+
+    let img = this.sunImg;
+   if (this.shadowService.midsummer !=null && isSameDayOfYear(this.date, this.shadowService.midsummer)) {
+      img = this.sunImgMidsummer;
+    } else if (this.shadowService.midwinter  != null && isSameDayOfYear(this.date, this.shadowService.midwinter)) {
+      img = this.sunImgMidwinter;
+    } else if (isSameDayOfYear(this.date, new Date())) {
+      img = this.sunImgToday;
+   }
+
     if (!this.sunFocued)
-      ctx.drawImage(this.sunImg, sunX, sunY, imgSize, imgSize);
+      ctx.drawImage(img, sunX, sunY, imgSize, imgSize);
     else
       ctx.drawImage(this.sunImgFocused, sunX, sunY, imgSize, imgSize);
 
-    // draw sun current hour
-    ctx.fillStyle = "#000000";
-    ctx.font = "16px \"-apple-system\", \"BlinkMacSystemFont\", \"Segoe UI\", \"Roboto\", \"Helvetica Neu\"";
-    ctx.textAlign="center";
-    ctx.fillText(this.formatTime(d), sunX+imgSize/2, sunY+70);
+
 
     return {date: d, sunX, sunY, imgSize}
   }
+
+
   private drawAltitudeFor24h(canvas: any, ctx: any) {
     const height = (canvas.height - this.offsetTop)/2;
     const hourSpan = this.getXSpanPixels(canvas);
@@ -205,6 +241,11 @@ export class DayInfoComponent implements OnInit, OnChanges {
   }
   private getXSpanPixels(canvas: any) {
     const cw = canvas.width - 2 * this.offsetLeft;
+    return cw / 24; //2ltitude is 4 hours
+  }
+  private getXSpanPixelsForMouse(canvas: any) {
+    const ratio = this.width/canvas.width;
+    const cw = this.width - 2 * this.offsetLeft*ratio;
     return cw / 24; //2ltitude is 4 hours
   }
   private getYSpanPixels(canvas: any) {
@@ -239,15 +280,21 @@ export class DayInfoComponent implements OnInit, OnChanges {
 
   increment() {
     this.date.setTime(this.date.getTime()+1000*60*10);
-
     this.updateHour();
-
-
   }
   decrement() {
     this.date.setTime(this.date.getTime()-1000*60*10);
     this.updateHour();
 
+  }
+
+  incrementDay() {
+    this.date.setTime(this.date.getTime()+1000*60*60*24);
+    this.shadowService.setDateAndTime(this.date);
+  }
+  decrementDay() {
+    this.date.setTime(this.date.getTime()-1000*60*60*24);
+    this.shadowService.setDateAndTime(this.date);
   }
   private updateHour() {
 

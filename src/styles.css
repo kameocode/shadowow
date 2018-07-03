@@ -6,15 +6,15 @@ body {
 }
 #wrap {
   min-height: 100%;
+  overflow-y: hidden;
 }
 #main {
   overflow:auto;
-  padding-bottom:50px; /* this needs to be bigger than footer height*/
+  padding-bottom:51px; /* this needs to be bigger than footer height*/
 }
 #footer {
   background: #fff;
   box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.1);
-  padding: 10px 0;
   color: #333;
   font-size: 14px;
 
@@ -22,7 +22,7 @@ body {
   margin-top: -50px; /* negative value of footer height */
   height: 50px;
   clear:both;
-  padding-top:20px;
+  padding: 20px 0 10px;
 }
 
 
@@ -64,4 +64,15 @@ textarea:focus, input:focus {
 .x-icon-link:hover {
   opacity: 1;
   color: red;
+}
+
+.x-section-divider {
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: #1dc8cd;
+  background: linear-gradient(0deg, #1dc8cd 0%, #55fabe 100%);
+  margin: 0 auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

@@ -11,18 +11,20 @@
            (click)="openHelpDialog()"
            href="#">Help<span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item">
+     <!-- <li class="nav-item">
         <a class="nav-link">
           <mat-icon (click)="openImportExportDialog()"
                     matTooltip="Date/time information"
-                    aria-label="Date/time information">speaker_notes</mat-icon>
+                    aria-label="Date/time information">speaker_notes
+          </mat-icon>
         </a>
-      </li>
+      </li>-->
       <li class="nav-item">
         <a class="nav-link">
           <mat-icon (click)="openImportExportDialog()"
                     matTooltip="Import/export"
-                    aria-label="Import/export">import_export</mat-icon>
+                    aria-label="Import/export">import_export
+          </mat-icon>
         </a>
       </li>
     </ul>
@@ -30,37 +32,50 @@
 </nav>
 
 
-
 <div class='row text-center x-content nopadding'>
-  <div class="col-md-8 col-xs-12 x-gmap-wrapper" [class.x-gmap-wrapper-night]="isNight"
+  <div class="col-lg-8 col-md-8 col-sm-12 x-gmap-wrapper" [class.x-gmap-wrapper-night]="isNight"
        [class.x-gmap-wrapper-dusk-or-down]="isDuskOrDawn">
-    <div [class.x-gmap-night]="isNight" [class.x-gmap-dusk-or-down]="isDuskOrDawn" #gmap style="min-height:50vh; height: 100%;"></div>
+    <div [class.x-gmap-night]="isNight" [class.x-gmap-dusk-or-down]="isDuskOrDawn" #gmap
+         style="min-height:50vh; height: 100%;"></div>
   </div>
 
-  <div class="col-md-4 col-xs-12 x-details">
+  <div class="col-lg-4 col-md-4 col-sm-12 x-details">
+
+
 
     <div class="row no-select">
-      <app-day-info class="col-md-7 col-xs-12"></app-day-info>
-
-      <div class="col-md-5 col-xs-12" style="display: flex; flex-flow: column; align-items: flex-end; justify-content: center; min-height: 180px;">
-
-
-        <app-time-details></app-time-details>
+      <div class="col-xs-12" style="width: 100%; margin-bottom: 10px;">
         <app-shape-details [shadowShape]="shadowShapesSet.currentShape"
                            [marker]="shadowShapesSet.currentMarker"
                            [markerIndex]="shadowShapesSet.currentMarkerIndex"
                            [currentHeight]="shadowShapesSet.currentHeight"
                            [currentShadow]="shadowShapesSet.currentShadowLength"
         ></app-shape-details>
-
       </div>
+    </div>
 
+
+<!--    <div class="row no-select">
+      <div class="col-xs-12" style="width: 100%; align-items: center;">
+        <span class="x-section-divider"></span>
+      </div>
+    </div>-->
+
+
+    <div class="row no-select" style="display: flex; justify-content: space-evenly; margin: 5px 0 5px 0">
+      <app-day-info></app-day-info>
+      <app-current-day></app-current-day>
     </div>
 
 
 
-    <app-solar-info></app-solar-info>
+    <div class="row no-select" style="margin-top:30px;">
+      <div class="col-xs-12" style="width: 100%;">
+        <app-solar-info style="display: flex; justify-content: center;" ></app-solar-info>
+      </div>
+    </div>
   </div>
+  <app-time-details></app-time-details>
 
 </div>
 

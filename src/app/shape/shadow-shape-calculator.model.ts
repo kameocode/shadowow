@@ -119,8 +119,6 @@ export class ShadowShapeCalculator {
           const inOriginal = this.isInOriginalShadow(u);
           const inOriginal2 = this.isInOriginalShadow(u.rescale(0.0009));
 
-          //console.log("ssss " + areaOfHoleAfterDiff + "  " + areaOfHole + " " + Math.abs(areaOfHole - areaOfHoleAfterDiff) + " isInOriginalShadow " + inOriginal + " " + inOriginal2);
-
           if ((!inOriginal || !inOriginal2) && ((areaOfHoleAfterDiff < areaOfHole && Math.abs(areaOfHole - areaOfHoleAfterDiff) > 0.00003) || diffResult.length == 1)) {
             toAdd.add(u);
           }

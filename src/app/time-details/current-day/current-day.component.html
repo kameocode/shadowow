@@ -1,0 +1,8 @@
+<app-solar-info-column [date]="date" type="CUSTOM" [pos]="pos"
+                       withNowAltitudeAndAzimuth="true"
+                       activeStateEnabled="true"
+                       detailed="true"
+                       [selectedDate]="date"
+                       (change)="selectDate($event)"
+                       (changeWithTime)="selectDateWithTime($event)"
+></app-solar-info-column>

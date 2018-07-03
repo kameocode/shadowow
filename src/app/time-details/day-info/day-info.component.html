@@ -1,14 +1,23 @@
-<div style="position: relative;"  class="x-box-shadow">
-<canvas id="canv" width="360" height="220"></canvas><!-- width: 240 height: 180 -->
+<div style="position: relative;" >
+<canvas id="canv" width="400" height="220"  class="x-box-shadow" ></canvas><!-- width: 240 height: 180 -->
 
-<div style="bottom: 8px;right: 5px; position: absolute;">
-  <button mat-icon-button (click)="decrement()">
-    <mat-icon class="x-icon-link" aria-label="-10 min">navigate_before</mat-icon>
-  </button>
-  <button mat-icon-button (click)="increment()">
-    <mat-icon class="x-icon-link" aria-label="+10 min">navigate_next</mat-icon>
-  </button>
-</div>
+  <div style="bottom: 8px;right: 5px; position: absolute;">
+    <!-- <div style="display: flex; align-items: center">
+       <button mat-icon-button (click)="decrementDay()">
+         <mat-icon class="x-icon-link" aria-label="-10 min">arrow_back_ios</mat-icon>
+       </button>-->
+    <button mat-icon-button (click)="decrement()">
+      <mat-icon class="x-icon-link" aria-label="-10 min">navigate_before</mat-icon>
+    </button>
+    <!--{{date.toLocaleDateString()}}-->
+    <button mat-icon-button (click)="increment()">
+      <mat-icon class="x-icon-link" aria-label="+10 min">navigate_next</mat-icon>
+    </button>
+    <!--  <button mat-icon-button (click)="incrementDay()">
+        <mat-icon class="x-icon-link" aria-label="-10 min">arrow_forward_ios</mat-icon>
+      </button>
+    </div>-->
+  </div>
 </div>
 
 

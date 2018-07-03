@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {isSameDayOfYear} from "../../../utils";
 import LatLng = google.maps.LatLng;
 
 
@@ -16,18 +17,33 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
   @Input()
   pos: LatLng;
   @Input()
-  type: 'CUSTOM' | 'MIDSUMMER' | 'MIDWINTER';
+  type: 'CUSTOM' | 'MIDSUMMER' | 'MIDWINTER' | 'TODAY';
   @Input()
   withNowAltitudeAndAzimuth: boolean = false;
+  @Input()
+  selectedDate: Date;
+  @Input()
+  detailed: boolean;
+  @Input()
+  modeButton: boolean;
+
+  private _nowDate: Date;
+
+  @Input()
+  activeStateEnabled: boolean = true;
+
   @Output()
   change = new EventEmitter<Date>();
 
+  @Output()
+  changeWithTime = new EventEmitter<Date>();
 
   private sunriseDate: Date | null;
   private sunsetDate: Date | null;
   private noonDate: Date | null;
 
   noonAltitudeDegrees: string;
+  noonAzimuthDegrees: string;
   sunriseAzimuthDegrees: string;
   sunsetAzimuthDegrees: string;
 
@@ -41,12 +57,19 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
   ngOnInit() {
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
 
+  ngOnChanges(changes: SimpleChanges): void {
     const times = SunCalc.getTimes(this.date, this.pos.lat(), this.pos.lng());
     const position = SunCalc.getPosition(this.date, this.pos.lat(), this.pos.lng());
-    this.nowAzimuthDegrees = this.getAzimuth(position);
-    this.nowAltitudeDegrees = this.getAltitude(position);
+
+    this._nowDate = new Date(this.date);
+    this._nowDate.setHours(this.selectedDate.getHours());
+    this._nowDate.setMinutes(this.selectedDate.getMinutes());
+    const nowPosition = SunCalc.getPosition(this._nowDate, this.pos.lat(), this.pos.lng());
+
+
+    this.nowAzimuthDegrees = this.getAzimuth(nowPosition);
+    this.nowAltitudeDegrees = this.getAltitude(nowPosition);
 
     this.sunriseDate = times.sunrise == "Invalid Date" ? null : times.sunrise as Date;
     this.sunsetDate = times.sunset == "Invalid Date" ? null : times.sunset as Date;
@@ -54,6 +77,7 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
 
     const noonPosition = SunCalc.getPosition(times.solarNoon, this.pos.lat(), this.pos.lng());
     this.noonAltitudeDegrees = this.getAltitude(noonPosition);
+    this.noonAzimuthDegrees = this.getAzimuth(noonPosition);
 
     if (this.sunriseDate == null) {
       this.sunriseAzimuthDegrees = "-";
@@ -71,8 +95,50 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
 
   }
 
+  selectSunrise() {
+    if (this.sunriseDate != null) {
+      this.changeWithTime.emit(this.sunriseDate);
+    }
+  }
+
+  selectSunset() {
+    if (this.sunsetDate != null) {
+      this.changeWithTime.emit(this.sunsetDate);
+    }
+  }
+
+  selectSolarNoon() {
+    if (this.noonDate != null) {
+      this.changeWithTime.emit(this.noonDate);
+    }
+  }
+
+  selectNow() {
+    if (this.type == "CUSTOM") {
+      this.changeWithTime.emit(new Date());
+    } else {
+      this.changeWithTime.emit(this._nowDate);
+    }
+  }
+
+  incrementDay() {
+    this.date.setTime(this.date.getTime() + 1000 * 60 * 60 * 24);
+    this.change.emit(this.date);
+  }
+
+  decrementDay() {
+    this.date.setTime(this.date.getTime() - 1000 * 60 * 60 * 24);
+    this.change.emit(this.date);
+  }
+
   public onDaySelected() {
     this.change.emit(this.date);
+  }
+
+
+  onDayChanged(day: Date) {
+    this.date = day;
+    this.change.emit(day);
   }
 
   private getAltitude(position: any) {
@@ -87,10 +153,12 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
     switch (this.type) {
       case "CUSTOM":
         return "selected day";
+      case "TODAY":
+        return "today";
       case "MIDSUMMER":
-        return "summer solastice";
+        return "midsummer"; //"summer solastice";
       case "MIDWINTER":
-        return "winter solastice";
+        return "midwinter"; //"winter solastice";
       default:
         return null;
     }
@@ -101,10 +169,12 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
     switch (this.type) {
       case "CUSTOM":
         return "assets/noon_selected.svg";
+      case "TODAY":
+        return "assets/sun_today.svg";
       case "MIDSUMMER":
-        return "assets/noon_summer.svg";
+        return "assets/midsummer.svg";
       case "MIDWINTER":
-        return "assets/noon_winter.svg";
+        return "assets/midwinter.svg";
       default:
         return null;
     }
@@ -114,6 +184,8 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
     switch (this.type) {
       case "CUSTOM":
         return "selected";
+      case "TODAY":
+        return "today";
       case "MIDSUMMER":
         return "summer solastice";
       case "MIDWINTER":
@@ -121,6 +193,10 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
       default:
         return null;
     }
+  }
+
+  get opaque() {
+    return this.type == "CUSTOM";
   }
 
   get sunriseHour() {
@@ -141,10 +217,11 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
     return this.formatTime(this.noonDate);
   }
 
+
   get nowHour() {
-    if (this.date == null)
+    if (this.selectedDate == null)
       return null;
-    return this.formatTime(this.date);
+    return this.formatTime(this._nowDate);
   }
 
   private formatTime(date: Date) {
@@ -161,5 +238,15 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
 
 
     return hours.toFixed(0) + "h " + minutes.toFixed(0) + "m";
+  }
+
+  public get active() {
+    return this.isSameDay(this.date, this.selectedDate) && this.activeStateEnabled;
+  }
+
+  private isSameDay(d1: Date, d2: Date) {
+    if (d1 == null || d2 == null)
+      return false;
+    return isSameDayOfYear(d1, d2)
   }
 }

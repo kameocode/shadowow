@@ -25,11 +25,11 @@
   padding: 20px;
   background: linear-gradient(-45deg, #ddf9ee, rgba(215, 255, 255, 0.15));
   transition: all 0.5s;
+
 }
 
 a > mat-icon {
   cursor: pointer;
 }
-
 
 

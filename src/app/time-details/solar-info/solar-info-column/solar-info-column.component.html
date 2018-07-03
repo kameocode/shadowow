@@ -1,32 +1,108 @@
-<div class="x-icon-block x-margin">
-  <img class="x-icon" [src]="iconUrl"  (click)="onDaySelected()"/>
-  <div class="x-altitude">{{typeLabel}}</div>
-  {{date.toLocaleDateString()}}
+<div class="x-icon-block x-margin" [class.x-icon-block-custom]="this.type=='CUSTOM'" >
 
-  <div  [matTooltip]="tooltip" class="x-mini-row" style="margin-top: 10px;">
-    <img src="assets/noon_duration.svg" style="width:28px;"/> {{dayDuration}}
+
+  <!--
+
+    <button *ngIf="modeButton"
+            mat-fab [color]="active? 'accent': 'primary'" [class.x-unselected]="!active">
+      <img style="height: 45px;margin-top:-10px;" [src]="iconUrl"
+           (click)="this.type==='CUSTOM'? picker.open(): onDaySelected()"/>
+    </button>-->
+  <div *ngIf="this.type=='CUSTOM'" style="display: flex;flex-flow: column;">
+      <input matInput [matDatepicker]="picker" [(ngModel)]="date"
+             style="width:0px; height: 0px; border: 0;padding:0"
+             (ngModelChange)="onDayChanged($event)"
+             placeholder="Choose a date">
+      <mat-datepicker #picker></mat-datepicker>
+
+    <div  style="cursor: pointer; display: flex; align-items: center">
+
+        <button mat-icon-button (click)="decrementDay()">
+          <mat-icon class="x-icon-link" aria-label="+1 day">navigate_before</mat-icon>
+        </button>
+      <b style="min-width: 85px;"
+         (click)="picker.open()">{{date.toLocaleDateString()}}</b>
+      <button mat-icon-button (click)="incrementDay()">
+          <mat-icon class="x-icon-link" aria-label="+1 day">navigate_next</mat-icon>
+      </button>
+    </div>
+
+    <!-- <div *ngIf="withNowAltitudeAndAzimuth && active" class="x-mini-row x-mini-row-group" style="margin-bottom: 10px;">
+     <a class="x-minitime" (click)="selectNow()">now:</a>&nbsp;<div>{{nowHour}}</div>&nbsp;<br/><br/>
+
+     <mat-icon matTooltip="sun azimuth in degrees">explore</mat-icon>&nbsp;{{nowAzimuthDegrees}}&deg;
+     <mat-icon matTooltip="sun altitude in degrees">arrow_upward</mat-icon>&nbsp;{{nowAltitudeDegrees}}&deg;
+   </div>-->
+     <div matTooltip="day duration" class="x-mini-row">
+     ↔ {{dayDuration}}
   </div>
-  <div class="x-mini-row-group">
-    <div class="x-mini-row">
-      <div class="x-minitime">noon:</div>&nbsp;<div>{{noonHour}}</div>&nbsp;
-      <mat-icon matTooltip="sun altitude in degrees">arrow_upward</mat-icon>
-      {{noonAltitudeDegrees}}&deg;
-    </div>
-    <div class="x-mini-row">
-      <div class="x-minitime">sunrise:</div>&nbsp;<div>{{sunriseHour}}</div>&nbsp;
-      <mat-icon matTooltip="sun azimuth in degrees">explore</mat-icon>&nbsp;{{sunriseAzimuthDegrees}}&deg;
-    </div>
-    <div class="x-mini-row">
-      <div class="x-minitime">sunset:</div>&nbsp;<div>{{sunsetHour}}</div>&nbsp;
-      <mat-icon matTooltip="sun azimuth in degrees">explore</mat-icon>&nbsp;{{sunsetAzimuthDegrees}}&deg;
+  </div>
+
+  <span *ngIf="this.type!='CUSTOM'">
+
+    <button *ngIf="modeButton"
+            mat-fab [color]="active? 'accent': 'primary'"
+            [class.x-unselected]="!active"
+            [class.x-notopague]="!opaque">
+      <img style="height: 45px;margin-top:-10px;" [src]="iconUrl"
+           (click)="this.type==='CUSTOM'? picker.open(): onDaySelected()"/>
+    </button>
+
+     <img *ngIf="!modeButton" class="x-icon"
+          [class.x-notopague]="!opaque"
+          [src]="iconUrl" (click)="onDaySelected()"/>
+      <div  (click)="onDaySelected()" style="cursor: pointer;">
+        <div class="x-altitude">{{typeLabel}}</div>
+        {{date.toLocaleDateString()}}
+      </div>
+     <div matTooltip="day duration" class="x-mini-row">
+    ↔{{dayDuration}}
+  </div>
+  </span>
+
+
+  <div *ngIf="detailed" class="x-mini-row-group" style="color: #18a3a7; ">
+
+
+
+    <div class="x-mini-row" style="margin-bottom: 20px;">
+      <a class="x-minitime" (click)="selectNow()">now:</a>
+      <div class="x-mini-hour">{{nowHour}}</div>&nbsp;
+      <div class="x-mini-azimuth" matTooltip="sun azimuth in degrees">{{nowAzimuthDegrees}}&deg;</div>
+      <div class="x-mini-altitude" matTooltip="sun altitude in degrees">{{nowAltitudeDegrees}}&deg;</div>
     </div>
 
-    <div *ngIf="withNowAltitudeAndAzimuth"  class="x-mini-row">
-      <div class="x-minitime">now:</div>&nbsp;<div>{{nowHour}}</div>&nbsp;
-      <mat-icon matTooltip="sun azimuth in degrees">explore</mat-icon>&nbsp;{{nowAzimuthDegrees}}&deg;
-      <mat-icon matTooltip="sun altitude in degrees">arrow_upward</mat-icon>&nbsp;{{nowAltitudeDegrees}}&deg;
+
+    <div class="x-mini-row">
+      <a class="x-minitime" (click)="selectSunrise()">sunrise:</a>
+      <div class="x-mini-hour">{{sunriseHour}}</div>
+      <div class="x-mini-azimuth" matTooltip="sun azimuth in degrees">{{sunriseAzimuthDegrees}}&deg;</div>
     </div>
+
+    <div class="x-mini-row">
+      <a class="x-minitime" (click)="selectSolarNoon()">noon:</a>
+      <div class="x-mini-hour">{{noonHour}}</div>
+      <div class="x-mini-azimuth" matTooltip="sun azimuth in degrees">{{noonAzimuthDegrees}}&deg;</div>
+      <div class="x-mini-altitude" matTooltip="sun altitude in degrees">{{noonAltitudeDegrees}}&deg;</div>
+    </div>
+
+    <div class="x-mini-row">
+      <a class="x-minitime" (click)="selectSunset()">sunset:</a>
+      <div class="x-mini-hour">{{sunsetHour}}</div>&nbsp;
+      <div class="x-mini-azimuth" matTooltip="sun azimuth in degrees">{{sunsetAzimuthDegrees}}&deg;</div>
+    </div>
+
+
+    <div class="x-mini-row">
+      <div class="x-minitime">&nbsp;</div>
+      <div class="x-mini-hour">&nbsp;</div>
+      <mat-icon class="x-mini-azimuth" matTooltip="sun azimuth in degrees">explore</mat-icon>
+      <mat-icon class="x-mini-altitude" matTooltip="sun altitude in degrees">arrow_upward</mat-icon>
+    </div>
+
   </div>
   <span class="d-sm-none x-section-divider"></span>
+
+
 </div>
 

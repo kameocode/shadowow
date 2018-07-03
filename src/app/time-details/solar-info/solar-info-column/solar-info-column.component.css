@@ -2,10 +2,14 @@
   display: flex;
   flex-flow: column;
   justify-content: flex-start;
-  align-items: center;
+
+}
+.x-icon-block-custom {
+  justify-content: space-between;
+  height: 100%;
 }
 .x-icon {
-  width: 64px;
+  height: 44px;
   cursor: pointer
 }
 .x-mini-row {
@@ -16,11 +20,12 @@
   font-size: 20px;
 }
 .x-margin {
-  margin-left:15px;
-  margin-right:15px;
+  margin-left:10px;
+  margin-right:10px;
 }
 .x-minitime {
-  width: 45px;
+  min-width: 55px;
+  width: 55px;
   text-align:left;
   font-weight: bold;
 }
@@ -30,13 +35,32 @@
 .x-mini-row-group {
   max-width: 150px;
 }
+.x-mini-hour {
+  min-width: 35px;
+  width: 35px;
+  text-align: left;
+}
+.x-mini-azimuth {
+  min-width: 30px;
+  width: 30px;
+  text-align: right;
+}
+.x-mini-altitude {
+  min-width: 30px;
+  width: 30px;
+  text-align: right;
+}
+.x-unselected {
+  background-color: white;
+}
 
-.x-section-divider {
-  display: block;
-  width: 60px;
-  height: 3px;
-  background: #1dc8cd;
-  background: linear-gradient(0deg, #1dc8cd 0%, #55fabe 100%);
-  margin: 0 auto;
-  margin-bottom: 20px;
+.x-notopague {
+  opacity: 0.6;
+}
+.x-notopague:hover {
+  opacity: 1;
+}
+
+a {
+  cursor: pointer;
 }

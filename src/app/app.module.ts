@@ -25,6 +25,7 @@ import {
   SolarInfoComponent
 } from './time-details/solar-info/solar-info.component';
 import {SolarInfoColumnComponent} from "./time-details/solar-info/solar-info-column/solar-info-column.component";
+import { CurrentDayComponent } from './time-details/current-day/current-day.component';
 
 
 @NgModule({
@@ -37,7 +38,8 @@ import {SolarInfoColumnComponent} from "./time-details/solar-info/solar-info-col
     ShapesLoaderDialogComponent,
     HelpDialogComponent,
     SolarInfoComponent,
-    SolarInfoColumnComponent
+    SolarInfoColumnComponent,
+    CurrentDayComponent
 
   ],
   imports: [

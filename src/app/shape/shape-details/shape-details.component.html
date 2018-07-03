@@ -1,11 +1,16 @@
 
-<div style="display: flex; flex-flow: column; align-items: flex-end;  margin-left: 18px; margin-top:10px;">
-  <div style="padding-top: 20px;">
-    Height:&nbsp;
-    <span class="x-pinBackground" (click)="openSettingsDialog()"><div class="x-pinLabel">{{ markerLabel }}</div></span>
-    <input style="width: 40px;" [(ngModel)]="currentHeight" (ngModelChange)="onChangeCurrentHeight($event)" type=number
-           min=0 max=50>[m]
-  </div>
+<div style="display: flex; flex-flow: row; justify-content: center; align-items: center;flex-wrap: nowrap; margin-left: 18px;">
 
-  <div style="margin-top:10px;" class="x-shadow-info">Shadow: {{currentShadow>0? currentShadow.toFixed(2)+"[m]": "&#8734;"}}</div>
+  <div style="display: flex; flex-flow: row; justify-content: center; align-items: center;flex-wrap: nowrap;">
+    Height:
+    <span class="x-pinBackground" (click)="openSettingsDialog()"><div class="x-pinLabel">{{ markerLabel }}</div></span>
+
+
+    <input style="width: 40px;" [(ngModel)]="currentHeight" (ngModelChange)="onChangeCurrentHeight($event)" type=number
+           min=0 max=50>
+
+  </div>
+  <div style="margin-right: 20px; margin-left: 20px;">→</div>
+
+  <div class="x-shadow-info">Shadow: {{currentShadow>0? currentShadow.toFixed(2)+" m": "&#8734;"}}</div>
 </div>
