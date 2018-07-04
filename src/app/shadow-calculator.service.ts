@@ -142,18 +142,20 @@ export class ShadowCalculatorService {
       let heading = google.maps.geometry.spherical.computeHeading(startLatLng, destLatLng);
       console.log("Heading: " + heading);
       console.log("new distance: " + newDistances[i]);
-      calculatedLatLng[i] = google.maps.geometry.spherical.computeOffset(startLatLng, newDistances[i], heading);
-      console.log("Orig LatLng ["+i+"]: lat: " + originalLatLng[i].lat() +  " lng: " +originalLatLng[i].lng());
-      console.log("Calc LatLng ["+i+"]: lat: " + calculatedLatLng[i].lat() +  " lng: " +calculatedLatLng[i].lng());
+      calculatedLatLng[tempIndex] = google.maps.geometry.spherical.computeOffset(startLatLng, newDistances[i], heading);
+      console.log("Orig LatLng ["+i+"]: lat: " + originalLatLng[tempIndex].lat() +  " lng: " +originalLatLng[tempIndex].lng());
+      console.log("Calc LatLng ["+i+"]: lat: " + calculatedLatLng[tempIndex].lat() +  " lng: " +calculatedLatLng[tempIndex].lng());
 
 
       this.shadowShapeSet.currentShape.origin.setPath(calculatedLatLng);
-      if (this.shadowShapeSet.currentShape != null) {
-        this.shadowShapeSet.markersSet.createMarkers(this.shadowShapeSet.currentShape.origin, true);
-      } else {
-        this.shadowShapeSet.markersSet.clearMarkers();
-      }
+
     });
+
+    if (this.shadowShapeSet.currentShape != null) {
+      this.shadowShapeSet.markersSet.createMarkers(this.shadowShapeSet.currentShape.origin, true);
+    } else {
+      this.shadowShapeSet.markersSet.clearMarkers();
+    }
     this.recalculateShadows();
   }
 
