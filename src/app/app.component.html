@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#" >Shadowow
+  <a class="navbar-brand" href="#">Shadowow
     <div style="font-size: 10px; max-width: 200px;margin-top: -5px;">shadows on google maps</div>
   </a>
 
@@ -19,73 +19,65 @@
            (click)="openHelpDialog()"
            href="#">Help</a>
       </li>
-
-     <!-- <li class="nav-item">
-        <a class="nav-link">
-          <mat-icon (click)="openImportExportDialog()"
-                    matTooltip="Date/time information"
-                    aria-label="Date/time information">speaker_notes
-          </mat-icon>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link">
-          <mat-icon (click)="openImportExportDialog()"
-                    matTooltip="Import/export"
-                    aria-label="Import/export">import_export
-          </mat-icon>
-        </a>
-      </li>-->
     </ul>
   </div>
 </nav>
 
+<div style="display: flex; flex-flow: column;" class="x-main">
+  <div class='row text-center x-content nopadding'>
+    <div class="col-lg-8 col-md-8 col-sm-12 x-gmap-wrapper" [class.x-gmap-wrapper-night]="isNight"
+         [class.x-gmap-wrapper-dusk-or-down]="isDuskOrDawn">
+      <div [class.x-gmap-night]="isNight" [class.x-gmap-dusk-or-down]="isDuskOrDawn" #gmap
+           style="min-height:40vh; height: 100%;"></div>
+    </div>
 
-<div class='row text-center x-content nopadding'>
-  <div class="col-lg-8 col-md-8 col-sm-12 x-gmap-wrapper" [class.x-gmap-wrapper-night]="isNight"
-       [class.x-gmap-wrapper-dusk-or-down]="isDuskOrDawn">
-    <div [class.x-gmap-night]="isNight" [class.x-gmap-dusk-or-down]="isDuskOrDawn" #gmap
-         style="min-height:50vh; height: 100%;"></div>
+    <div class="col-lg-4 col-md-4 col-sm-12 x-details">
+      <div class="row no-select">
+        <div class="col-xs-12" style="width: 100%; margin-bottom: 10px;">
+          <app-shape-details [shadowShape]="shadowShapesSet.currentShape"
+                             [marker]="shadowShapesSet.currentMarker"
+                             [markerIndex]="shadowShapesSet.currentMarkerIndex"
+                             [currentHeight]="shadowShapesSet.currentHeight"
+                             [currentShadow]="shadowShapesSet.currentShadowLength"
+          ></app-shape-details>
+        </div>
+      </div>
+
+      <div class="row no-select" style="display: flex; justify-content: space-evenly; margin: 5px 0 5px 0">
+        <app-day-info></app-day-info>
+      </div>
+
+      <div class="row no-select" style="margin-top:30px;">
+        <div class="col-xs-12" style="width: 100%;">
+          <app-solar-info style="display: flex; justify-content: center;"></app-solar-info>
+        </div>
+      </div>
+    </div>
+    <app-time-details></app-time-details>
+
   </div>
-
-  <div class="col-lg-4 col-md-4 col-sm-12 x-details">
-
-
-
-    <div class="row no-select">
-      <div class="col-xs-12" style="width: 100%; margin-bottom: 10px;">
-        <app-shape-details [shadowShape]="shadowShapesSet.currentShape"
-                           [marker]="shadowShapesSet.currentMarker"
-                           [markerIndex]="shadowShapesSet.currentMarkerIndex"
-                           [currentHeight]="shadowShapesSet.currentHeight"
-                           [currentShadow]="shadowShapesSet.currentShadowLength"
-        ></app-shape-details>
+  <div class="row">
+    <div class="col-xl-6 col-lg-7 col-md-10 col-sm-12 mx-auto" style="padding-top: 120px; padding: 80px; line-height: 30px;">
+      <div class="d-none d-sm-block text-center">
+        <span class="x-section-divider" style="margin-bottom: 30px;"></span>
       </div>
-    </div>
+      <h1>Sun position calculator on google maps</h1>
+      <h2 style="color: #666">Predict size of shadows at different times of the day for google maps location.</h2><br/>
+
+      Navigate to the plot where you plan to <b>build a house</b> and check <b>how much sun your garden will get</b>.<br/>
+      Use rectangle or polygon tool to draw area of your house/building on the map. You can specify heights (in meters) for each point.<br/>
+      The application will:<br/>
+        <ul>
+          <li>simulate casted shadow directly on the map</li>
+          <li>calculate sun shade length and angle on your parcel/land</li>
+          <li>predict shadow shape for any specified time, including both summer and winter solastice</li>
+          <li>display day duration, sunrise and sunset times for selected google maps location and date</li>
+          <li>display sun position: sun altitude and sun azimuth</li>
+        </ul>
 
 
-<!--    <div class="row no-select">
-      <div class="col-xs-12" style="width: 100%; align-items: center;">
-        <span class="x-section-divider"></span>
-      </div>
-    </div>-->
-
-
-    <div class="row no-select" style="display: flex; justify-content: space-evenly; margin: 5px 0 5px 0">
-      <app-day-info></app-day-info>
-
-    </div>
-
-
-
-    <div class="row no-select" style="margin-top:30px;">
-      <div class="col-xs-12" style="width: 100%;">
-        <app-solar-info style="display: flex; justify-content: center;" ></app-solar-info>
-      </div>
     </div>
   </div>
-  <app-time-details></app-time-details>
-
 </div>
 
 
@@ -102,8 +94,13 @@
       </div>
       <div class="col-lg-6">
         <nav class="footer-links text-lg-right text-center pt-2 pt-lg-0">
-          <a href="http://kameocode.com#projects">Projects</a>
+
+          <a class="d-sm-none" href="http://kameocode.com#projects">Projects</a>
           <a href="http://kameocode.com#contact" class="scrollto">Contact</a>
+
+          &nbsp; &nbsp;
+          <a href="assets/privacy_policy.html" rel="nofollow">Privacy Policy</a>
+          <a href="assets/terms.html" rel="nofollow">Terms & Conditions</a>
         </nav>
       </div>
     </div>

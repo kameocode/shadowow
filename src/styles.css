@@ -4,31 +4,15 @@
 body {
   overflow-x: hidden;
 }
-#wrap {
-  min-height: 100%;
-  overflow-y: hidden;
-}
-#main {
-  overflow:auto;
-  padding-bottom:51px; /* this needs to be bigger than footer height*/
-}
+
 #footer {
   background: #fff;
   box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.1);
   color: #333;
   font-size: 14px;
-
-  /*
-  position: relative;
-  margin-top: -50px; !* negative value of footer height *!
-  clear:both;
-  */
-
   height: 50px;
   padding: 20px 0 10px;
 }
-
-
 
 a {
   color: #1dc8cd;
@@ -79,3 +63,4 @@ textarea:focus, input:focus {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+

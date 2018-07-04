@@ -1,0 +1,13 @@
+.x-gradient-backround {
+  background: linear-gradient(-45deg, #ddf9ee, rgba(215, 255, 255, 0.15));
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
+a {
+  text-decoration: none;
+  color: #1dc8cd;
+}
+body {
+  width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}

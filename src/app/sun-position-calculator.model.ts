@@ -83,7 +83,7 @@ export class SunPositionCalculator {
         position: this.pixelToLatlng(p),
         map: this.map,
         icon: {
-          url: 'assets/sun.svg',
+          url: 'assets/sun_on_map.svg',
           anchor: new google.maps.Point(30, 30), // half size of image
         }
       });

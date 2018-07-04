@@ -16,7 +16,7 @@
    id="svg4139"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="noon_small_white.svg">
+   sodipodi:docname="sun_on_map.svg">
   <defs
      id="defs4141">
     <linearGradient
@@ -73,9 +73,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="9.1175856"
-     inkscape:cx="38.834458"
-     inkscape:cy="28.563308"
+     inkscape:zoom="4.5587928"
+     inkscape:cx="-61.736709"
+     inkscape:cy="46.324148"
      inkscape:document-units="px"
      inkscape:current-layer="g4744"
      showgrid="false"
@@ -93,7 +93,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -104,31 +104,6 @@
      transform="translate(0,-992.3622)">
     <g
        id="g4744">
-      <path
-         sodipodi:type="star"
-         style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.5043515;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="path4135-9"
-         sodipodi:sides="15"
-         sodipodi:cx="19.973072"
-         sodipodi:cy="1032.8955"
-         sodipodi:r1="20.598314"
-         sodipodi:r2="10.299158"
-         sodipodi:arg1="0.8347408"
-         sodipodi:arg2="1.0441803"
-         inkscape:flatsided="false"
-         inkscape:rounded="0"
-         inkscape:randomized="0"
-         d="m 33.802158,1048.1614 -8.652619,-6.3621 1.247841,10.6671 -5.316853,-9.3314 -3.198746,10.2524 -1.061755,-10.6873 -7.0922407,8.0651 3.3769297,-10.1952 -9.7594226,4.4831 7.2317126,-7.9402 -10.73911123,0.126 9.83606703,-4.3123 -9.86191044,-4.2529 10.73967564,0.061 -7.2794952,-7.8964 9.7862972,4.4241 -3.4383897,-10.1746 7.1407787,8.0221 0.997245,-10.6935 3.260555,10.233 5.260447,-9.3634 -1.183448,10.6745 8.614069,-6.4142 -5.422822,9.2702 10.478241,-2.356 -8.724542,6.2631 10.530631,2.1096 -10.517709,2.173 8.762178,6.2104 -10.492268,-2.2928 z"
-         inkscape:transform-center-x="-0.22035464"
-         inkscape:transform-center-y="0.0065502035"
-         transform="matrix(1.0080281,0,0,1.0160174,-65.187525,-35.251471)" />
-      <ellipse
-         style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.5104112;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="path4137-6"
-         cx="-45.64249"
-         cy="1013.778"
-         rx="11.360283"
-         ry="11.176608" />
       <path
          sodipodi:type="star"
          style="fill:url(#radialGradient4224);fill-opacity:1;stroke:#000000;stroke-width:0.5043515;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
