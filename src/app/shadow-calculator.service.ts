@@ -128,7 +128,7 @@ export class ShadowCalculatorService {
 
   }
 
-  recalculateShape(newDistances: Array) {
+  recalculateShape(data: {distances, angles}) {
     let calculatedLatLng = this.shadowShapeSet.currentShape.origin.getPath().getArray();
     let originalLatLng: LatLng[] = this.shadowShapeSet.currentShape.origin.getPath().getArray();
 
@@ -136,19 +136,9 @@ export class ShadowCalculatorService {
       let tempIndex = i + 1;
       if (i + 1 === originalLatLng.length)
         tempIndex = 0;
-
       let startLatLng = calculatedLatLng[i];
-      let destLatLng = calculatedLatLng[tempIndex];
-      let heading = google.maps.geometry.spherical.computeHeading(startLatLng, destLatLng);
-      console.log("Heading: " + heading);
-      console.log("new distance: " + newDistances[i]);
-      calculatedLatLng[tempIndex] = google.maps.geometry.spherical.computeOffset(startLatLng, newDistances[i], heading);
-      console.log("Orig LatLng ["+i+"]: lat: " + originalLatLng[tempIndex].lat() +  " lng: " +originalLatLng[tempIndex].lng());
-      console.log("Calc LatLng ["+i+"]: lat: " + calculatedLatLng[tempIndex].lat() +  " lng: " +calculatedLatLng[tempIndex].lng());
-
-
+      calculatedLatLng[tempIndex] = google.maps.geometry.spherical.computeOffset(startLatLng, data.distances[i], data.angles[i]);
       this.shadowShapeSet.currentShape.origin.setPath(calculatedLatLng);
-
     });
 
     if (this.shadowShapeSet.currentShape != null) {
