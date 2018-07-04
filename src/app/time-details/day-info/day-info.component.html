@@ -1,7 +1,7 @@
+<div class="x-box-shadow">
 
-<div style="display: flex; flex-flow: row; justify-content: center; flex-wrap: wrap;" class="x-box-shadow">
-  <div style="min-width: 250px; display: flex; justify-content: center; align-items: flex-end; position: relative;">
-    <canvas id="canv" width="360" height="220"></canvas><!-- width: 240 height: 180 -->
+  <div class="x-canvas-wrapper">
+    <canvas id="canv" width="360" height="220"></canvas>
     <div class="x-buttons-row">
       <button mat-icon-button (click)="decrement()">
         <mat-icon class="x-icon-link" aria-label="-10 min">navigate_before</mat-icon>
@@ -9,7 +9,6 @@
       <button mat-icon-button (click)="increment()">
         <mat-icon class="x-icon-link" aria-label="+10 min">navigate_next</mat-icon>
       </button>
-
     </div>
   </div>
 

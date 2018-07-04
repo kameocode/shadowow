@@ -1,3 +1,9 @@
+.x-box-shadow {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  flex-wrap: wrap;
+}
 
 /* force shadow border to shrink */
 @media only screen and (max-width: 1710px) and (min-width: 1170px) {
@@ -17,3 +23,12 @@ canvas {
   right: 5px;
   position: absolute;
 }
+
+.x-canvas-wrapper {
+  min-width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  position: relative;
+}
+

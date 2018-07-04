@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>Shadowow - calculate shadows on google maps</title>
   <base href="/">
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Display building shadows on google maps for specified location and time. Calculate the azimuth and altitude of the sun.">
@@ -18,11 +19,107 @@
 
   <script src="http://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=drawing,geometry"></script>
   <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <style type="text/css">
+    body, html {
+      height: 100%;
+      border: 0;
+      margin: 0;
+      padding: 0;
+    }
+
+    .app-loading {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      max-height: 100vh;
+      overflow-y: hidden;
+
+      box-sizing: border-box;
+      background: linear-gradient(-45deg, #ddf9ee, rgba(215, 255, 255, 0.15));
+    }
+    .app-loading .spinner {
+      height: 200px;
+      width: 200px;
+      animation: rotate 2s linear infinite;
+      transform-origin: center center;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+    .app-loading .spinner .path {
+      stroke-dasharray: 1, 200;
+      stroke-dashoffset: 0;
+      animation: dash 1.5s ease-in-out infinite;
+      stroke-linecap: round;
+      stroke: #82F2E6;
+    }
+
+    @keyframes rotate {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    @keyframes dash {
+      0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+      }
+      50% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -35px;
+      }
+      100% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -124px;
+      }
+    }
+  </style>
 
 </head>
 
 <body>
-  <app-root>Loading...</app-root>
+  <app-root>
+
+    <div class="app-loading">
+      <svg
+        xmlns:svg="http://www.w3.org/2000/svg"
+        xmlns="http://www.w3.org/2000/svg"
+        width="124"
+        height="124"
+        viewBox="0 0 24 24"
+        id="svg4139"
+        version="1.1"
+     >
+        <g id="layer1"
+          transform="translate(0,-1028.3622)">
+          <g id="g4744">
+            <path
+              style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.5043515;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+              id="path4135"
+              d="m 33.802158,1048.1614 -8.652619,-6.3621 1.247841,10.6671 -5.316853,-9.3314 -3.198746,10.2524 -1.061755,-10.6873 -7.0922407,8.0651 3.3769297,-10.1952 -9.7594226,4.4831 7.2317126,-7.9402 -10.73911123,0.126 9.83606703,-4.3123 -9.86191044,-4.2529 10.73967564,0.061 -7.2794952,-7.8964 9.7862972,4.4241 -3.4383897,-10.1746 7.1407787,8.0221 0.997245,-10.6935 3.260555,10.233 5.260447,-9.3634 -1.183448,10.6745 8.614069,-6.4142 -5.422822,9.2702 10.478241,-2.356 -8.724542,6.2631 10.530631,2.1096 -10.517709,2.173 8.762178,6.2104 -10.492268,-2.2928 z"
+              transform="matrix(0.5972497,0,0,0.6019833,-0.04724692,418.54868)" />
+            <ellipse
+              style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.30241513;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+              id="path4137"
+              cx="11.533052"
+              cy="1040.0913"
+              rx="6.7308888"
+              ry="6.6220636" />
+          </g>
+        </g>
+      </svg>
+      <svg class="spinner" viewBox="25 25 50 50">
+        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
+      </svg>
+    </div>
+
+  </app-root>
 </body>
 
 
