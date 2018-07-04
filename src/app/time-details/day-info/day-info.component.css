@@ -1,6 +1,6 @@
 
 /* force shadow border to shrink */
-@media only screen and (max-width: 1680px) and (min-width: 1170px) {
+@media only screen and (max-width: 1710px) and (min-width: 1170px) {
   .x-box-shadow {
     max-width: 360px;
   }

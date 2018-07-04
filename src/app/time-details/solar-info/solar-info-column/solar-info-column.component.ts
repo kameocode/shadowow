@@ -80,14 +80,14 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
     this.noonAzimuthDegrees = this.getAzimuth(noonPosition);
 
     if (this.sunriseDate == null) {
-      this.sunriseAzimuthDegrees = "-";
+      this.sunriseAzimuthDegrees = null;
     } else {
       const sunrisePosition = SunCalc.getPosition(times.sunrise, this.pos.lat(), this.pos.lng());
       this.sunriseAzimuthDegrees = this.getAzimuth(sunrisePosition);
     }
 
     if (this.sunsetDate == null) {
-      this.sunsetAzimuthDegrees = "-";
+      this.sunsetAzimuthDegrees = null;
     } else {
       const sunsetPosition = SunCalc.getPosition(times.sunset, this.pos.lat(), this.pos.lng());
       this.sunsetAzimuthDegrees = this.getAzimuth(sunsetPosition);
@@ -142,11 +142,11 @@ export class SolarInfoColumnComponent implements OnInit, OnChanges {
   }
 
   private getAltitude(position: any) {
-    return (position.altitude * (180 / Math.PI)).toFixed(0);
+    return (position.altitude * (180 / Math.PI)).toFixed(0)+'°';
   }
 
   private getAzimuth(position: any) { //TODO direction?
-    return (-1 * (-180 - position.azimuth * (180 / Math.PI))).toFixed(0);
+    return (-1 * (-180 - position.azimuth * (180 / Math.PI))).toFixed(0)+'°';
   }
 
   get typeLabel() {
