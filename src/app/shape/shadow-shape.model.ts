@@ -20,7 +20,7 @@ export interface ShadowShape {
 
 export class ShadowShapeSet {
   private shadowShapes: ShadowShape[] = [];
-  private readonly markersSet: MarkersSet;
+  public readonly markersSet: MarkersSet;
   public map: google.maps.Map;
   public currentShape: ShadowShape;
   public currentMarker: Marker;

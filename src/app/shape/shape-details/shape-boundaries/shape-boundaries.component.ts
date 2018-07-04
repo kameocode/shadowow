@@ -1,6 +1,6 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, EventEmitter, Inject, OnInit, Output} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {ShadowShape} from "../../shadow-shape.model";
+import {SchematicOutput} from "@angular/cli/tasks/schematic-run";
 
 @Component({
   selector: 'app-shape-boundaries',
@@ -8,16 +8,11 @@ import {ShadowShape} from "../../shadow-shape.model";
   styleUrls: ['./shape-boundaries.component.css']
 })
 export class ShapeBoundariesComponent implements OnInit {
-  private shadowShapes: ShadowShape[] = [];
-  distances =[];
-  angles = [];
 
-  constructor(public dialogRef: MatDialogRef<ShapeBoundariesComponent>, @Inject(MAT_DIALOG_DATA) public shadowShape: ShadowShape) {
+  constructor(public dialogRef: MatDialogRef<ShapeBoundariesComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
   ngOnInit() {
-     this.calculateDistances();
-     this.calculateAngles();
   }
 
   onNoClick(): void {
@@ -38,38 +33,30 @@ export class ShapeBoundariesComponent implements OnInit {
   }
 
   onSaveData() {
-
+    let originalDistances = [];
+    let hasChanges = this.detectChanges(originalDistances);
+    if (hasChanges) {
+      console.log("emit event")
+      this.data.shadowService.recalculateShape(this.data.distances);
+    }
+    this.onNoClick();
   }
 
-  calculateDistances() {
-    this.shadowShape.origin.getPaths().getArray().forEach(path => {
-      path.getArray().forEach( (value, i) => {
-        //console.log(value);
+  private detectChanges(originalDistances) {
+    let hasChanges = false;
+    this.data.shadowShape.origin.getPaths().getArray().forEach(path => {
+      path.getArray().forEach((value, i) => {
         let tempIndex = i + 1;
         if (i === path.getArray().length - 1) {
           tempIndex = 0
         }
-        this.distances[i] = google.maps.geometry.spherical.computeDistanceBetween(value, path.getAt(tempIndex))
-      })
-    });
-    this.distances.forEach(dist => {
-      console.log(dist)
-    })
-  }
-
-  calculateAngles() {
-    this.shadowShape.origin.getPaths().getArray().forEach(path => {
-      path.getArray().forEach( (value, i) => {
-        console.log(value);
-        let tempIndex = i + 1;
-        if (i === path.getArray().length - 1) {
-          tempIndex = 0
+        originalDistances[i] = google.maps.geometry.spherical.computeDistanceBetween(value, path.getAt(tempIndex))
+        console.log("data: " + originalDistances[i] + " " + this.data.distances[i]);
+        if (originalDistances[i] !== this.data.distances[i]) {
+          hasChanges = true;
         }
-        this.distances[i] = google.maps.geometry.spherical.computeDistanceBetween(value, path.getAt(tempIndex))
-
       })
     });
-
-
+    return hasChanges;
   }
 }
