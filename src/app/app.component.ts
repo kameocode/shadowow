@@ -15,7 +15,6 @@ import LatLng = google.maps.LatLng;
 import {} from '@types/googlemaps';
 import Rectangle = google.maps.Rectangle;
 import Polygon = google.maps.Polygon;
-import {XYArray} from "./shape/xy-array.model";
 
 @Component({
   selector: 'app-root',
@@ -66,9 +65,19 @@ export class AppComponent implements OnInit {
     this.shadowService.setPosition(this.map.getCenter());
     this.shadowService.setDay(this.shadowService.getDate());
     this.shadowService.recalculateShadows();
+    this.calculateGeolocation();
   }
 
-
+  private calculateGeolocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position)=>{
+        this.map.setCenter(new LatLng(position.coords.latitude, position.coords.longitude));
+        console.log("Geolocation: Latitude: "+    position.coords.latitude +
+          ", Longitude: " + position.coords.longitude);
+        this.shadowService.setPosition(this.map.getCenter());
+      });
+    }
+  }
 
   public get isNight() {
     return !this.shadowService.isDay;
@@ -115,7 +124,7 @@ export class AppComponent implements OnInit {
           let northEast = r.getBounds().getNorthEast();
           let southWest = r.getBounds().getSouthWest();
           polygon.setPath([northEast, new LatLng(northEast.lat(), southWest.lng()), southWest, new LatLng(southWest.lat(), northEast.lng())]);
-          polygon.setOptions({ draggable: true })
+          polygon.setOptions({ draggable: true });
           polygon.setMap(this.map);
           e.overlay.setMap(null);
           e.overlay = polygon;
@@ -132,7 +141,7 @@ export class AppComponent implements OnInit {
     let dialogRef = this.dialog.open(HelpDialogComponent);
   }
 
-  private openImportExportDialog() {
+  openImportExportDialog() {
     const jsonObj = this.shadowShapesSet.toJSON();
     jsonObj.timestamp = this.shadowService.getDate().getTime();
     jsonObj.mapCenterLat = this.map.getCenter().lat();

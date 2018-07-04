@@ -15,7 +15,7 @@
    id="svg4139"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="noon_summer.svg">
+   sodipodi:docname="midsummer.svg">
   <defs
      id="defs4141">
     <marker
@@ -54,9 +54,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="9.1175856"
-     inkscape:cx="-42.742866"
-     inkscape:cy="-13.9365"
+     inkscape:zoom="25.788426"
+     inkscape:cx="7.3386256"
+     inkscape:cy="10.016155"
      inkscape:document-units="px"
      inkscape:current-layer="g4744"
      showgrid="false"
@@ -110,12 +110,19 @@
          cy="1040.3622"
          rx="6.7310095"
          ry="6.6221828" />
-      <circle
-         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.26352951;stroke-miterlimit:3.5999999;stroke-dasharray:none;stroke-opacity:1"
+      <ellipse
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.53923869;stroke-miterlimit:3.5999999;stroke-dasharray:none;stroke-opacity:1"
          id="path4823"
+         cx="11.980081"
+         cy="1040.3428"
+         rx="5.848527"
+         ry="5.6854539" />
+      <circle
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="path4155"
          cx="12"
          cy="1040.3622"
-         r="2.8180847" />
+         r="2.5976961" />
     </g>
   </g>
 </svg>

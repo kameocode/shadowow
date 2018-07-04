@@ -1,16 +1,25 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Shadowow</a>
+  <a class="navbar-brand" href="#" >Shadowow
+    <div style="font-size: 10px; max-width: 200px;margin-top: -5px;">shadows on google maps</div>
+  </a>
+
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
           aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="nav navbar-nav navbar-right">
-      <li class="nav-item active">
+      <li class="nav-item">
+        <a class="nav-link"
+           (click)="openImportExportDialog()"
+           href="#">Import/Export</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link"
            (click)="openHelpDialog()"
-           href="#">Help<span class="sr-only">(current)</span></a>
+           href="#">Help</a>
       </li>
+
      <!-- <li class="nav-item">
         <a class="nav-link">
           <mat-icon (click)="openImportExportDialog()"
@@ -18,7 +27,7 @@
                     aria-label="Date/time information">speaker_notes
           </mat-icon>
         </a>
-      </li>-->
+      </li>
       <li class="nav-item">
         <a class="nav-link">
           <mat-icon (click)="openImportExportDialog()"
@@ -26,7 +35,7 @@
                     aria-label="Import/export">import_export
           </mat-icon>
         </a>
-      </li>
+      </li>-->
     </ul>
   </div>
 </nav>
@@ -64,7 +73,7 @@
 
     <div class="row no-select" style="display: flex; justify-content: space-evenly; margin: 5px 0 5px 0">
       <app-day-info></app-day-info>
-      <app-current-day></app-current-day>
+
     </div>
 
 
@@ -78,6 +87,28 @@
   <app-time-details></app-time-details>
 
 </div>
+
+
+<footer id="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 text-lg-left text-center">
+        <div class="copyright">
+          © Copyright <strong><a href="http://kameocode.com">KameoCode</a></strong>. All Rights Reserved
+        </div>
+        <div class="credits">
+
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <nav class="footer-links text-lg-right text-center pt-2 pt-lg-0">
+          <a href="http://kameocode.com#projects">Projects</a>
+          <a href="http://kameocode.com#contact" class="scrollto">Contact</a>
+        </nav>
+      </div>
+    </div>
+  </div>
+</footer>
 
 
 

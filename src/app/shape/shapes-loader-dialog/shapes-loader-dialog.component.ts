@@ -81,7 +81,6 @@ export class ShapesLoaderDialogComponent implements OnInit {
 
   copyToClipboard() {
     copyTextToClipboard( this.json);
-    this.dialogRef.close();
   }
 
   onImport(): void {

@@ -9,8 +9,8 @@ import {ShadowShape} from "../../shadow-shape.model";
 })
 export class ShapeBoundariesComponent implements OnInit {
   private shadowShapes: ShadowShape[] = [];
-  private distances =[];
-  private angles = [];
+  distances =[];
+  angles = [];
 
   constructor(public dialogRef: MatDialogRef<ShapeBoundariesComponent>, @Inject(MAT_DIALOG_DATA) public shadowShape: ShadowShape) {
   }
@@ -37,7 +37,7 @@ export class ShapeBoundariesComponent implements OnInit {
 
   }
 
-  onSaveData($event) {
+  onSaveData() {
 
   }
 

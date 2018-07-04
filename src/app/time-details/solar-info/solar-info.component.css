@@ -1,9 +1,10 @@
 
 .x-time-1 {
   display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
   justify-content: center;
   padding-bottom: 5px;
-  flex-flow: row;
 }
 
 .x-icon-block {

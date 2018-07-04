@@ -1,3 +1,8 @@
+:host {
+  display: flex;
+  flex-flow: column;
+}
+
 .x-gmap-wrapper-night, .x-gmap-wrapper-dusk-or-down {
   background-color: black;
  }
@@ -18,11 +23,13 @@
 
 .x-content {
   min-height: calc(100vh - 120px);
-  max-height: calc(100vh - 120px);
+
 }
 
 .x-details {
-  padding: 20px;
+  padding-top: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
   background: linear-gradient(-45deg, #ddf9ee, rgba(215, 255, 255, 0.15));
   transition: all 0.5s;
 

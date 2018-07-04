@@ -155,7 +155,7 @@ export class DayInfoComponent implements OnInit, OnChanges {
 
     ctx.font = "12px \"-apple-system\", \"BlinkMacSystemFont\", \"Segoe UI\", \"Roboto\", \"Helvetica Neu\"";
     ctx.fillText(this.getAltitudeInDegrees(this.shadowService.noon).toFixed(0)+" "+String.fromCharCode(176), noonX, this.offsetTop-8);
-    ctx.fillText(this.getAltitudeInDegrees(sunPos.date).toFixed(0)+" "+String.fromCharCode(176), sunPos.sunX+this.sunImgSize/2, sunPos.sunY+70+12);
+    // ctx.fillText(this.getAltitudeInDegrees(sunPos.date).toFixed(0)+" "+String.fromCharCode(176), sunPos.sunX+this.sunImgSize/2, sunPos.sunY+70+12);
     // ctx.fillText(this.getAzimuthInDegrees(d).toFixed(0)+" "+String.fromCharCode(176), sunX+imgSize/2, sunY+70+12+12);
 
 

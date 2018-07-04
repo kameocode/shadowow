@@ -39,8 +39,7 @@ import { CurrentDayComponent } from './time-details/current-day/current-day.comp
     HelpDialogComponent,
     SolarInfoComponent,
     SolarInfoColumnComponent,
-    CurrentDayComponent
-
+    CurrentDayComponent,
   ],
   imports: [
     BrowserModule,

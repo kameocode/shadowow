@@ -22,7 +22,7 @@ export class SolarInfoComponent implements OnInit {
   hours: number;
   minutes: number;
 
-  private detailed: boolean = false;
+  detailed: boolean = false;
 
 
   today: Date;

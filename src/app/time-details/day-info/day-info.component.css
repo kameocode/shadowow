@@ -1,17 +1,19 @@
-:host {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  padding:0px;
-  margin:0px;
-  /*border: 1px solid red;*/
 
+/* force shadow border to shrink */
+@media only screen and (max-width: 1680px) and (min-width: 1170px) {
+  .x-box-shadow {
+    max-width: 360px;
+  }
 }
-
 
 canvas {
   cursor: pointer;
   width: 100%;
   height: auto;
+}
+
+.x-buttons-row {
+  bottom: 5px;
+  right: 5px;
+  position: absolute;
 }

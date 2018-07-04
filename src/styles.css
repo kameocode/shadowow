@@ -18,10 +18,13 @@ body {
   color: #333;
   font-size: 14px;
 
+  /*
   position: relative;
-  margin-top: -50px; /* negative value of footer height */
-  height: 50px;
+  margin-top: -50px; !* negative value of footer height *!
   clear:both;
+  */
+
+  height: 50px;
   padding: 20px 0 10px;
 }
 
