@@ -16,6 +16,7 @@ canvas {
   cursor: pointer;
   width: 100%;
   height: auto;
+  touch-action: none;
 }
 
 .x-buttons-row {
