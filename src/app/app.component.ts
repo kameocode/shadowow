@@ -66,6 +66,8 @@ export class AppComponent implements OnInit {
     this.shadowService.setDay(this.shadowService.getDate());
     this.shadowService.recalculateShadows();
     this.calculateGeolocation();
+
+
   }
 
   private calculateGeolocation() {
@@ -196,5 +198,7 @@ export class AppComponent implements OnInit {
       }
     }
   }
+
+
 
 }

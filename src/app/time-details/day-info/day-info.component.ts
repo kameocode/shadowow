@@ -90,6 +90,38 @@ export class DayInfoComponent implements OnInit, OnChanges {
       this.mouseoverSun = true;
       this.updateSunPosition(canvas, evt);
     });
+
+
+    canvas.addEventListener("touchstart", function (e) {
+      const mousePos = getTouchPos(canvas, e);
+      const touch = e.touches[0];
+      const mouseEvent = new MouseEvent("mousedown", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      canvas.dispatchEvent(mouseEvent);
+    }, false);
+    canvas.addEventListener("touchend", function (e) {
+      const mouseEvent = new MouseEvent("mouseup", {});
+      canvas.dispatchEvent(mouseEvent);
+    }, false);
+    canvas.addEventListener("touchmove", function (e) {
+      const touch = e.touches[0];
+      const mouseEvent = new MouseEvent("mousemove", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      canvas.dispatchEvent(mouseEvent);
+    }, false);
+
+// Get the position of a touch relative to the canvas
+    function getTouchPos(canvasDom, touchEvent) {
+      const rect = canvasDom.getBoundingClientRect();
+      return {
+        x: touchEvent.touches[0].clientX - rect.left,
+        y: touchEvent.touches[0].clientY - rect.top
+      };
+    }
   }
 
   private calculateMouseIsOverSun(canvas: HTMLElement | null, evt) {
