@@ -22,9 +22,6 @@ export class ShapeDetailsComponent implements OnInit {
   @Input()
   currentShadow: number;
 
-  distances = [];
-  angles = [];
-
   constructor(private shadowService: ShadowCalculatorService, private dialog: MatDialog) {
   }
 
@@ -48,17 +45,11 @@ export class ShapeDetailsComponent implements OnInit {
   }
 
   openSettingsDialog() {
-
-    this.calculateDistances();
-    this.calculateAngles();
-
     this.dialog.open(ShapeBoundariesComponent, {
       minWidth: '450',
       minHeight: '420',
       data: {
         shadowShape: this.shadowShape,
-        distances: this.distances,
-        angles: this.angles,
         shadowService: this.shadowService
       },
     });
@@ -76,29 +67,4 @@ export class ShapeDetailsComponent implements OnInit {
 
 
 
-  calculateDistances() {
-    this.shadowShape.origin.getPaths().getArray().forEach(path => {
-      path.getArray().forEach((value, i) => {
-        let tempIndex = i + 1;
-        if (i === path.getArray().length - 1) {
-          tempIndex = 0
-        }
-        this.distances[i] = google.maps.geometry.spherical.computeDistanceBetween(value, path.getAt(tempIndex))
-      })
-    });
-  }
-
-
-  private calculateAngles() {
-    this.shadowShape.origin.getPaths().getArray().forEach(path => {
-      path.getArray().forEach((value, i) => {
-        //console.log(value);
-        let tempIndex = i + 1;
-        if (i === path.getArray().length - 1) {
-          tempIndex = 0
-        }
-        this.angles[i] = google.maps.geometry.spherical.computeHeading(value, path.getAt(tempIndex))
-      })
-    });
-  }
 }

@@ -128,19 +128,16 @@ export class ShadowCalculatorService {
 
   }
 
-  recalculateShape(data: {distances, angles}) {
+  recalculateShape(index: number, distance: number, angle: number) {
     let calculatedLatLng = this.shadowShapeSet.currentShape.origin.getPath().getArray();
-    let originalLatLng: LatLng[] = this.shadowShapeSet.currentShape.origin.getPath().getArray();
-
-    originalLatLng.forEach((value, i) => {
-      let tempIndex = i + 1;
-      if (i + 1 === originalLatLng.length)
-        tempIndex = 0;
-      let startLatLng = calculatedLatLng[i];
-      calculatedLatLng[tempIndex] = google.maps.geometry.spherical.computeOffset(startLatLng, data.distances[i], data.angles[i]);
-      this.shadowShapeSet.currentShape.origin.setPath(calculatedLatLng);
-    });
-
+    let originalLatLng: LatLng[] = calculatedLatLng;
+    let tempIndex = index + 1;
+    if (index + 1 === originalLatLng.length) {
+      tempIndex = 0;
+    }
+    let startLatLng = calculatedLatLng[index];
+    calculatedLatLng[tempIndex] = google.maps.geometry.spherical.computeOffset(startLatLng, distance, angle);
+    this.shadowShapeSet.currentShape.origin.setPath(calculatedLatLng);
     if (this.shadowShapeSet.currentShape != null) {
       this.shadowShapeSet.markersSet.createMarkers(this.shadowShapeSet.currentShape.origin, true);
     } else {
