@@ -1,5 +1,3 @@
-
-
 .x-pinBackground {
   display: inline-block;
   width: 30px;
@@ -18,8 +16,6 @@
   margin-top: 7px;
 }
 
-
 .x-shadow-info {
   text-shadow: 2px 2px 5px #8e8e8e;
-  /*font-size: 18px;*/
 }

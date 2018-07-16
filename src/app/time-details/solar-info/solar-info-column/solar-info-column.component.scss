@@ -4,52 +4,70 @@
   justify-content: flex-start;
 
 }
+
 .x-icon-block-custom {
   justify-content: space-between;
   height: 100%;
 }
+
 .x-icon {
   height: 44px;
   cursor: pointer
 }
+
 .x-mini-row {
-  display: flex; flex-flow: row; align-items: center; justify-content: flex-start;
-  font-size:12px;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 13px;
 }
+
 .x-mini-row mat-icon {
   font-size: 20px;
 }
+
 .x-margin {
-  margin-left:10px;
-  margin-right:10px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
+
 .x-minitime {
   min-width: 55px;
   width: 55px;
-  text-align:left;
+  text-align: left;
   font-weight: bold;
 }
+
+
 .x-altitude {
-  font-size:12px;
+  font-size: 12px;
 }
+
 .x-mini-row-group {
   max-width: 150px;
 }
+
 .x-mini-hour {
   min-width: 35px;
   width: 35px;
   text-align: left;
 }
+
+$min-width: 30px;
+
 .x-mini-azimuth {
-  min-width: 30px;
-  width: 30px;
+  min-width: $min-width;
+  width: $min-width;
   text-align: right;
 }
+
 .x-mini-altitude {
-  min-width: 30px;
-  width: 30px;
+  min-width: $min-width;
+  width: $min-width;
   text-align: right;
 }
+
 .x-unselected {
   background-color: white;
 }
@@ -57,6 +75,7 @@
 .x-notopague {
   opacity: 0.6;
 }
+
 .x-notopague:hover {
   opacity: 1;
 }

@@ -1,6 +1,8 @@
+@import '~sass/variables';
+
 .x-copy-icon {
   cursor: pointer;
-  color: #16ead6;
+  color: $x-link-color;
 }
 .x-can-export {
   margin-right: 22px;

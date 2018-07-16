@@ -20,7 +20,6 @@
   padding-left: 0;
 }
 
-
 .x-content {
   min-height: calc(100vh - 68px);
 
@@ -34,6 +33,8 @@
 }
 .x-main {
   background: linear-gradient(-45deg, #ddf9ee, rgba(215, 255, 255, 0.15));
+  overflow-x: hidden;
+  width: calc(100vw);
 }
 
 a > mat-icon {

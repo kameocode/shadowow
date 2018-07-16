@@ -39,7 +39,7 @@ export class ShapeBoundariesComponent implements OnInit {
     this.data.shadowService.recalculateShape(index, this.modified.distances[index], this.modified.angles[index]);
   }
 
-  onSaveData(index:number) {
+  onSaveData() {
     //this.data.shadowService.recalculateShape(index, this.data.distances[index], this.data.angles[index])
   }
 

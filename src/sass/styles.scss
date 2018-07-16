@@ -1,6 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 /*@import '~@angular/material/prebuilt-themes/indigo-pink.css';*/
 
+@import './variables';
+@import './mixins';
+
 body {
   overflow-x: hidden;
 }
@@ -15,7 +18,7 @@ body {
 }
 
 a {
-  color: #1dc8cd;
+  color: $x-link-color;
 }
 
 .no-select {
@@ -50,15 +53,15 @@ textarea:focus, input:focus {
 
 .x-icon-link:hover {
   opacity: 1;
-  color: red;
+  color: $x-link-color-hover;
 }
 
 .x-section-divider {
   display: block;
   width: 60px;
   height: 3px;
-  background: #1dc8cd;
-  background: linear-gradient(0deg, #1dc8cd 0%, #55fabe 100%);
+  background: $x-link-color;
+  background: linear-gradient(0deg, $x-link-color 0%, $x-link-color-2 100%);
   margin: 0 auto;
   margin-top: 10px;
   margin-bottom: 10px;

@@ -8,7 +8,7 @@ let SunCalc = require('suncalc');
 @Component({
   selector: 'app-solar-info-column',
   templateUrl: './solar-info-column.component.html',
-  styleUrls: ['./solar-info-column.component.css']
+  styleUrls: ['./solar-info-column.component.scss']
 })
 export class SolarInfoColumnComponent implements OnInit, OnChanges {
 

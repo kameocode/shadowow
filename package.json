@@ -8,21 +8,22 @@
     "build": "ng build --prod --no-sourcemap --env=prod",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "profiling": "ng build --prod --source-map --output-hashing none --output-path ./dist && source-map-explorer ./dist/main.js"
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^5.2.0",
-    "@angular/cdk": "^5.2.4",
-    "@angular/common": "^5.2.0",
-    "@angular/compiler": "^5.2.0",
-    "@angular/core": "^5.2.0",
-    "@angular/forms": "^5.2.0",
-    "@angular/http": "^5.2.0",
-    "@angular/material": "^5.2.4",
-    "@angular/platform-browser": "^5.2.0",
-    "@angular/platform-browser-dynamic": "^5.2.0",
-    "@angular/router": "^5.2.0",
+    "@angular/animations": "^6.0.9",
+    "@angular/cdk": "^6.0.0",
+    "@angular/common": "^6.0.9",
+    "@angular/compiler": "^6.0.9",
+    "@angular/core": "^6.0.9",
+    "@angular/forms": "^6.0.9",
+    "@angular/http": "^6.0.9",
+    "@angular/material": "^6.0.0",
+    "@angular/platform-browser": "^6.0.9",
+    "@angular/platform-browser-dynamic": "^6.0.9",
+    "@angular/router": "^6.0.9",
     "@types/node": "^10.3.2",
     "bootstrap": "^4.1.1",
     "core-js": "^2.4.1",
@@ -30,14 +31,15 @@
     "hammerjs": "^2.0.8",
     "jquery": "^3.3.1",
     "lodash": "^4.17.10",
-    "rxjs": "^5.5.6",
+    "rxjs": "^6.2.2",
+    "rxjs-compat": "^6.0.0-rc.0",
     "suncalc": "^1.8.0",
     "zone.js": "^0.8.19"
   },
   "devDependencies": {
-    "@angular/cli": "~1.7.4",
-    "@angular/compiler-cli": "^5.2.0",
-    "@angular/language-service": "^5.2.0",
+    "@angular/cli": "^6.0.8",
+    "@angular/compiler-cli": "^6.0.9",
+    "@angular/language-service": "^6.0.9",
     "@types/googlemaps": "^3.30.8",
     "@types/jasmine": "~2.8.3",
     "@types/jasminewd2": "~2.0.2",
@@ -53,6 +55,7 @@
     "protractor": "~5.1.2",
     "ts-node": "~4.1.0",
     "tslint": "~5.9.1",
-    "typescript": "~2.5.3"
+    "typescript": "~2.7.2",
+    "@angular-devkit/build-angular": "~0.6.8"
   }
 }

@@ -1,17 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import {Component} from '@angular/core';
 import {ShapesLoaderDialogComponent} from "../shape/shapes-loader-dialog/shapes-loader-dialog.component";
 import {MatDialogRef} from "@angular/material";
 
 @Component({
   selector: 'app-help-dialog',
   templateUrl: './help-dialog.component.html',
-  styleUrls: ['./help-dialog.component.css']
+  styleUrls: ['./help-dialog.component.scss']
 })
-export class HelpDialogComponent implements OnInit {
+export class HelpDialogComponent {
 
-  constructor(public dialogRef: MatDialogRef<ShapesLoaderDialogComponent>,) { }
-
-  ngOnInit() {
+  constructor(public dialogRef: MatDialogRef<ShapesLoaderDialogComponent>) {
   }
 
   onClose() {

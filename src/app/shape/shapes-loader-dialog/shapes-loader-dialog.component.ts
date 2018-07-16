@@ -8,7 +8,7 @@ import {ShapesJSON} from "../shadow-shape.model";
 @Component({
   selector: 'app-shapes-loader-dialog',
   templateUrl: './shapes-loader-dialog.component.html',
-  styleUrls: ['./shapes-loader-dialog.component.css']
+  styleUrls: ['./shapes-loader-dialog.component.scss']
 })
 export class ShapesLoaderDialogComponent implements OnInit {
   json: string;
