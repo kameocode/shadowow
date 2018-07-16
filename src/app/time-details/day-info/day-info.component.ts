@@ -1,6 +1,7 @@
 import {Component, HostListener, OnChanges, OnInit} from '@angular/core';
 import {ShadowCalculatorService} from "../../shadow-calculator.service";
 import {isSameDayOfYear} from "../../utils";
+import {Observable} from "rxjs/Rx";
 import LatLng = google.maps.LatLng;
 
 let SunCalc = require('suncalc');
@@ -40,25 +41,25 @@ export class DayInfoComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.shadowService.pos$.subscribe((latLng: LatLng) => {
-      this.latLng = latLng;
-      this.onInputChanged();
-    });
-    this.shadowService.date$.subscribe((date: Date) => {
-      this.date = date;
-      this.onInputChanged();
-    });
+
     this.sunImg.src = "assets/sun.svg";
     this.sunImgMidsummer.src = "assets/midsummer.svg";
     this.sunImgMidwinter.src = "assets/midwinter.svg";
     this.backgroundCircularImg.src = "assets/circular_button.svg";
     this.sunImgToday.src = "assets/sun_today.svg";
-    // this.sunImgSunrise.src = "assets/sunrise_small.svg";
 
-    this.sunImg.addEventListener('load', () => {
-      // we need to have proper width and height
+    Observable.combineLatest([
+      this.shadowService.pos$, this.shadowService.date$,
+      Observable.fromEvent(this.sunImg, 'load'),
+      Observable.fromEvent(this.sunImgMidsummer, 'load'),
+      Observable.fromEvent(this.sunImgMidwinter, 'load'),
+      Observable.fromEvent(this.backgroundCircularImg, 'load'),
+      Observable.fromEvent(this.sunImgToday, 'load')]
+    ).subscribe(([latLng, date]) => {
+      this.latLng = latLng as any;
+      this.date = date as any;
       this.onInputChanged();
-    }, false);
+    });
 
     const canvas = document.getElementById("canv");
     canvas.addEventListener('mousedown', () => {
