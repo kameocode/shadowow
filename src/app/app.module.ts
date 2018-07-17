@@ -14,7 +14,7 @@ import {
   MatNativeDateModule,
   MatSliderModule, MatTooltipModule
 } from "@angular/material";
-import {NoopAnimationsModule} from "@angular/platform-browser/animations";
+import {BrowserAnimationsModule, NoopAnimationsModule} from "@angular/platform-browser/animations";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
 import {TimeDetailsComponent} from "./time-details/time-details.component"
 import {ShapeBoundariesComponent} from "./shape/shape-details/shape-boundaries/shape-boundaries.component";
@@ -27,6 +27,8 @@ import {
 import {SolarInfoColumnComponent} from "./time-details/solar-info/solar-info-column/solar-info-column.component";
 import { CurrentDayComponent } from './time-details/current-day/current-day.component';
 import { PlacementComponent } from './placement/placement.component';
+import {RouterModule} from "@angular/router";
+
 
 
 @NgModule({
@@ -47,6 +49,7 @@ import { PlacementComponent } from './placement/placement.component';
     BrowserModule,
     FormsModule,
     // MatSliderModule,
+    // BrowserAnimationsModule,
     NoopAnimationsModule,
     MatDatepickerModule,
     MatFormFieldModule,
@@ -54,11 +57,14 @@ import { PlacementComponent } from './placement/placement.component';
     MatDialogModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    RouterModule.forRoot([]),
+    BrowserAnimationsModule,
   ],
   providers: [
     ShadowCalculatorService,
-    MatDialog
+    MatDialog,
+
   ],
   bootstrap: [AppComponent],
   entryComponents: [

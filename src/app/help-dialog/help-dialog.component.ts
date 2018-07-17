@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {ShapesLoaderDialogComponent} from "../shape/shapes-loader-dialog/shapes-loader-dialog.component";
 import {MatDialogRef} from "@angular/material";
 
 @Component({
@@ -9,7 +8,7 @@ import {MatDialogRef} from "@angular/material";
 })
 export class HelpDialogComponent {
 
-  constructor(public dialogRef: MatDialogRef<ShapesLoaderDialogComponent>) {
+  constructor(public dialogRef: MatDialogRef<HelpDialogComponent>) {
   }
 
   onClose() {

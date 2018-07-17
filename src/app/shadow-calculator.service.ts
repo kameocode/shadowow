@@ -93,12 +93,17 @@ export class ShadowCalculatorService {
     this.sunset = times.sunset;
     this.noon = times.solarNoon;
 
+
+  }
+  public recalculateSunPosition() {
+    const center = this.shadowShapeSet.map.getCenter();
+    const times = SunCalc.getTimes(this.date, center.lat(), center.lng());
+    const position = SunCalc.getPosition(this.date, center.lat(), center.lng());
     if (this.sunIconPositionCalculator == null) {
       this.sunIconPositionCalculator = new SunPositionCalculator(this.shadowShapeSet.map);
     }
 
     this.sunIconPositionCalculator.recalculatePositionOfSunIconOnTheMap(position.azimuth);
-
   }
 
 

@@ -1,3 +1,6 @@
+import {fromEventPattern} from "rxjs/index";
+import {Observable} from "rxjs/Rx";
+import Map = google.maps.Map;
 
 export function copyTextToClipboard(text) {
   const textArea = document.createElement("textarea");
@@ -43,4 +46,15 @@ export function isSameDayOfYear(d1: Date, d2: Date) {
   return d1.getFullYear() === d2.getFullYear() &&
   d1.getMonth() === d2.getMonth() &&
   d1.getDate() === d2.getDate();
+}
+
+export function googleMapObservable$(map: Map, listenerName: string): Observable<any> {
+  return fromEventPattern(
+    (handler) => {
+      return map.addListener(listenerName, handler as any);
+    },
+    function (handler, listener) {
+      google.maps.event.removeListener(listener);
+    }
+  );
 }

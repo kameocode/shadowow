@@ -7,14 +7,19 @@ import {ShadowShapeSet, ShapesJSON} from "./shape/shadow-shape.model";
 import {MatDialog} from "@angular/material";
 import {ShapesLoaderDialogComponent} from "./shape/shapes-loader-dialog/shapes-loader-dialog.component";
 import {HelpDialogComponent} from "./help-dialog/help-dialog.component";
+import {ActivatedRoute} from "@angular/router";
+import {Location} from '@angular/common';
+import {timer} from "rxjs/index";
+import {debounce} from "rxjs/internal/operators";
+import {googleMapObservable$} from "./utils";
 import DrawingControlOptions = google.maps.drawing.DrawingControlOptions;
 import OverlayType = google.maps.drawing.OverlayType;
 import MarkerOptions = google.maps.MarkerOptions;
 import DrawingManager = google.maps.drawing.DrawingManager;
 import LatLng = google.maps.LatLng;
-import {} from '@types/googlemaps';
 import Rectangle = google.maps.Rectangle;
 import Polygon = google.maps.Polygon;
+import {} from '@types/googlemaps';
 
 @Component({
   selector: 'app-root',
@@ -22,22 +27,38 @@ import Polygon = google.maps.Polygon;
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-
   @ViewChild('gmap') gmapElement: any;
   map: google.maps.Map;
   shadowShapesSet: ShadowShapeSet;
   private drawingManager: DrawingManager;
+  private initialLatLng: LatLng;
 
 
-  constructor(private _ngZone: NgZone, private shadowService: ShadowCalculatorService, public dialog: MatDialog) {
-
-
+  constructor(private _ngZone: NgZone, private shadowService: ShadowCalculatorService, public dialog: MatDialog, private location: Location) {
+    this.calculateInitialLatLng();
   }
 
+  private calculateInitialLatLng() {
+    const hash = this.location.path(true);
+    if (hash != '') {
+      const arr = hash.split("/");
+      let lat, lng;
+      for (let i = 0; i < hash.length - 1; i++) {
+        if (arr[i] === "lat") {
+          lat = arr[i + 1];
+        } else if (arr[i] === "lng") {
+          lng = arr[i + 1];
+        }
+      }
+      if (lat != null && lng != null) {
+        this.initialLatLng = new LatLng(lat, lng);
+      }
+    }
+  }
 
   ngOnInit() {
     let mapProp = {
-      center: new google.maps.LatLng(environment.initLat, environment.initLng),
+      center: this.initialLatLng!=null? this.initialLatLng: new google.maps.LatLng(environment.initLat, environment.initLng),
       zoom: 20,
       mapTypeId: google.maps.MapTypeId.SATELLITE,
       rotateControl: false,
@@ -47,6 +68,7 @@ export class AppComponent implements OnInit {
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
     this.map.setTilt(0);
 
+
     this.shadowShapesSet = new ShadowShapeSet(this.map, this._ngZone);
     this.shadowService.setShadowShapeSet(this.shadowShapesSet);
 
@@ -55,26 +77,35 @@ export class AppComponent implements OnInit {
     google.maps.event.addListener(this.map, "click", () =>
       this._ngZone.run(() => this.shadowShapesSet.clearSelection())
     );
-    google.maps.event.addListener(this.map, "center_changed", () => {
-      this.shadowService.setPosition(this.map.getCenter());
-      this._ngZone.run(() => this.shadowService.recalculateShadows())
+
+    const centerChanged$ = googleMapObservable$(this.map, 'center_changed');
+    const boundChanged$ = googleMapObservable$(this.map, 'bounds_changed');
+
+    boundChanged$.subscribe(() => {
+      this.shadowService.recalculateSunPosition();
     });
-    google.maps.event.addListener(this.map, 'bounds_changed', () => {
-      this.shadowService.recalculateShadows();
+    boundChanged$.pipe(debounce(() => timer(1000))).subscribe(() => {
+      const pos = this.map.getCenter();
+      this.shadowService.setPosition(pos);
+      this.location.replaceState(`#/lat/${pos.lat()}/lng/${pos.lng()}`);
+      // this._ngZone.run(() => this.shadowService.recalculateShadows())
     });
+
+
     this.shadowService.setPosition(this.map.getCenter());
     this.shadowService.setDay(this.shadowService.getDate());
     this.shadowService.recalculateShadows();
-    this.calculateGeolocation();
+    if (this.initialLatLng === null)
+      this.calculateGeolocation();
 
 
   }
 
   private calculateGeolocation() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position)=>{
+      navigator.geolocation.getCurrentPosition((position) => {
         this.map.setCenter(new LatLng(position.coords.latitude, position.coords.longitude));
-        console.log("Geolocation: Latitude: "+    position.coords.latitude +
+        console.log("Geolocation: Latitude: " + position.coords.latitude +
           ", Longitude: " + position.coords.longitude);
         this.shadowService.setPosition(this.map.getCenter());
       });
@@ -118,7 +149,7 @@ export class AppComponent implements OnInit {
         // Switch back to non-drawing mode after drawing a origin.
         this.drawingManager.setDrawingMode(null);
 
-        if (e.type==OverlayType.RECTANGLE) {
+        if (e.type == OverlayType.RECTANGLE) {
           const r = e.overlay as Rectangle;
 
           // create polygon from bounds
@@ -126,7 +157,7 @@ export class AppComponent implements OnInit {
           let northEast = r.getBounds().getNorthEast();
           let southWest = r.getBounds().getSouthWest();
           polygon.setPath([northEast, new LatLng(northEast.lat(), southWest.lng()), southWest, new LatLng(southWest.lat(), northEast.lng())]);
-          polygon.setOptions({ draggable: true });
+          polygon.setOptions({draggable: true});
           polygon.setMap(this.map);
           e.overlay.setMap(null);
           e.overlay = polygon;
@@ -198,7 +229,6 @@ export class AppComponent implements OnInit {
       }
     }
   }
-
 
 
 }
