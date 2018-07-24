@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {MatDialogRef} from "@angular/material";
+import {isDeviceMobile} from "../utils";
 
 @Component({
   selector: 'app-help-dialog',
@@ -7,6 +8,7 @@ import {MatDialogRef} from "@angular/material";
   styleUrls: ['./help-dialog.component.scss']
 })
 export class HelpDialogComponent {
+  mobile: boolean = isDeviceMobile();
 
   constructor(public dialogRef: MatDialogRef<HelpDialogComponent>) {
   }

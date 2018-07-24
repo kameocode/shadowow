@@ -28,6 +28,7 @@ import {SolarInfoColumnComponent} from "./time-details/solar-info/solar-info-col
 import { CurrentDayComponent } from './time-details/current-day/current-day.component';
 import { PlacementComponent } from './placement/placement.component';
 import {RouterModule} from "@angular/router";
+import { ShapeControlsComponent } from './shape/shape-controls/shape-controls.component';
 
 
 
@@ -44,6 +45,7 @@ import {RouterModule} from "@angular/router";
     SolarInfoColumnComponent,
     CurrentDayComponent,
     PlacementComponent,
+    ShapeControlsComponent,
   ],
   imports: [
     BrowserModule,

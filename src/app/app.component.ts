@@ -7,7 +7,6 @@ import {ShadowShapeSet, ShapesJSON} from "./shape/shadow-shape.model";
 import {MatDialog} from "@angular/material";
 import {ShapesLoaderDialogComponent} from "./shape/shapes-loader-dialog/shapes-loader-dialog.component";
 import {HelpDialogComponent} from "./help-dialog/help-dialog.component";
-import {ActivatedRoute} from "@angular/router";
 import {Location} from '@angular/common';
 import {timer} from "rxjs/index";
 import {debounce} from "rxjs/internal/operators";
@@ -19,6 +18,7 @@ import DrawingManager = google.maps.drawing.DrawingManager;
 import LatLng = google.maps.LatLng;
 import Rectangle = google.maps.Rectangle;
 import Polygon = google.maps.Polygon;
+import {XY} from "./shape/tranformable-point.model";
 import {} from '@types/googlemaps';
 
 @Component({
@@ -58,7 +58,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     let mapProp = {
-      center: this.initialLatLng!=null? this.initialLatLng: new google.maps.LatLng(environment.initLat, environment.initLng),
+      center: this.initialLatLng != null ? this.initialLatLng : new google.maps.LatLng(environment.initLat, environment.initLng),
       zoom: 20,
       mapTypeId: google.maps.MapTypeId.SATELLITE,
       rotateControl: false,
@@ -69,13 +69,14 @@ export class AppComponent implements OnInit {
     this.map.setTilt(0);
 
 
-    this.shadowShapesSet = new ShadowShapeSet(this.map, this._ngZone);
-    this.shadowService.setShadowShapeSet(this.shadowShapesSet);
+    this.shadowService.init(this.map, this._ngZone);
+    this.shadowShapesSet = this.shadowService.shadowShapeSet;
+
 
     this.initializeDrawingManager();
 
     google.maps.event.addListener(this.map, "click", () =>
-      this._ngZone.run(() => this.shadowShapesSet.clearSelection())
+      this._ngZone.run(() => this.shadowService.clearSelection())
     );
 
     const centerChanged$ = googleMapObservable$(this.map, 'center_changed');
@@ -213,7 +214,7 @@ export class AppComponent implements OnInit {
         y = -0.1;
       }
       if (x != 0 || y != 0) {
-        this.shadowShapesSet.moveShape(this.shadowShapesSet.currentShape, x, y);
+        this.moveShape({x, y});
       }
     }
     if (event.shiftKey && event.ctrlKey && this.shadowShapesSet.currentShape != null) {
@@ -225,10 +226,16 @@ export class AppComponent implements OnInit {
         r = degreeToRatate * Math.PI / 180;
       }
       if (r != 0) {
-        this.shadowShapesSet.rotateShape(this.shadowShapesSet.currentShape, r, this.shadowService);
+        this.rotateShape(r);
       }
     }
   }
 
+  moveShape(xy: XY) {
+    this.shadowShapesSet.moveShape(this.shadowShapesSet.currentShape, xy.x, xy.y);
+  }
+  rotateShape(r: number) {
+    this.shadowShapesSet.rotateShape(this.shadowShapesSet.currentShape, r, this.shadowService);
+  }
 
 }

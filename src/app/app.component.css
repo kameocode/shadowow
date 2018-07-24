@@ -40,5 +40,22 @@
 a > mat-icon {
   cursor: pointer;
 }
+/*
+.x-shape-control-hide {
+  width:0;
+  max-width: 0;
+
+  border: 1px solid #ca02cd;
+}
+.x-shape-control-visible {
+  width: 100%;
+  max-width: unset;
+opacity: 1 !important;
+  transition: all 4s ease !important;
+  border: 1px solid #1dc8cd;
+
+  height: 30px;
+}
+*/
 
 

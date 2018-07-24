@@ -1,3 +1,5 @@
+import {isDeviceMobile} from "../utils";
+
 export const colors = {
   colorArea: "#a7ffeb"
 };
@@ -72,6 +74,7 @@ export class MarkersSet {
       this.nodeSelectedCallback(marker);
 
     });
+
     google.maps.event.addListener(marker, 'mouseout', () => {
       /* marker.setIcon({
          labelOrigin: new google.maps.Point(11, 13),

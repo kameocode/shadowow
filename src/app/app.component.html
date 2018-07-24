@@ -43,6 +43,16 @@
         </div>
       </div>
 
+<!--      [class.x-shape-control-hide]="shadowShapesSet.currentShape == null"
+
+      [class.x-shape-control-visible]="shadowShapesSet.currentShape != null"-->
+
+      <app-shape-controls
+        *ngIf="shadowShapesSet.currentShape != null"
+        (moveShape)="moveShape($event)"
+        (rotateShape)="rotateShape($event)"></app-shape-controls>
+
+
       <div class="row no-select" style="display: flex; justify-content: space-evenly; margin: 5px 0 5px 0">
         <app-day-info></app-day-info>
       </div>

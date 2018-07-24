@@ -2,8 +2,10 @@
 
 <div style="margin-top: 10px; display: flex; flex-flow: row; justify-content: flex-end">
 
-  <textarea [(ngModel)]="json" spellcheck="false"></textarea>
-
+  <div style="display: flex; flex-flow: column">
+    <div style="margin-bottom: 5px;">Copy or paste the model to input below:</div>
+    <textarea [(ngModel)]="json" spellcheck="false"></textarea>
+  </div>
 
   <mat-icon
     *ngIf="canExport"
@@ -19,6 +21,6 @@
 <div style="margin-top: 10px; display: flex; justify-content: flex-end" [class.x-can-export]="canExport">
   <button mat-raised-button color="accent" *ngIf="originalJson!=json" (click)="onImport()">Import</button>
   &nbsp;
-  <button mat-raised-button (click)="onCancelClick()">Cancel</button>
+  <button mat-raised-button (click)="onCancelClick()">Close</button>
 </div>
 

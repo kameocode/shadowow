@@ -1,8 +1,9 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {ShadowShapeSet, ShapesJSON} from "./shape/shadow-shape.model";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {SunPositionCalculator} from "./sun-position-calculator.model";
 import LatLng = google.maps.LatLng;
+import Map = google.maps.Map;
 
 let SunCalc = require('suncalc');
 
@@ -12,7 +13,7 @@ let SunCalc = require('suncalc');
 export class ShadowCalculatorService {
   private hour: number = 16;
   private minutes: number = 20;
-  private shadowShapeSet: ShadowShapeSet;
+  public shadowShapeSet: ShadowShapeSet;
   private date = new Date();
 
 
@@ -37,6 +38,10 @@ export class ShadowCalculatorService {
 
   }
 
+  public init(map: Map, _ngZone: NgZone) {
+    this.shadowShapeSet = new ShadowShapeSet(map, _ngZone);
+  }
+
   public setTime(hour: number, minutes: number) {
     this.hour = hour;
     this.minutes = minutes;
@@ -44,6 +49,7 @@ export class ShadowCalculatorService {
     this.date$.next(new Date(this.date));
     this.shadowShapeSet.clearSelection();
     this.recalculateShadows();
+    this.recalculateSunPosition();
   }
 
   setDay(day: Date) {
@@ -51,6 +57,7 @@ export class ShadowCalculatorService {
     this.date.setHours(this.hour, this.minutes, 0, 0);
     this.date$.next(this.date);
     this.recalculateShadows();
+    this.recalculateSunPosition();
   }
 
   public setDateAndTime(day: Date) {
@@ -59,6 +66,7 @@ export class ShadowCalculatorService {
     this.hour = day.getHours();
     this.minutes = day.getMinutes();
     this.recalculateShadows();
+    this.recalculateSunPosition();
   }
 
   public setDateAndTimeFromModel(model: ShapesJSON) {
@@ -67,12 +75,11 @@ export class ShadowCalculatorService {
       this.hour = this.date.getHours();
       this.minutes = this.date.getMinutes();
       this.date$.next(this.date);
+      this.recalculateShadows();
+      this.recalculateSunPosition();
     }
   }
 
-  public setShadowShapeSet(shadowShapeSet: ShadowShapeSet) {
-    this.shadowShapeSet = shadowShapeSet;
-  }
 
   public recalculateShadows() {
 
@@ -151,4 +158,7 @@ export class ShadowCalculatorService {
     this.recalculateShadows();
   }
 
+  clearSelection() {
+    this.shadowShapeSet.clearSelection();
+  }
 }

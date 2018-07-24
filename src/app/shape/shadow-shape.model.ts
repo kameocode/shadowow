@@ -8,7 +8,6 @@ import LatLng = google.maps.LatLng;
 import Polygon = google.maps.Polygon;
 import PolygonOptions = google.maps.PolygonOptions;
 import Marker = google.maps.Marker;
-import {SunPositionCalculator} from "../sun-position-calculator.model";
 
 
 export interface ShadowShape {
@@ -33,7 +32,7 @@ export class ShadowShapeSet {
     this.map = map;
     this.markersSet = new MarkersSet(this.map, (marker) => {
       const cs = this.currentShape;
-      if (cs!=null && cs.heights!=null) {
+      if (cs != null && cs.heights != null) {
         _ngZone.run(() => {
           this.currentMarker = marker;
           if (marker != null) {
@@ -187,7 +186,10 @@ export class ShadowShapeSet {
     });
     const debouncedRecreateMarkersAndShadows = _.debounce((shape, shadowService) => {
       this.markersSet.createMarkers(shape);
-      shadowService.recalculateShadows();
+      _ngZone.run(() => {
+        console.trace("Recalculate shadows and markers");
+        shadowService.recalculateShadows();
+      });
     }, 250);
 
     google.maps.event.addListener(shape.getPath(), 'set_at', () =>
@@ -197,12 +199,13 @@ export class ShadowShapeSet {
     google.maps.event.addListener(shape.getPath(), 'insert_at', (vertex: number) => {
 
       _ngZone.run(() => {
-        this.markersSet.createMarkers(shape);
-        const shadowShape = this.shadowShapes.find((s) => s.origin === shape);
-        shadowShape.heights.splice(vertex, 0, this.currentHeight);
-        shadowService.recalculateShadows();
-        this.setSelection(shape, false); }
-        )
+          this.markersSet.createMarkers(shape);
+          const shadowShape = this.shadowShapes.find((s) => s.origin === shape);
+          shadowShape.heights.splice(vertex, 0, this.currentHeight);
+          shadowService.recalculateShadows();
+          this.setSelection(shape, false);
+        }
+      )
     });
 
     google.maps.event.addListener(shape, 'rightclick', (e) => {
@@ -291,6 +294,7 @@ export class ShadowShapeSet {
     } else
       this.markersSet.clearMarkers();
   }
+
   rotateShape(currentShape: ShadowShape, x: number, shadowService: ShadowCalculatorService) {
     const array = XYArray.fromLatLng(this.map, 0, currentShape.origin.getPath().getArray());
     currentShape.origin.setPath(array.rotate(x).getPath());
