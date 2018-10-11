@@ -11,8 +11,8 @@ let SunCalc = require('suncalc');
 
 @Injectable()
 export class ShadowCalculatorService {
-  private hour: number = 16;
-  private minutes: number = 20;
+  private hour: number = new Date().getHours();
+  private minutes: number = new Date().getMinutes();
   public shadowShapeSet: ShadowShapeSet;
   private date = new Date();
 
