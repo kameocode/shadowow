@@ -201,6 +201,10 @@ export class AppComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
+    if(event.key === 'Delete'  && this.shadowShapesSet.currentShape != null) {
+      this.deleteShape();
+    }
+
     if (event.ctrlKey && this.shadowShapesSet.currentShape != null) {
       let x = 0, y = 0;
 
@@ -229,6 +233,10 @@ export class AppComponent implements OnInit {
         this.rotateShape(r);
       }
     }
+  }
+
+  deleteShape() {
+    this.shadowShapesSet.deleteShadowShape(this.shadowShapesSet.currentShape);
   }
 
   moveShape(xy: XY) {

@@ -248,7 +248,7 @@ export class ShadowShapeSet {
     shadowService.recalculateShadows();
   }
 
-  private deleteShadowShape(shadowShape: ShadowShape | undefined) {
+  deleteShadowShape(shadowShape: ShadowShape | undefined) {
     shadowShape.origin.setMap(null);
     ShadowShapeSet.clearShadowShapes(shadowShape);
     this.markersSet.clearMarkers();
