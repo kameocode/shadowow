@@ -19,3 +19,7 @@
 .x-shadow-info {
   text-shadow: 2px 2px 5px #8e8e8e;
 }
+
+.x-clickable {
+  cursor: pointer;
+}

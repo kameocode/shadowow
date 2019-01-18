@@ -45,14 +45,16 @@ export class ShapeDetailsComponent implements OnInit {
   }
 
   openSettingsDialog() {
-    this.dialog.open(ShapeBoundariesComponent, {
-      minWidth: '450',
-      minHeight: '420',
-      data: {
-        shadowShape: this.shadowShape,
-        shadowService: this.shadowService
-      },
-    });
+    if (this.shadowShape != null) {
+      this.dialog.open(ShapeBoundariesComponent, {
+        minWidth: '450',
+        minHeight: '420',
+        data: {
+          shadowShape: this.shadowShape,
+          shadowService: this.shadowService
+        },
+      });
+    }
   }
 
 

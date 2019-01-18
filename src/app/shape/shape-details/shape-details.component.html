@@ -3,7 +3,9 @@
 
   <div style="display: flex; flex-flow: row; justify-content: center; align-items: center;flex-wrap: nowrap;">
     Height:
-    <span class="x-pinBackground" (click)="openSettingsDialog()"><div class="x-pinLabel">{{ markerLabel }}</div></span>
+    <span *ngIf="shadowShape==null" style="display: block;width: 20px;"></span>
+
+    <span *ngIf="shadowShape!=null" class="x-pinBackground x-clickable" (click)="openSettingsDialog()" matTooltip="Shape settings"><div class="x-pinLabel">{{ markerLabel }}</div></span>
 
 
     <input style="width: 40px;" [(ngModel)]="currentHeight" (ngModelChange)="onChangeCurrentHeight($event)" type=number

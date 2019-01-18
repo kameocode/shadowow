@@ -127,7 +127,7 @@ export class ShadowShapeSet {
       fillColor,
 
       // fillOpacity: 0.5,
-      // strokeWeight: 0,
+      strokeWeight: 1,
       zIndex
     });
     sh.shadows.push(shapePolygonTotal);
