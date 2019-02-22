@@ -245,10 +245,10 @@ export class AppComponent implements OnInit {
   }
 
   moveShape(xy: XY) {
-    this.shadowShapesSet.moveShape(this.shadowShapesSet.currentShape, xy.x, xy.y);
+    this.shadowShapesSet.moveShape(this.shadowShapesSet.currentShape, xy.x, xy.y, this._ngZone, this.shadowService);
   }
   rotateShape(r: number) {
-    this.shadowShapesSet.rotateShape(this.shadowShapesSet.currentShape, r, this.shadowService);
+    this.shadowShapesSet.rotateShape(this.shadowShapesSet.currentShape, r, this._ngZone, this.shadowService);
   }
 
 }

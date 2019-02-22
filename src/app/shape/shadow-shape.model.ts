@@ -15,8 +15,9 @@ export interface ShadowShape {
   shadows?: google.maps.Polygon[]
   heights: number[]
 }
+
 export interface ShadowVisualPreferences {
-  shadowFillColor : string //#000000
+  shadowFillColor: string //#000000
   shadowStrokeWidth: number
 }
 
@@ -182,36 +183,7 @@ export class ShadowShapeSet {
   }
 
   private initListeners(shape: google.maps.Polygon, _ngZone: NgZone, shadowService: ShadowCalculatorService) {
-
-    google.maps.event.addListener(shape.getPath(), 'remove_at', () => {
-      this.markersSet.createMarkers(shape);
-      shadowService.recalculateShadows();
-
-
-    });
-    const debouncedRecreateMarkersAndShadows = _.debounce((shape, shadowService) => {
-      this.markersSet.createMarkers(shape);
-      _ngZone.run(() => {
-        console.trace("Recalculate shadows and markers");
-        shadowService.recalculateShadows();
-      });
-    }, 250);
-
-    google.maps.event.addListener(shape.getPath(), 'set_at', () =>
-      debouncedRecreateMarkersAndShadows(shape, shadowService)
-    );
-
-    google.maps.event.addListener(shape.getPath(), 'insert_at', (vertex: number) => {
-
-      _ngZone.run(() => {
-          this.markersSet.createMarkers(shape);
-          const shadowShape = this.shadowShapes.find((s) => s.origin === shape);
-          shadowShape.heights.splice(vertex, 0, this.currentHeight);
-          shadowService.recalculateShadows();
-          this.setSelection(shape, false);
-        }
-      )
-    });
+    const debouncedRecreateMarkersAndShadows = this.initPathListeners(shape, shadowService, _ngZone);
 
     google.maps.event.addListener(shape, 'rightclick', (e) => {
       // check if click was on a vertex control point
@@ -253,6 +225,39 @@ export class ShadowShapeSet {
     shadowService.recalculateShadows();
   }
 
+  private initPathListeners(shape: google.maps.Polygon, shadowService: ShadowCalculatorService, _ngZone: NgZone) {
+    google.maps.event.addListener(shape.getPath(), 'remove_at', () => {
+      this.markersSet.createMarkers(shape);
+      shadowService.recalculateShadows();
+
+
+    });
+    const debouncedRecreateMarkersAndShadows = _.debounce((shape, shadowService) => {
+      this.markersSet.createMarkers(shape);
+      _ngZone.run(() => {
+        console.trace("Recalculate shadows and markers");
+        shadowService.recalculateShadows();
+      });
+    }, 250);
+
+    google.maps.event.addListener(shape.getPath(), 'set_at', () =>
+      debouncedRecreateMarkersAndShadows(shape, shadowService)
+    );
+
+    google.maps.event.addListener(shape.getPath(), 'insert_at', (vertex: number) => {
+
+      _ngZone.run(() => {
+          this.markersSet.createMarkers(shape);
+          const shadowShape = this.shadowShapes.find((s) => s.origin === shape);
+          shadowShape.heights.splice(vertex, 0, this.currentHeight);
+          shadowService.recalculateShadows();
+          this.setSelection(shape, false);
+        }
+      )
+    });
+    return debouncedRecreateMarkersAndShadows;
+  }
+
   deleteShadowShape(shadowShape: ShadowShape | undefined) {
     shadowShape.origin.setMap(null);
     ShadowShapeSet.clearShadowShapes(shadowShape);
@@ -282,32 +287,43 @@ export class ShadowShapeSet {
     }
   }
 
-  moveShape(currentShape: ShadowShape, x: number, y: number) {
-    const array = XYArray.fromLatLng(this.map, 0, currentShape.origin.getPath().getArray());
-    currentShape.origin.setPath(array.move(x, y).getPath());
-    this.currentShape.shadows.forEach(shadow => {
-      const newPaths = [];
-      shadow.getPaths().forEach(path => {
-        const array = XYArray.fromLatLng(this.map, 0, path.getArray());
-        newPaths.push(array.move(x, y).getPath());
-      });
-      shadow.setPaths(newPaths);
-
-    });
+  moveShape(currentShape: ShadowShape, x: number, y: number, _ngZone: NgZone, shadowService: ShadowCalculatorService) {
     if (currentShape != null) {
+      const array = XYArray.fromLatLng(this.map, 0, currentShape.origin.getPath().getArray());
+      currentShape.origin.setPath(array.move(x, y).getPath());
+      this.currentShape.shadows.forEach(shadow => {
+        const newPaths = [];
+        shadow.getPaths().forEach(path => {
+          const array = XYArray.fromLatLng(this.map, 0, path.getArray());
+          newPaths.push(array.move(x, y).getPath());
+        });
+        shadow.setPaths(newPaths);
+
+      });
+
       this.markersSet.moveMarkers(x, y);
+      this.initPathListeners(currentShape.origin, shadowService, _ngZone);
+
+      shadowService.recalculateShadows();
     } else
       this.markersSet.clearMarkers();
   }
 
-  rotateShape(currentShape: ShadowShape, x: number, shadowService: ShadowCalculatorService) {
-    const array = XYArray.fromLatLng(this.map, 0, currentShape.origin.getPath().getArray());
-    currentShape.origin.setPath(array.rotate(x).getPath());
+  rotateShape(currentShape: ShadowShape, x: number, _ngZone: NgZone, shadowService: ShadowCalculatorService) {
     if (currentShape != null) {
+
+
+      const array = XYArray.fromLatLng(this.map, 0, currentShape.origin.getPath().getArray());
+      currentShape.origin.setPath(array.rotate(x).getPath());
+
       this.markersSet.createMarkers(currentShape.origin, true);
+
+      this.initPathListeners(currentShape.origin, shadowService, _ngZone);
+
+      shadowService.recalculateShadows();
     } else
       this.markersSet.clearMarkers();
-    shadowService.recalculateShadows()
+
   }
 }
 

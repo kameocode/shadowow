@@ -1,5 +1,3 @@
-import {isDeviceMobile} from "../utils";
-
 export const colors = {
   colorArea: "#a7ffeb"
 };
