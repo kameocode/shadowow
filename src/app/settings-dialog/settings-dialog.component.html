@@ -1,0 +1,21 @@
+<h4 style="margin-bottom: 10px;">Settings</h4>
+<div style="max-height: 60vh; overflow-y: auto; padding: 10px;">
+  <div style="display: flex; margin-bottom: 10px;">
+
+    <div style="width: 120px;">Shadow color: </div>
+    <input [(colorPicker)]="visualPreferences.shadowFillColor"
+           [style.background]="visualPreferences.shadowFillColor"
+
+           style="cursor: pointer; border: 1px solid grey; width: 40px;"
+    />
+  </div>
+  <div style="display: flex; margin-bottom: 10px;">
+    <div style="width: 120px;">Shadow border: </div>
+      <input style="width: 40px" [(ngModel)]="visualPreferences.shadowStrokeWidth" type=number min=0 max=10 (change)="updateShadowVisualPreferences()">
+  </div>
+
+</div>
+<div style="margin-top: 10px; display: flex; justify-content: flex-end">
+
+  <button mat-raised-button (click)="onClose()">Close</button>
+</div>

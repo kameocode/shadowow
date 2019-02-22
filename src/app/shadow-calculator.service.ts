@@ -1,6 +1,6 @@
 import {Injectable, NgZone} from '@angular/core';
-import {ShadowShapeSet, ShapesJSON} from "./shape/shadow-shape.model";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {ShadowShapeSet, ShadowVisualPreferences, ShapesJSON} from "./shape/shadow-shape.model";
+import {BehaviorSubject} from 'rxjs';
 import {SunPositionCalculator} from "./sun-position-calculator.model";
 import LatLng = google.maps.LatLng;
 import Map = google.maps.Map;
@@ -34,12 +34,29 @@ export class ShadowCalculatorService {
   public midsummer: Date;
   public midwinter: Date;
 
+  public visualPreferences: ShadowVisualPreferences = {
+    shadowStrokeWidth: 2,
+    shadowFillColor: "#000000"
+  };
+
   constructor() {
 
   }
 
   public init(map: Map, _ngZone: NgZone) {
-    this.shadowShapeSet = new ShadowShapeSet(map, _ngZone);
+
+    const prefString = localStorage.getItem('shadowVisualPreferences');
+    try {
+      if (prefString != null) {
+        const temp = JSON.parse(prefString);
+        Object.assign(this.visualPreferences, temp);
+      }
+    } catch (error) {
+      // ignore error
+    }
+
+
+    this.shadowShapeSet = new ShadowShapeSet(map, _ngZone, this.visualPreferences);
   }
 
   public setTime(hour: number, minutes: number) {
@@ -80,6 +97,15 @@ export class ShadowCalculatorService {
     }
   }
 
+  public updateShadowPreferences() {
+    try {
+      localStorage.setItem('shadowVisualPreferences', JSON.stringify(this.visualPreferences));
+    } catch (error) {
+      // ignore error
+    }
+    this.recalculateShadows();
+  }
+
 
   public recalculateShadows() {
 
@@ -102,6 +128,7 @@ export class ShadowCalculatorService {
 
 
   }
+
   public recalculateSunPosition() {
     const center = this.shadowShapeSet.map.getCenter();
     const times = SunCalc.getTimes(this.date, center.lat(), center.lng());

@@ -1,7 +1,7 @@
 import {Component, HostListener, OnChanges, OnInit} from '@angular/core';
 import {ShadowCalculatorService} from "../../shadow-calculator.service";
 import {isSameDayOfYear} from "../../utils";
-import {Observable} from "rxjs/Rx";
+import {combineLatest, fromEvent} from 'rxjs';
 import LatLng = google.maps.LatLng;
 
 let SunCalc = require('suncalc');
@@ -48,13 +48,13 @@ export class DayInfoComponent implements OnInit, OnChanges {
     this.backgroundCircularImg.src = "assets/circular_button.svg";
     this.sunImgToday.src = "assets/sun_today.svg";
 
-    Observable.combineLatest([
+    combineLatest([
       this.shadowService.pos$, this.shadowService.date$,
-      Observable.fromEvent(this.sunImg, 'load'),
-      Observable.fromEvent(this.sunImgMidsummer, 'load'),
-      Observable.fromEvent(this.sunImgMidwinter, 'load'),
-      Observable.fromEvent(this.backgroundCircularImg, 'load'),
-      Observable.fromEvent(this.sunImgToday, 'load')]
+      fromEvent(this.sunImg, 'load'),
+      fromEvent(this.sunImgMidsummer, 'load'),
+      fromEvent(this.sunImgMidwinter, 'load'),
+      fromEvent(this.backgroundCircularImg, 'load'),
+      fromEvent(this.sunImgToday, 'load')]
     ).subscribe(([latLng, date]) => {
       this.latLng = latLng as any;
       this.date = date as any;

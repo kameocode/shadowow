@@ -20,6 +20,7 @@ import Rectangle = google.maps.Rectangle;
 import Polygon = google.maps.Polygon;
 import {XY} from "./shape/tranformable-point.model";
 import {} from '@types/googlemaps';
+import {SettingsDialogComponent} from "./settings-dialog/settings-dialog.component";
 
 @Component({
   selector: 'app-root',
@@ -173,6 +174,10 @@ export class AppComponent implements OnInit {
 
   openHelpDialog() {
     let dialogRef = this.dialog.open(HelpDialogComponent);
+  }
+
+  openSettingsDialog() {
+    let dialogRef = this.dialog.open(SettingsDialogComponent);
   }
 
   openImportExportDialog() {

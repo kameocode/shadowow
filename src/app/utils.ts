@@ -1,5 +1,5 @@
 import {fromEventPattern} from "rxjs/index";
-import {Observable} from "rxjs/Rx";
+import {Observable} from 'rxjs';
 import Map = google.maps.Map;
 
 export function copyTextToClipboard(text) {

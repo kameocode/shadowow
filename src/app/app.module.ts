@@ -10,9 +10,10 @@ import {
   MatDatepickerModule,
   MatDialog,
   MatDialogModule,
-  MatFormFieldModule, MatIconModule,
+  MatFormFieldModule,
+  MatIconModule,
   MatNativeDateModule,
-  MatSliderModule, MatTooltipModule
+  MatTooltipModule
 } from "@angular/material";
 import {BrowserAnimationsModule, NoopAnimationsModule} from "@angular/platform-browser/animations";
 import {ShadowCalculatorService} from "./shadow-calculator.service";
@@ -20,17 +21,15 @@ import {TimeDetailsComponent} from "./time-details/time-details.component"
 import {ShapeBoundariesComponent} from "./shape/shape-details/shape-boundaries/shape-boundaries.component";
 import {DayInfoComponent} from './time-details/day-info/day-info.component';
 import {ShapesLoaderDialogComponent} from './shape/shapes-loader-dialog/shapes-loader-dialog.component';
-import { HelpDialogComponent } from './help-dialog/help-dialog.component';
-import {
-  SolarInfoComponent
-} from './time-details/solar-info/solar-info.component';
+import {HelpDialogComponent} from './help-dialog/help-dialog.component';
+import {SolarInfoComponent} from './time-details/solar-info/solar-info.component';
 import {SolarInfoColumnComponent} from "./time-details/solar-info/solar-info-column/solar-info-column.component";
-import { CurrentDayComponent } from './time-details/current-day/current-day.component';
-import { PlacementComponent } from './placement/placement.component';
+import {CurrentDayComponent} from './time-details/current-day/current-day.component';
+import {PlacementComponent} from './placement/placement.component';
 import {RouterModule} from "@angular/router";
-import { ShapeControlsComponent } from './shape/shape-controls/shape-controls.component';
-
-
+import {ShapeControlsComponent} from './shape/shape-controls/shape-controls.component';
+import {SettingsDialogComponent} from './settings-dialog/settings-dialog.component';
+import {ColorPickerModule} from 'ngx-color-picker';
 
 @NgModule({
   declarations: [
@@ -46,6 +45,7 @@ import { ShapeControlsComponent } from './shape/shape-controls/shape-controls.co
     CurrentDayComponent,
     PlacementComponent,
     ShapeControlsComponent,
+    SettingsDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,6 +62,7 @@ import { ShapeControlsComponent } from './shape/shape-controls/shape-controls.co
     MatTooltipModule,
     RouterModule.forRoot([]),
     BrowserAnimationsModule,
+    ColorPickerModule
   ],
   providers: [
     ShadowCalculatorService,
@@ -72,7 +73,8 @@ import { ShapeControlsComponent } from './shape/shape-controls/shape-controls.co
   entryComponents: [
     ShapeBoundariesComponent,
     ShapesLoaderDialogComponent,
-    HelpDialogComponent]
+    HelpDialogComponent,
+    SettingsDialogComponent]
 })
 export class AppModule {
 }
