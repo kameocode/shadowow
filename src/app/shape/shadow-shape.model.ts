@@ -42,7 +42,7 @@ export class ShadowShapeSet {
         _ngZone.run(() => {
           this.currentMarker = marker;
           if (marker != null) {
-            const markerIndex = marker.getLabel() as number - 1;
+            const markerIndex = +marker.getLabel().text as number - 1;
             this.currentHeight = cs.heights[markerIndex];
           }
         });
@@ -52,7 +52,7 @@ export class ShadowShapeSet {
 
   get currentMarkerIndex() {
     if (this.currentMarker != null) {
-      const markerIndex = this.currentMarker.getLabel() as number - 1;
+      const markerIndex = +this.currentMarker.getLabel().text as number - 1;
       return markerIndex;
     }
     return -1;
