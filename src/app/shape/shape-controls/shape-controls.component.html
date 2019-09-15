@@ -1,20 +1,20 @@
 <div>
-  <button mat-mini-fab (click)="rotateLeft()" matTooltip="Rotate left">
+  <button mat-mini-fab (click)="rotateLeft($event)" matTooltip="Rotate left">
     <mat-icon aria-label="Rotate left">rotate_left</mat-icon>
   </button>
-  <button mat-mini-fab (click)="rotateRight()" matTooltip="Rotate right">
+  <button mat-mini-fab (click)="rotateRight($event)" matTooltip="Rotate right">
     <mat-icon aria-label="Rotate right">rotate_right</mat-icon>
   </button>
-  <button mat-mini-fab (click)="moveLeft()" matTooltip="Move left">
+  <button mat-mini-fab (click)="moveLeft($event)" matTooltip="Move left">
     <mat-icon aria-label="Left">arrow_back</mat-icon>
   </button>
-  <button mat-mini-fab (click)="moveRight()" matTooltip="Move right">
+  <button mat-mini-fab (click)="moveRight($event)" matTooltip="Move right">
     <mat-icon aria-label="Right">arrow_forward</mat-icon>
   </button>
-  <button mat-mini-fab (click)="moveUp()" matTooltip="Move up">
+  <button mat-mini-fab (click)="moveUp($event)" matTooltip="Move up">
     <mat-icon aria-label="Up">arrow_upward</mat-icon>
   </button>
-  <button mat-mini-fab (click)="moveDown()" matTooltip="Move down">
+  <button mat-mini-fab (click)="moveDown($event)" matTooltip="Move down">
     <mat-icon aria-label="Down">arrow_downward</mat-icon>
   </button>
 </div>
