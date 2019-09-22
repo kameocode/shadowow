@@ -16,28 +16,31 @@ export class ShapeControlsComponent implements OnInit {
 
   constructor() { }
 
+  private unitsToTransform(shiftHeld : boolean, baseUnits: number){
+    const multiplier = 15; 
+    return shiftHeld ? baseUnits * multiplier : baseUnits;
+  }
+
   ngOnInit() {
   }
-  rotateLeft() {
-    const degreeToRatate = 1;
-    const r = -degreeToRatate * Math.PI / 180;
+  rotateLeft(event) {
+    const r = this.unitsToTransform(event.shiftKey, -1) * Math.PI / 180;
     this.rotateShape.emit(r);
   }
-  rotateRight() {
-    const degreeToRatate = 1;
-    const r = degreeToRatate * Math.PI / 180;
+  rotateRight(event) {
+    const r = this.unitsToTransform(event.shiftKey, 1) * Math.PI / 180;
     this.rotateShape.emit(r);
   }
-  moveLeft() {
-    this.moveShape.emit({x: -0.1, y: 0});
+  moveLeft(event) {
+    this.moveShape.emit({x: this.unitsToTransform(event.shiftKey, -0.1), y: 0});
   }
-  moveRight() {
-    this.moveShape.emit({x: 0.1, y: 0});
+  moveRight(event) {
+    this.moveShape.emit({x: this.unitsToTransform(event.shiftKey, 0.1), y: 0});
   }
-  moveUp() {
-    this.moveShape.emit({x: 0, y: 0.1});
+  moveUp(event) {
+    this.moveShape.emit({x: 0, y: this.unitsToTransform(event.shiftKey, 0.1)});
   }
-  moveDown() {
-    this.moveShape.emit({x: 0, y: -0.1});
+  moveDown(event) {
+    this.moveShape.emit({x: 0, y: this.unitsToTransform(event.shiftKey, -0.1)});
   }
 }
